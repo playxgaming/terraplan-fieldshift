@@ -188,7 +188,7 @@ test('actual demo scoring is pure and every scored starter result has Low confid
   assert(result.ranked.every(row=>row.confidence.level==='Low' && row.confidence.reasons.some(reason=>reason.includes('unverified'))));
   assert(result.ranked.some(row=>row.feasible===false));
   assert(result.options.every(row=>row.id!==result.current.id));
-  console.log(`Rajkot scoring: current ${result.current.total.toFixed(2)}, ${result.ranked.filter(row=>row.total!==null).length} scored alternatives, ${result.ranked.filter(row=>row.total===null).length} unavailable totals`);
+  console.log(`Jaipur scoring: current ${result.current.total.toFixed(2)}, ${result.ranked.filter(row=>row.total!==null).length} scored alternatives, ${result.ranked.filter(row=>row.total===null).length} unavailable totals`);
 });
 
 test('priority view has six labelled ranges and preserves scores, unknowns, confidence and source labels in its preview',()=>{

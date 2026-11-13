@@ -2,17 +2,29 @@ import { validateCrops } from './engine.mjs';
 
 /** The single editable demo-field definition. No V2 data is used. */
 export const DEMO_FARM = Object.freeze({
-  name: 'Demo farm, Rajkot',
-  lat: 22.30,
-  lon: 70.80,
-  soil: 'black',
+  name: 'Demo farm, Jobner · Jaipur',
+  lat: 26.97,
+  lon: 75.38,
+  soil: 'loam',
   soil_tested: false,
   area_ha: 2,
-  water_source: 'rainfed',
+  water_source: 'well',
   irrigation_mm: Object.freeze({ kharif: 0, rabi: 150, zaid: 0 }),
   equipment: 'basic',
-  market_access: 'local',
-  current_rotation: Object.freeze({ kharif: 'groundnut', rabi: 'wheat', zaid: null }),
+  market_access: 'mandi',
+  current_rotation: Object.freeze({ kharif: 'bajra', rabi: 'wheat', zaid: null }),
+});
+
+export const DEMO_CONTEXT = Object.freeze({
+  label: 'Jaipur', area: 'Jobner, near Jaipur, Rajasthan',
+  description: 'An editable 2-hectare demonstration near Jaipur: bajra in kharif, wheat in rabi, and no zaid crop. It is a planning scenario, not a surveyed or university-endorsed farm.',
+  soil_note: 'Sandy-loam scenario, represented by the broad Loam class in this prototype. No soil test is available. Local research describes loamy sand to sandy loam; a specific field still needs testing.',
+  water_note: 'The well and 150 mm rabi irrigation are illustrative entries, not measured supply. Confirm the actual well capacity locally.',
+  region_note: 'Starter crop regional flags were drafted for Gujarat/Maharashtra. They do not verify suitability around Jaipur; all starter confidence remains Low.',
+  sources: Object.freeze([
+    Object.freeze({title:'Jobner soil research, SKN Agriculture University thesis (2021)',url:'https://krishikosh.egranth.ac.in/server/api/core/bitstreams/19adae90-cf75-485f-96ef-78fb7476281d/content',note:'Location and soil context; not a soil test for this demo.'}),
+    Object.freeze({title:'ICAR-CRIDA Jaipur contingency plan (2011)',url:'https://www.icar-crida.res.in/CP-2012/statewiseplans/Rajastan%20(Pdf)/RAU,%20Bikaner/RAJ1-Jaipur%203.2.2011.pdf',note:'Historical local cropping context, including irrigated pearl millet–wheat; not current field-specific advice.'}),
+  ]),
 });
 
 export const DATA_STATUS = Object.freeze({
@@ -259,7 +271,7 @@ export function satelliteSourceUrl(value) {
 /** Invalid products are skipped independently; provenance is required before exposing values. */
 export function validateSatellite(raw) {
   const errors = [], empty = {status:'not-loaded',data:null,errors};
-  if (!raw || !isDemoPoint(raw.location)) { errors.push('Satellite location does not match the Rajkot demo.'); return empty; }
+  if (!raw || !isDemoPoint(raw.location)) { errors.push('Satellite location does not match the Jaipur demo.'); return empty; }
   if (!raw.imerg && !raw.smap && !raw.grace) { errors.push('Satellite summaries not loaded yet. The data team has not supplied sourced values.'); return empty; }
   if (typeof raw.retrieved_at !== 'string' || !Number.isFinite(Date.parse(raw.retrieved_at)) || !Array.isArray(raw.sources) || !raw.sources.length
     || raw.sources.some(row => typeof row.name !== 'string' || !row.name.trim() || !satelliteSourceUrl(row.doi_or_url))) {

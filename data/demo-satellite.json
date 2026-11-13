@@ -1,10 +1,13 @@
 {
   "status": "not-loaded",
-  "location": { "lat": 22.3, "lon": 70.8 },
+  "location": {
+    "lat": 26.97,
+    "lon": 75.38
+  },
   "imerg": null,
   "smap": null,
   "grace": null,
   "retrieved_at": null,
   "sources": [],
-  "note": "Satellite summaries have not been supplied by the data team. No satellite values have been invented. Replace this manifest with sourced data using the schema in AGENTS.md section 9.4."
+  "note": "Jaipur\u2013Jobner satellite summaries have not been supplied. No other-location summary or invented observation is reused. Only add sourced data matching this point."
 }

@@ -165,7 +165,7 @@ test('actual demo timelines preserve scoring/selection and escaped text while ad
   const html=renderCompare({generated,scoring,field:DEMO_FARM,cropData:{status:'loaded',crops,errors:[]},climateState:{data},climateMatches:true});
   assert.equal((html.match(/data-month=/g)??[]).length,36);
   const current=buildTimeline(scoring.current,data);
-  assert.deepEqual(current.filter(value=>value.bare).map(value=>value.month),[3,4,5]);
+  assert.deepEqual(current.filter(value=>value.bare).map(value=>value.month),[9,3,4,5]);
   assert(current.some(value=>value.flags.length));
   assert.equal(JSON.stringify({data,scoring}),before);
   const unsafe=rotation(window(0,0,crop('unsafe',{name:'<img src=x onerror=alert(1)>'})));

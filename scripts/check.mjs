@@ -2,9 +2,9 @@ import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 
 const files = [
-  'app.mjs', 'views.mjs', 'engine.mjs', 'data.mjs', 'glossary.mjs', 'field.mjs', 'scenario.mjs', 'labels.mjs', 'map.mjs', 'print.mjs', 'field-scene.mjs', 'photos.mjs',
+  'app.mjs', 'views.mjs', 'engine.mjs', 'data.mjs', 'glossary.mjs', 'field.mjs', 'scenario.mjs', 'labels.mjs', 'map.mjs', 'print.mjs', 'field-scene.mjs', 'photos.mjs', 'brief.mjs',
   'scripts/check.mjs', 'scripts/package-site.mjs', 'scripts/fetch-demo.mjs',
-  'tests/index.js', 'tests/climate.test.mjs', 'tests/satellite.test.mjs', 'tests/scenario.test.mjs', 'tests/deployment.test.mjs', 'tests/optional.test.mjs', 'tests/studio.test.mjs', 'tests/engine.test.mjs', 'tests/data.test.mjs', 'tests/routes.test.mjs', 'tests/field.test.mjs', 'tests/weather.test.mjs', 'tests/scoring.test.mjs', 'tests/comparison.test.mjs', 'tests/timeline.test.mjs',
+  'tests/index.js', 'tests/climate.test.mjs', 'tests/satellite.test.mjs', 'tests/scenario.test.mjs', 'tests/deployment.test.mjs', 'tests/optional.test.mjs', 'tests/studio.test.mjs', 'tests/jaipur.test.mjs', 'tests/engine.test.mjs', 'tests/data.test.mjs', 'tests/routes.test.mjs', 'tests/field.test.mjs', 'tests/weather.test.mjs', 'tests/scoring.test.mjs', 'tests/comparison.test.mjs', 'tests/timeline.test.mjs',
 ];
 
 for (const file of files) {

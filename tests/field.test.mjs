@@ -109,6 +109,6 @@ test('form safely renders saved names, labelled controls and explicit Bare choic
   }
   assert.equal((html.match(/Bare \(no crop\)/g) ?? []).length, 3);
   assert(html.includes('value="bare" selected'));
-  assert(renderWelcome().includes('data-load-demo'));
+  assert(renderWelcome().includes('data-run-demo'));
   assert(!renderWelcome().includes(' disabled'));
 });

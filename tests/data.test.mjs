@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { DATA_STATUS, DEMO_FARM, loadCrops } from '../data.mjs';
 
-test('the one demo definition is Rajkot and includes the farmer current rotation', () => {
-  assert.equal(DEMO_FARM.lat, 22.30);
-  assert.equal(DEMO_FARM.lon, 70.80);
-  assert.equal(DEMO_FARM.name, 'Demo farm, Rajkot');
-  assert.deepEqual(DEMO_FARM.current_rotation, { kharif: 'groundnut', rabi: 'wheat', zaid: null });
+test('the one demo definition is Jaipur and includes the farmer current rotation', () => {
+  assert.equal(DEMO_FARM.lat, 26.97);
+  assert.equal(DEMO_FARM.lon, 75.38);
+  assert.equal(DEMO_FARM.name, 'Demo farm, Jobner · Jaipur');
+  assert.deepEqual(DEMO_FARM.current_rotation, { kharif: 'bajra', rabi: 'wheat', zaid: null });
   assert.deepEqual(DEMO_FARM.irrigation_mm, { kharif: 0, rabi: 150, zaid: 0 });
   assert(Object.isFrozen(DEMO_FARM));
   assert(Object.isFrozen(DEMO_FARM.current_rotation));

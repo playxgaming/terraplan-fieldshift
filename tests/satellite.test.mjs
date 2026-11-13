@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {loadSatellite,validateSatellite,DEMO_FARM} from '../data.mjs';
 import {renderSatelliteCards} from '../views.mjs';
-const fixture=()=>({location:{lat:22.3,lon:70.8},retrieved_at:'2026-11-13T00:00:00Z',sources:[{name:'Synthetic test fixture',doi_or_url:'https://example.org/test'}],imerg:{resolution:'10 km',monthly_rain_mm:{'2025-06':0}},smap:{resolution:'9 km',monthly_anomaly:{'2025-06':-0.1}},grace:{resolution:'300 km',annual_lwe_cm:{2025:0},trend_cm_per_year:0}});
+const fixture=()=>({location:{lat:26.97,lon:75.38},retrieved_at:'2026-11-13T00:00:00Z',sources:[{name:'Synthetic test fixture',doi_or_url:'https://example.org/test'}],imerg:{resolution:'10 km',monthly_rain_mm:{'2025-06':0}},smap:{resolution:'9 km',monthly_anomaly:{'2025-06':-0.1}},grace:{resolution:'300 km',annual_lwe_cm:{2025:0},trend_cm_per_year:0}});
 test('satellite loader treats absent, unavailable, malformed and empty manifests as not loaded',async()=>{
- for(const fetcher of [async()=>{throw Error('offline')},async()=>({ok:false}),async()=>({ok:true,json:async()=>({location:{lat:22.3,lon:70.8},imerg:null})})])assert.equal((await loadSatellite(fetcher)).status,'not-loaded');
+ for(const fetcher of [async()=>{throw Error('offline')},async()=>({ok:false}),async()=>({ok:true,json:async()=>({location:{lat:26.97,lon:75.38},imerg:null})})])assert.equal((await loadSatellite(fetcher)).status,'not-loaded');
  assert.equal(validateSatellite(null).data,null);
 });
 test('satellite provenance and location are mandatory and invalid products are skipped independently',()=>{
@@ -21,7 +21,7 @@ test('satellite view keeps zero values, missing cross-checks and non-demo locati
  assert(!html.includes('javascript:'));
  const wrong=renderSatelliteCards(DEMO_FARM,state,{daily,point:{lat:23,lon:70}});assert(!wrong.includes('-30'));
  const partial=renderSatelliteCards(DEMO_FARM,state,{daily:daily.slice(1),point:DEMO_FARM});assert.match(partial,/<td>Missing<\/td>/);
- const other=renderSatelliteCards({...DEMO_FARM,lat:23},state,{daily,point:DEMO_FARM});assert.match(other,/No Rajkot satellite value is applied/);assert(!other.includes('0 cm/year'));
+ const other=renderSatelliteCards({...DEMO_FARM,lat:23},state,{daily,point:DEMO_FARM});assert.match(other,/No Jaipur satellite value is applied/);assert(!other.includes('0 cm/year'));
  state.data.sources[0].name='<script>';assert(!renderSatelliteCards(DEMO_FARM,state).includes('<script>'));
  assert.match(renderSatelliteCards(DEMO_FARM),/Not loaded yet/);
 });

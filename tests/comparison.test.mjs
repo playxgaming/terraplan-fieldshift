@@ -64,8 +64,8 @@ test('information gaps and local checks identify unverified data, missing days, 
   assert(result.gaps.some(gap=>gap.includes('soil test')));
   assert(result.gaps.some(gap=>gap.includes('No local price')));
   assert(result.gaps.some(gap=>gap.includes('50 km')));
-  assert(result.checks.some(check=>check.includes('Groundnut')&&check.includes('June sowing')));
-  assert(result.checks.some(check=>check.includes('rabi')&&check.includes('248.48 mm')));
+  assert(result.checks.some(check=>check.includes('Bajra (pearl millet)')&&check.includes('June sowing')));
+  assert(result.checks.some(check=>check.includes('rabi')&&check.includes('235.36 mm')));
   assert(result.checks.some(check=>check.includes('nitrogen and organic carbon')));
 });
 
@@ -83,7 +83,7 @@ test('actual demo displays current and two distinct selected alternatives, each 
   assert(html.includes('data-comparison="Option A"'));
   assert(html.includes('data-comparison="Option B"'));
   assert.equal(new Set([scoring.current.id,...scoring.options.map(row=>row.id)]).size,3);
-  assert(html.includes('877.4 mm'));
+  assert(html.includes('707.2 mm'));
   assert(html.includes('Root-zone wetness (model)'));
   assert(html.includes('Not feasible without extra water'));
   assert.equal((html.match(/class="timeline-strip"/g)??[]).length,3);
@@ -155,7 +155,7 @@ test('comparison output escapes crop text and never fabricates photos, sources o
   assert(html.includes('&lt;img'));
   assert(html.includes('<img class="comparison-crop-photo"'));
   assert(html.includes('Representative photo'));
-  assert(html.includes('./assets/crops/groundnut.jpg'));
+  assert(html.includes('./assets/crops/bajra.jpg'));
   assert(html.includes(climate.retrieved_at));
   assert(html.includes('Excluded (36)'));
 });

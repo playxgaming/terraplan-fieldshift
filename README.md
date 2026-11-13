@@ -10,13 +10,19 @@ NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 
 V3 is a fresh build for small farms in western India. The planned workflow starts with the farmer's **current rotation** and compares it with two alternatives using stated rules and clearly labelled NASA evidence.
 
+## Jaipur demo release
+
+The user requested a Jaipur-area demonstration, overriding the original Rajkot fixture in the preserved AGENTS.md. **Run the Jaipur demo** opens an unsaved Jobner scenario with bundled NASA weather and the comparison ready. It preserves the saved field and What-if settings. The scenario uses bajra → wheat → Bare at 26.97° N, 75.38° E; its broad Loam soil category and 150 mm winter irrigation are assumptions, not field measurements.
+
+The comparison now exports a local JSON decision brief containing coordinates, priority weights, scores, crop assumptions and NASA provenance. No upload occurs. See [the demo script](docs/jaipur/demo-guide.md) and [release audit](docs/jaipur/audit.md).
+
 ## Current status: steps 1–12
 
 This branch implements the all twelve build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison with crop timelines, full climate cards and What-if sensitivity. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
 
-Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. June–May crop timelines now show historical weather markers and known Bare months. Climate cards, complete-year monthly trends, optional satellite evidence and What-if sensitivity are now implemented. Satellite observations have not been supplied; the cards show **Not loaded yet**.
+Field entry, saving, editable Jaipur–Jobner demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. June–May crop timelines now show historical weather markers and known Bare months. Climate cards, complete-year monthly trends, optional satellite evidence and What-if sensitivity are now implemented. Satellite observations have not been supplied; the cards show **Not loaded yet**.
 
-Choose **Start** for a blank field or **Load demo farm** for the shared Rajkot definition. Fill in the location, soil, water, equipment, market access and current crop for each season. Every season supports **Bare (no crop)**. Choose **Save field** to keep entries after reloading. Demo loading fills a draft and does not overwrite a saved field until you save it. Draft edits survive navigation between pages in the current tab, but unsaved edits do not survive a reload.
+Choose **Start** for a blank field or **Load demo farm** for the shared Jaipur–Jobner definition. Fill in the location, soil, water, equipment, market access and current crop for each season. Every season supports **Bare (no crop)**. Choose **Save field** to keep entries after reloading. Demo loading fills a draft and does not overwrite a saved field until you save it. Draft edits survive navigation between pages in the current tab, but unsaved edits do not survive a reload.
 
 All numeric values must be finite: latitude −90…90, longitude −180…180, area greater than 0 and at most 100 hectares, and extra irrigation 0…1500 mm per season. Invalid entries show linked summary errors and inline messages. Zero is valid for coordinates and irrigation; missing values are never converted into zero.
 
@@ -40,7 +46,7 @@ With Python on your PATH, `npm start` serves the same root at http://127.0.0.1:3
 
 | Hash | Screen | Current behavior |
 | --- | --- | --- |
-| `#/` | Welcome | Start a field or load an editable Rajkot demo |
+| `#/` | Welcome | Start a field or load an editable Jaipur–Jobner demo |
 | `#/field` | My field | Validated form, current-rotation pickers, save/reload and recovery messages |
 | `#/climate` | Your climate (NASA) | Explicit live/bundle loading, source labels, current-crop cards, annual trends, optional satellite summaries, missing-data notes and retry |
 | `#/priorities` | Priorities | Six weights, live ranking preview, current score, water labels and confidence/rule reasons |
@@ -80,7 +86,7 @@ npm run check
 npm run verify
 ```
 
-The suite contains 99 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 103 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 
@@ -96,20 +102,20 @@ Every rotation has a stable ID derived from the three crop IDs (null for Bare), 
 
 The current rotation is returned exactly once as `is_current: true`, including overlaps, off-season choices and hard-rule failures; those produce warnings. If no valid calendar exists, its earliest listed starts are shown as assumptions with warnings. Missing/invalid crop rows retain the current crop ID with `unavailable: true` and null calendar bounds. These cannot be treated as computed crop windows in later scoring. The current sequence is never duplicated among alternatives or excluded rows.
 
-For the current illustrative Rajkot fixture: **84 retained rotations (current + 83 alternatives), 36 excluded**. This is a generator test result, not a recommendation count or evidence of water feasibility. Counts will change when the crop person replaces the starter values. The Compare preview uses current field entries, including a valid unsaved draft; use Save field for reload persistence.
+For the current illustrative Jaipur–Jobner fixture: **84 retained rotations (current + 83 alternatives), 36 excluded**. This is a generator test result, not a recommendation count or evidence of water feasibility. Counts will change when the crop person replaces the starter values. The Compare preview uses current field entries, including a valid unsaved draft; use Save field for reload persistence.
 
 ## NASA loading and offline use
 
-1. Load the Rajkot demo or complete your own field. Save it if you want it to survive a reload.
+1. Load the Jaipur–Jobner demo or complete your own field. Save it if you want it to survive a reload.
 2. Open **Your climate**. **Load NASA climate** sends coordinates rounded to two decimal places to NASA POWER and loads daily/monthly records. Requests are user-triggered, with a 20-second timeout covering headers and response body.
-3. **Use bundled demo data** is available at the Rajkot point. It fetches local JSON and sends no NASA request. Serve the project locally to demonstrate this without internet access. This is an offline NASA-data fallback, not a service worker or a guarantee that an uncached site shell can open offline.
+3. **Use bundled demo data** is available at the Jaipur–Jobner point. It fetches local JSON and sends no NASA request. Serve the project locally to demonstrate this without internet access. This is an offline NASA-data fallback, not a service worker or a guarantee that an uncached site shell can open offline.
 4. Evidence lists each dataset independently as live, browser cache or demo bundle, with original URL/retrieval time, provider units, date range and fallback reason. Switching locations hides old metrics until weather is loaded for the new point.
 
 Daily parameters: `PRECTOTCORR,T2M,T2M_MAX,T2M_MIN,GWETROOT,GWETTOP`. For agricultural year Y, the requested range is June 1 of Y−3 through May 31 of Y+1. The default Y follows the specification: current month ≥ July gives current year−1; January–June gives current year−2. Dates use UTC calendar arithmetic while the provider's default daily data time standard is LST (recorded in metadata).
 
 Monthly parameters: `PRECTOTCORR_SUM,T2M_MAX`, 1991–2024. Parsing emits 408 monthly entries and skips month 13 (annual values). Raw sums and provider units are retained. The downloaded API metadata labels `PRECTOTCORR_SUM` as `mm/day`; the monthly accumulation is used directly in mm, following the NASA POWER GIS variable definition and a cross-check against every overlapping complete daily month. The discrepancy is explicitly disclosed on the cards and Evidence; do not multiply the SUM by days. Missing values, including −999 and absent dates, become null.
 
-Fallback order is **live → validated cache → matching Rajkot bundle**. Cache keys include temporal level, coordinates rounded to two decimal places, start and end dates; records are versioned and checked against request URL, location and range before use. Cache fallback keeps the original retrieval time. Corrupt cache bytes are left untouched when a fallback is used. A bundle for another point or date range is rejected. Monthly failure is reported separately while daily data remain usable. Storage quota/blocking errors do not hide successful live data.
+Fallback order is **live → validated cache → matching Jaipur–Jobner bundle**. Cache keys include temporal level, coordinates rounded to two decimal places, start and end dates; records are versioned and checked against request URL, location and range before use. Cache fallback keeps the original retrieval time. Corrupt cache bytes are left untouched when a fallback is used. A bundle for another point or date range is rejected. Monthly failure is reported separately while daily data remain usable. Storage quota/blocking errors do not hide successful live data.
 
 The bundled daily response covers **2022-06-01 through 2026-05-31** (1,461 daily entries); the monthly file covers **1991–2024**. NASA responses are preserved with `_terraplan` metadata (request URL, point, range, version and retrieval timestamp). Refresh them with:
 
@@ -148,7 +154,7 @@ A water gap **greater than 40%** of crop need makes a rotation infeasible; exact
 
 Any active window without a computable fit leaves the total null/Not scored; all-Bare and missing-crop current plans remain visible with Low confidence. Partial weather is scored from complete days with missing-data reasons. Confidence is High for complete/verified/regional crop windows with a soil test, Medium with soil type only, and Low for unverified/non-regional crops, missing weather or crops outside listed seasons/start months. Every label includes reasons. All current starter-based results are Low because every starter crop has `verified: false`.
 
-For the bundled Rajkot data and default weights, tests currently produce a **56.35 current score**, **77 scored alternatives** and **6 unavailable totals** (windows outside the loaded weather range). These are outputs of illustrative rules and crop assumptions; changing weights, water entries or crop data changes them. Evidence prints every MODEL constant with an illustrative tag and explains the formulas.
+For the bundled Jaipur–Jobner data and default weights, tests currently produce a **50.43 current score**, **77 scored alternatives** and **6 unavailable totals** (windows outside the loaded weather range). These are outputs of illustrative rules and crop assumptions; changing weights, water entries or crop data changes them. Evidence prints every MODEL constant with an illustrative tag and explains the formulas.
 
 ## Full comparison
 
@@ -178,7 +184,7 @@ Your climate shows six cards per active current crop: rainfall, heat/cold days, 
 
 Long-term trends cover calendar years 1991–2024, separately from agricultural years. Rain uses the sum of twelve monthly accumulations; Tmax uses the mean of twelve monthly values. Each series drops an incomplete year independently. Ordinary least-squares slope against the actual years is multiplied by ten; at least two complete years are needed. The cards list all years used and provide an annual audit table. No statistical significance or forecast is claimed. NASA metadata reference: [POWER monthly variable definitions](https://gis.earthdata.nasa.gov/portal/rest/services/POWER/POWER_MONTHLY_METEOROLOGY_LST/ImageServer/multiDimensionalInfo).
 
-`data/demo-satellite.json` is an explicit not-loaded manifest. Replace it with the sourced team dataset described in AGENTS.md §9.4. The loader requires a matching Rajkot location, valid retrieval time and HTTPS/DOI sources, and skips invalid products independently. Cards never apply Rajkot values to another field. IMERG/POWER differences require complete, same-location monthly rain records; SMAP anomalies show supplied units or a missing-unit note; GRACE is total water-storage context, not isolated groundwater or a well measurement. Satellite values do not change scores.
+`data/demo-satellite.json` is an explicit not-loaded manifest. Replace it with the sourced team dataset described in AGENTS.md §9.4. The loader requires a matching Jaipur–Jobner location, valid retrieval time and HTTPS/DOI sources, and skips invalid products independently. Cards never apply Jaipur–Jobner values to another field. IMERG/POWER differences require complete, same-location monthly rain records; SMAP anomalies show supplied units or a missing-unit note; GRACE is total water-storage context, not isolated groundwater or a well measurement. Satellite values do not change scores.
 
 ## What-if experiments
 

@@ -50,9 +50,9 @@ test('crop validation rejects missing keys, malformed lists, duplicates and inva
   assert(mixed.errors.some(error => error.messages.includes('Duplicate crop id.')));
 });
 
-test('Rajkot generator prints count and every alternative is unique, non-overlapping and within 12 months', () => {
+test('Jaipur generator prints count and every alternative is unique, non-overlapping and within 12 months', () => {
   const result = generateRotations(crops, DEMO_FARM);
-  console.log(`Rajkot rotation count: ${result.rotations.length} retained (${result.rotations.filter(row => !row.is_current).length} alternatives), ${result.excluded.length} excluded`);
+  console.log(`Jaipur rotation count: ${result.rotations.length} retained (${result.rotations.filter(row => !row.is_current).length} alternatives), ${result.excluded.length} excluded`);
   assert(result.rotations.length > 2);
   assert.equal(result.rotations.filter(row => row.is_current).length, 1);
   const all = [...result.rotations, ...result.excluded];
@@ -137,11 +137,11 @@ test('current rotations survive overlap, off-season choices, all-Bare and missin
   const bare = generateRotations(crops, field({ current_rotation: {kharif:null,rabi:null,zaid:null} })).rotations[0];
   assert.deepEqual(sequence(bare), [null,null,null]);
   assert(bare.warnings.length);
-  for (const table of [[], crops.filter(row => row.id !== 'groundnut'), crops.map(row => row.id === 'groundnut' ? {...row,water_need_mm:null} : row)]) {
+  for (const table of [[], crops.filter(row => row.id !== 'bajra'), crops.map(row => row.id === 'bajra' ? {...row,water_need_mm:null} : row)]) {
     const result = generateRotations(table, DEMO_FARM);
     assert.equal(result.rotations.filter(row => row.is_current).length, 1);
     const current = result.rotations[0];
-    assert.deepEqual(sequence(current), ['groundnut','wheat',null]);
+    assert.deepEqual(sequence(current), ['bajra','wheat',null]);
     assert(current.warnings.some(reason => /missing or invalid/.test(reason)));
     assert.equal(current.seasons.kharif.start, null);
   }

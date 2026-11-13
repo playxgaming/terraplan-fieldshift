@@ -26,7 +26,7 @@ function fetcher({ offline = false, failMonthly = false, calls = [] } = {}) {
 
 test('agricultural year boundaries and request ranges follow the specification, with finite rounded coordinates', () => {
   for (const [date,year] of [['2026-01-01',2024],['2026-06-30',2024],['2026-07-01',2025],['2026-12-31',2025]]) assert.equal(latestCompleteAgYear(new Date(date)),year);
-  const request = buildPowerRequests({...DEMO_FARM, lat:22.301,lon:70.801},2025);
+  const request = buildPowerRequests({...DEMO_FARM, lat:26.971,lon:75.381},2025);
   assert.equal(request.daily.start,'20220601');
   assert.equal(request.daily.end,'20260531');
   assert.equal(request.monthly.start,'1991');
@@ -123,7 +123,7 @@ test('live records are cached by location/range and cache fallback preserves ori
   assert.equal(store.getItem('terraplan.v3.whatif'),whatif);
 });
 
-test('Rajkot loads from real bundles without NASA access, including explicit bundle-only mode', async () => {
+test('Jaipur loads from real bundles without NASA access, including explicit bundle-only mode', async () => {
   const calls=[];
   const offline=await loadClimate(DEMO_FARM,{agYear:2025,fetcher:fetcher({offline:true,calls}),storage:storage(),now});
   assert.equal(offline.source,'demo-bundle');
@@ -145,7 +145,7 @@ test('wrong-location or wrong-range bundles and caches are rejected; corrupt cac
   assert.equal(store.getItem(powerCacheKey(requests.daily)),'{corrupt');
   const calls=[];
   await assert.rejects(loadClimate({...DEMO_FARM,lat:20},{agYear:2025,fetcher:fetcher({offline:true,calls}),storage:storage()}),/No valid cache/);
-  assert(calls.every(call=>call.remote),'Never attempt to serve the Rajkot bundle for another point');
+  assert(calls.every(call=>call.remote),'Never attempt to serve the Jaipur bundle for another point');
   await assert.rejects(loadClimate(DEMO_FARM,{agYear:2024,mode:'bundle',fetcher:fetcher()}),/match/);
 });
 
@@ -186,7 +186,7 @@ test('weather views distinguish missing values, partial totals, provenance and s
   assert(html.includes('Missing'));
   assert(html.includes('Rain (partial total)'));
   assert(html.includes('MERRA-2 model'));
-  assert(html.includes('bundled Rajkot records'));
+  assert(html.includes('bundled Jaipur records'));
   const stale=renderClimate({field:DEMO_FARM,climateState:{status:'loaded',data},climateMatches:false});
   assert(stale.includes('another location'));
   assert(!stale.includes('season-climate-grid'));

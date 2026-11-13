@@ -18,7 +18,7 @@ if (args.length && (args.length !== 2 || args[0] !== '--year' || !/^\d{4}$/.test
       const temporary = new URL(`${target.href}.tmp`);
       await writeFile(temporary, JSON.stringify({ ...payload, _terraplan: metadata }) + '\n', 'utf8');
       await rename(temporary, target);
-      console.log(`${record.kind}: downloaded ${record.start}–${record.end} for Rajkot. Source: ${record.request_url}. Retrieved: ${record.retrieved_at}`);
+      console.log(`${record.kind}: downloaded ${record.start}–${record.end} for ${DEMO_FARM.name}. Source: ${record.request_url}. Retrieved: ${record.retrieved_at}`);
     }
   } catch (error) {
     console.error(`Demo download failed: ${error.message} Existing files are preserved when requests fail. Run this script again with network access.`);

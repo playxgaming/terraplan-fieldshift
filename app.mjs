@@ -1,3 +1,4 @@
+import {buildDecisionBrief} from './brief.mjs';
 import {mountFieldScene} from './field-scene.mjs';
 import {LABELS,validLanguage,loadLabelLanguage,saveLabelLanguage,applyCropLabels} from './labels.mjs';
 import {mapPoint,createFieldMap} from './map.mjs';
@@ -164,9 +165,11 @@ document.addEventListener('click', event => {
   const weather = event.target.closest('[data-load-climate]');
   if (weather) refreshClimate(weather.dataset.loadClimate);
   if (event.target.closest('[data-retry-crops]')) refreshCrops();
+  if (event.target.closest('[data-run-demo]')) runDemo();
+  if (event.target.closest('[data-download-brief]')) downloadBrief();
   if (event.target.closest('[data-load-demo]')) {
     fieldDraft = structuredClone(DEMO_FARM);
-    fieldMessage = 'Demo farm, Rajkot is filled in. Review the entries, then choose Save field to keep them.';
+    fieldMessage = DEMO_FARM.name + ' is filled in as an editable scenario. Review the entries, then choose Save field to keep them.';
     if (window.location.hash === '#/field') render({ focus: true });
     else window.location.hash = '#/field';
   }
@@ -404,4 +407,23 @@ async function openFieldMap() {
 function navIcon(path){
   const paths={'/':'M3 10 12 3l9 7v10H6V10m3 10v-7h6v7','/field':'m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6m6-3v15m6-12v15','/climate':'M4 16a4 4 0 0 1 0-8 6 6 0 0 1 11-2 5 5 0 0 1 3 10M8 19v2m5-2v2m5-2v2','/priorities':'M5 3v18m7-18v18m7-18v18M2 8h6m1 8h6m1-10h6','/compare':'M3 4h7v16H3V4m11 0h7v16h-7V4M6 9h1m-1 5h1m10-5h1m-1 5h1','/whatif':'m7 3-4 4 4 4M3 7h11a6 6 0 0 1 0 12h-4m7-4 4 4-4 4','/evidence':'M3 4h7l2 2 2-2h7v16h-7l-2 2-2-2H3V4m9 2v16'};
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="${paths[path]??paths['/']}"/></svg>`;
+}
+
+async function runDemo(){
+  fieldDraft=structuredClone(DEMO_FARM);
+  fieldMessage='Jaipur–Jobner demo is an unsaved draft. Your saved field and What-if settings are unchanged.';
+  window.location.hash='#/compare';
+  await refreshClimate('bundle');
+}
+function downloadBrief(){
+  const status=document.getElementById('brief-status');
+  try{
+    const field=validateField(fieldDraft).field;
+    if(!field || climateState.key!==climateKey(field) || !climateState.data || cropData.status!=='loaded')throw new Error('Load matching weather and crop data before downloading a brief.');
+    const scoring=rankingFor(field,generateRotations(cropData.crops,field));
+    const brief=buildDecisionBrief({field,scoring,climate:climateState.data,generatedAt:new Date().toISOString()});
+    const url=URL.createObjectURL(new Blob([JSON.stringify(brief,null,2)+'\n'],{type:'application/json'})),link=document.createElement('a');
+    link.href=url;link.download=`terraplan-decision-${climateState.data.ag_year}.json`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    status.textContent='Decision brief downloaded locally. It includes your field coordinates, assumptions and source references.';
+  }catch(error){status.textContent=error.message;}
 }

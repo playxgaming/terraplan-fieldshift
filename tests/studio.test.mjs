@@ -16,6 +16,6 @@ test('every representative crop image has attribution, a source and licence, and
 test('the Studio entry opens the real planner and labels its controllable 3D scene as an illustration',()=>{
  const html=renderWelcome();assert.match(html,/data-field-canvas/);assert.match(html,/Use arrow keys/);assert.match(html,/data-scene-motion/);
  assert.match(html,/data-scene-action="reset"/);assert.match(html,/not NASA imagery or a crop-growth simulation/);
- assert.match(html,/data-load-demo/);assert.match(html,/data-navigate="\/field"/);assert.equal((html.match(/Representative .*? photograph/g)||[]).length,4);
+ assert.match(html,/data-run-demo/);assert.match(html,/data-navigate="\/field"/);assert.equal((html.match(/Representative .*? photograph/g)||[]).length,4);
  assert(!html.includes('<iframe'));assert(!html.includes('<script src='));
 });
