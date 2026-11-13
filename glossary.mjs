@@ -1,5 +1,8 @@
 /** Plain-language terms used throughout the app. */
 export const GLOSSARY = Object.freeze({
+  grace: Object.freeze({title:'GRACE and GRACE-FO',definition:'Gravity satellites estimate changes in total stored water across very large areas. Separating groundwater needs other water-storage information; this is not a reading of your well.'}),
+  smap: Object.freeze({title:'SMAP anomaly',definition:'A satellite-based soil-moisture product compared with its reference baseline. Confirm the baseline and units supplied with the data; it is different from POWER model root-zone wetness.'}),
+  imerg: Object.freeze({title:'GPM IMERG',definition:'A combined precipitation estimate using satellite observations and other inputs. Compare area rain estimates over the same months; differences are not proof that either equals rain on your field.'}),
   rainfall: Object.freeze({title:'Season rainfall',definition:'Rain added across the assumed crop window. A coarse area estimate can differ from rain on your field; partial totals omit missing days.'}),
   cold_stress: Object.freeze({title:'Cold marker',definition:'Days below an illustrative crop temperature threshold. This is a rule match, not observed crop damage.'}),
   trend: Object.freeze({title:'Climate trend',definition:'A straight-line summary of change across the complete annual records used. It is not a forecast, and statistical significance has not been tested.'}),

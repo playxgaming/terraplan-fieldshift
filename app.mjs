@@ -1,6 +1,6 @@
 import { ROUTES, resolveRoute, renderNotFound, renderRankingPreview, renderRotationsTable, tableDataFor, ROTATION_SORT_COLUMNS } from './views.mjs';
 import { openGlossary } from './glossary.mjs';
-import { DEMO_FARM, loadCrops, loadClimate, powerPoint, latestCompleteAgYear } from './data.mjs';
+import { DEMO_FARM, loadSatellite, loadCrops, loadClimate, powerPoint, latestCompleteAgYear } from './data.mjs';
 import { generateRotations, seasonClimate, defaultPriorities, PRIORITIES, validatePriorities, prepareScoring, rankRotations } from './engine.mjs';
 import { SEASONS, emptyField, loadField, saveField, validateField } from './field.mjs';
 
@@ -17,6 +17,7 @@ let cropData = { crops: [], errors: [], status: 'loading' };
 let climateState = { status: 'idle', data: null, error: '', key: '' };
 let climateRequestId = 0;
 let priorities = defaultPriorities();
+let satelliteState = {status:'loading',data:null,errors:[]};
 let scoringCache = null;
 let comparisonSort = { key: 'total', direction: 'desc' };
 const climateKey = field => JSON.stringify({ ...powerPoint(field), ag_year: latestCompleteAgYear() });
@@ -44,7 +45,7 @@ function render({ focus = false } = {}) {
   const metrics = route?.path === '/climate' && climateMatches && climateState.data && current
     ? Object.fromEntries(SEASONS.map(season => [season, seasonClimate(climateState.data, current.seasons[season])])) : null;
   const scoring = ['/priorities','/compare'].includes(route?.path) && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
-  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort }) : renderNotFound();
+  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort, satelliteState }) : renderNotFound();
   document.title = `TerraPlan V3 · ${route?.label ?? 'Page not found'}`;
   menuOpen = false;
   syncMenu();
@@ -257,3 +258,8 @@ function updatePriorityRanking() {
   document.getElementById('ranking-preview').innerHTML = renderRankingPreview(scoring);
   document.getElementById('ranking-status').textContent = `Ranking updated. ${scoring.ranked.filter(row => row.total !== null).length} alternatives have a score. ${scoring.options[0] ? `First comparison candidate: ${SEASONS.map(season => scoring.options[0].seasons[season]?.crop.name ?? 'Bare').join(', ')}. ${scoring.options[0].feasibility_label}.` : 'No scored comparison candidate is available.'}`;
 }
+
+loadSatellite().then(result => {
+  satelliteState = result;
+  if (['#/climate','#/evidence'].includes(window.location.hash)) render();
+});

@@ -1,5 +1,11 @@
 # Changelog
 
+## V3 — step 9 satellite evidence — 2026-11-13
+
+- Added optional Rajkot IMERG, SMAP and GRACE cards and Evidence source entries, with a not-loaded manifest instead of invented values.
+- Validated location, retrieval time, HTTPS/DOI provenance and per-product series; invalid products are independently skipped.
+- Added same-month IMERG/POWER comparisons only for complete rain months. GRACE is labelled total water-storage context, not a well measurement.
+
 ## V3 — step 8 climate cards and trends — 2026-11-13
 
 - Added six sourced cards for each current crop window and independently complete-year OLS rain/Tmax trends with annual audit tables.

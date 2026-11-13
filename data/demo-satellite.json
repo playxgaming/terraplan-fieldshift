@@ -1,0 +1,10 @@
+{
+  "status": "not-loaded",
+  "location": { "lat": 22.3, "lon": 70.8 },
+  "imerg": null,
+  "smap": null,
+  "grace": null,
+  "retrieved_at": null,
+  "sources": [],
+  "note": "Satellite summaries have not been supplied by the data team. No satellite values have been invented. Replace this manifest with sourced data using the schema in AGENTS.md section 9.4."
+}

@@ -249,3 +249,42 @@ export function buildMonthlyTrend(monthly, parameters = {}) {
       : 'PRECTOTCORR_SUM is a monthly accumulation in mm; no multiplication by days.',
     method:'Annual rain = sum of 12 monthly accumulations; annual Tmax = mean of 12 monthly Tmax values. Each series omits a year if any of its months is missing. OLS slope against calendar year × 10; at least two complete years required. No statistical significance test is provided.'};
 }
+
+export function satelliteSourceUrl(value) {
+  if (typeof value !== 'string') return null;
+  if (/^10\.\d{4,9}\/\S+$/.test(value)) return `https://doi.org/${value}`;
+  try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password ? url.href : null; } catch { return null; }
+}
+
+/** Invalid products are skipped independently; provenance is required before exposing values. */
+export function validateSatellite(raw) {
+  const errors = [], empty = {status:'not-loaded',data:null,errors};
+  if (!raw || !isDemoPoint(raw.location)) { errors.push('Satellite location does not match the Rajkot demo.'); return empty; }
+  if (!raw.imerg && !raw.smap && !raw.grace) { errors.push('Satellite summaries not loaded yet. The data team has not supplied sourced values.'); return empty; }
+  if (typeof raw.retrieved_at !== 'string' || !Number.isFinite(Date.parse(raw.retrieved_at)) || !Array.isArray(raw.sources) || !raw.sources.length
+    || raw.sources.some(row => typeof row.name !== 'string' || !row.name.trim() || !satelliteSourceUrl(row.doi_or_url))) {
+    errors.push('Satellite summaries need a valid retrieval time and source links before values can be shown.'); return empty;
+  }
+  const series = (values, annual = false, nonnegative = false) => values && typeof values === 'object' && !Array.isArray(values)
+    && Object.entries(values).every(([key,value]) => (annual ? /^\d{4}$/ : /^\d{4}-(0[1-9]|1[0-2])$/).test(key)
+      && (value === null || typeof value === 'number' && Number.isFinite(value) && value !== -999 && (!nonnegative || value >= 0)));
+  const data = {location:structuredClone(raw.location),retrieved_at:raw.retrieved_at,sources:raw.sources.map(row=>({name:row.name,doi_or_url:satelliteSourceUrl(row.doi_or_url)}))};
+  for (const key of ['imerg','smap','grace']) {
+    const product = raw[key];
+    if (!product) { data[key]=null; continue; }
+    const valid = typeof product.resolution === 'string' && product.resolution.trim()
+      && (key === 'imerg' ? series(product.monthly_rain_mm,false,true) : key === 'smap' ? series(product.monthly_anomaly)
+        : series(product.annual_lwe_cm,true) && (product.trend_cm_per_year === null || typeof product.trend_cm_per_year === 'number' && Number.isFinite(product.trend_cm_per_year) && product.trend_cm_per_year !== -999));
+    data[key] = valid ? structuredClone(product) : null;
+    if (!valid) errors.push(`${key.toUpperCase()} summary is invalid and was skipped.`);
+  }
+  return {status:['imerg','smap','grace'].some(key=>data[key])?'loaded':'not-loaded',data,errors};
+}
+
+export async function loadSatellite(fetcher = globalThis.fetch) {
+  try {
+    const response = await fetcher(new URL('./data/demo-satellite.json',import.meta.url));
+    if (!response.ok) throw new Error('missing');
+    return validateSatellite(await response.json());
+  } catch { return {status:'not-loaded',data:null,errors:['Satellite summaries not loaded yet. The optional bundled file is unavailable.']}; }
+}

@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 const files = [
   'app.mjs', 'views.mjs', 'engine.mjs', 'data.mjs', 'glossary.mjs', 'field.mjs',
   'scripts/check.mjs', 'scripts/fetch-demo.mjs',
-  'tests/index.js', 'tests/climate.test.mjs', 'tests/engine.test.mjs', 'tests/data.test.mjs', 'tests/routes.test.mjs', 'tests/field.test.mjs', 'tests/weather.test.mjs', 'tests/scoring.test.mjs', 'tests/comparison.test.mjs', 'tests/timeline.test.mjs',
+  'tests/index.js', 'tests/climate.test.mjs', 'tests/satellite.test.mjs', 'tests/engine.test.mjs', 'tests/data.test.mjs', 'tests/routes.test.mjs', 'tests/field.test.mjs', 'tests/weather.test.mjs', 'tests/scoring.test.mjs', 'tests/comparison.test.mjs', 'tests/timeline.test.mjs',
 ];
 
 for (const file of files) {
@@ -12,7 +12,7 @@ for (const file of files) {
   if (result.status !== 0) process.exit(result.status || 1);
 }
 
-for (const name of ['crops', 'demo-power-daily', 'demo-power-monthly']) {
+for (const name of ['crops', 'demo-power-daily', 'demo-power-monthly', 'demo-satellite']) {
   JSON.parse(await readFile(new URL(`../data/${name}.json`, import.meta.url), 'utf8'));
 }
 
