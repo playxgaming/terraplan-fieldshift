@@ -110,7 +110,7 @@ test('live records are cached by location/range and cache fallback preserves ori
   assert.equal(live.source,'live');
   assert.equal(live.daily.length,1461);
   assert.equal(live.monthly.length,408);
-  assert.equal(live.monthly_trend,null);
+  assert.equal(live.monthly_trend.rain_years.length,34);
   assert.equal(live.retrieved_at,now().toISOString());
   assert.equal(live.datasets.length,2);
   const calls=[];

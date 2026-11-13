@@ -301,3 +301,11 @@ summary:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
+
+.climate-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr)); gap:0.85rem; margin-block:1rem; }
+.climate-card { padding:1rem; border:1px solid var(--line); border-radius:6px; background:var(--paper); min-width:0; overflow-wrap:anywhere; }
+.climate-card h4 { margin:0 0 0.6rem; }
+.climate-value { display:block; font-size:1.4rem; color:var(--green); }
+.climate-card p { font-size:0.85rem; }
+.trend-panel { margin-block:2rem; min-width:0; }
+.table-scroll { max-width:100%; overflow-x:auto; }

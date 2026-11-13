@@ -1,5 +1,11 @@
 # Changelog
 
+## V3 — step 8 climate cards and trends — 2026-11-13
+
+- Added six sourced cards for each current crop window and independently complete-year OLS rain/Tmax trends with annual audit tables.
+- Disclosed the monthly SUM unit discrepancy, retained sum values without multiplying by days, and checked all 31 overlapping complete demo months against daily rain.
+- Added plain-language climate glossary and missing/unsupported-unit safeguards. Added four climate tests.
+
 ## V3 — step 7 crop timelines — 2026-11-13
 
 - Added pure twelve-cell June–May timelines to current and both populated alternatives, with crop colours, hatched Bare months and native keyboard-accessible month disclosures.

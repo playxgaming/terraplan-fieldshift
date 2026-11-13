@@ -1,5 +1,9 @@
-/** Terms currently used in the app. The remaining climate glossary arrives in step 8. */
+/** Plain-language terms used throughout the app. */
 export const GLOSSARY = Object.freeze({
+  rainfall: Object.freeze({title:'Season rainfall',definition:'Rain added across the assumed crop window. A coarse area estimate can differ from rain on your field; partial totals omit missing days.'}),
+  cold_stress: Object.freeze({title:'Cold marker',definition:'Days below an illustrative crop temperature threshold. This is a rule match, not observed crop damage.'}),
+  trend: Object.freeze({title:'Climate trend',definition:'A straight-line summary of change across the complete annual records used. It is not a forecast, and statistical significance has not been tested.'}),
+  data_types: Object.freeze({title:'Satellite, model and ground data',definition:'Satellites observe from space, models estimate conditions using equations and inputs, and ground instruments measure at a location. These sources have different coverage and cannot be treated as identical field readings.'}),
   flowering: Object.freeze({ title: 'Assumed flowering month', definition: 'TerraPlan estimates this month from the listed sowing month and crop duration using an illustrative rule. Actual flowering depends on the variety and conditions and has not been observed by this app.' }),
   heat_stress: Object.freeze({ title: 'Heat stress marker', definition: 'A marker for days above the crop-table heat threshold. The threshold is illustrative; the marker does not confirm crop damage at your field.' }),
   benefit: Object.freeze({ title: 'Benefit badge', definition: 'A match to a stated comparison rule using crop-table roles and assumptions. A badge describes a potential benefit; it is not a measured change at your field.' }),

@@ -204,9 +204,48 @@ export async function loadClimate(field, options = {}) {
     years_available: Array.from({length:4}, (_, index) => requests.ag_year - 3 + index).filter(year => daily.some(row => row.date >= `${year}-06-01` && row.date <= `${year + 1}-05-31` && complete(row))),
     missing_days: daily.filter(row => !complete(row)).length,
     monthly: monthlyRecord ? parsePowerMonthly(monthlyRecord.payload, requests.monthly.start, requests.monthly.end) : null,
-    monthly_trend: null,
+    monthly_trend: monthlyRecord ? buildMonthlyTrend(parsePowerMonthly(monthlyRecord.payload, requests.monthly.start, requests.monthly.end), monthlyRecord.payload.parameters) : null,
     monthly_error: results[1].status === 'rejected' ? results[1].reason.message : '',
     datasets: [dailyRecord, monthlyRecord].filter(Boolean).map(provenance),
     warnings: [dailyRecord.cache_warning, monthlyRecord?.cache_warning].filter(Boolean),
   };
+}
+
+/** OLS against actual calendar years; no significance test or forecast is implied. */
+export function slopePerDecade(points) {
+  if (points.length < 2 || points.some(([x,y]) => !Number.isFinite(x) || !Number.isFinite(y))) return null;
+  const meanX = points.reduce((s,p) => s+p[0],0)/points.length, meanY = points.reduce((s,p) => s+p[1],0)/points.length;
+  const denominator = points.reduce((s,p) => s+(p[0]-meanX)**2,0);
+  return denominator ? 10*points.reduce((s,p) => s+(p[0]-meanX)*(p[1]-meanY),0)/denominator : null;
+}
+
+export function buildMonthlyTrend(monthly, parameters = {}) {
+  const valid = value => typeof value === 'number' && Number.isFinite(value) && value !== -999;
+  // PRECTOTCORR_SUM is a monthly accumulation. Never multiply this SUM by days.
+  // NASA's GIS product documents mm; the point API currently labels the same SUM mm/day.
+  const rainUnit = parameters.PRECTOTCORR_SUM?.units;
+  const rainAllowed = ['mm','mm/day'].includes(rainUnit);
+  const heatAllowed = ['C','°C','degC'].includes(parameters.T2M_MAX?.units);
+  const byDate = new Map(), duplicates = new Set();
+  for (const row of monthly ?? []) if (/^\d{4}-(0[1-9]|1[0-2])$/.test(row.date)) {
+    if (byDate.has(row.date)) duplicates.add(row.date);
+    byDate.set(row.date,row);
+  }
+  const years = [...new Set([...byDate.keys()].map(date => Number(date.slice(0,4))))].sort((a,b)=>a-b);
+  const annual = years.map(year => {
+    const rows = Array.from({length:12},(_,i) => {
+      const date = `${year}-${String(i+1).padStart(2,'0')}`;
+      return duplicates.has(date) ? null : byDate.get(date);
+    });
+    return {year,rain_mm:rainAllowed && rows.every(row => valid(row?.rain_sum) && row.rain_sum >= 0) ? rows.reduce((sum,row)=>sum+row.rain_sum,0) : null,
+      tmax_c:heatAllowed && rows.every(row => valid(row?.tmax)) ? rows.reduce((sum,row)=>sum+row.tmax,0)/12 : null};
+  });
+  const rainYears = annual.filter(row => row.rain_mm !== null).map(row=>row.year), heatYears = annual.filter(row=>row.tmax_c !== null).map(row=>row.year);
+  return {annual,years,rain_years:rainYears,tmax_years:heatYears,
+    rain_mm_per_decade:slopePerDecade(annual.filter(row=>row.rain_mm !== null).map(row=>[row.year,row.rain_mm])),
+    tmax_c_per_decade:slopePerDecade(annual.filter(row=>row.tmax_c !== null).map(row=>[row.year,row.tmax_c])),
+    unit_note:!rainAllowed ? 'Rain trend unavailable: unsupported or missing precipitation units.' : rainUnit === 'mm/day'
+      ? 'Provider unit discrepancy: the point API labels PRECTOTCORR_SUM mm/day. This is the monthly SUM, used as mm without multiplying by days, following NASA POWER GIS metadata. Bundled overlapping months are checked against summed daily rain in tests.'
+      : 'PRECTOTCORR_SUM is a monthly accumulation in mm; no multiplication by days.',
+    method:'Annual rain = sum of 12 monthly accumulations; annual Tmax = mean of 12 monthly Tmax values. Each series omits a year if any of its months is missing. OLS slope against calendar year × 10; at least two complete years required. No statistical significance test is provided.'};
 }
