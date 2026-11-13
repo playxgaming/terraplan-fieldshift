@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a reproducible application, data or calculation problem.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "For sensitive vulnerabilities, follow SECURITY.md. Do not include tokens or real private field profiles."
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Explain what happened and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps and relevant inputs
+      description: Include crop year, windows, texture, irrigation, priority and scenario settings. Use synthetic field information when possible.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, device and application/model version
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or source
+      description: Add logs, screenshots, file/function references or an authoritative agricultural source.

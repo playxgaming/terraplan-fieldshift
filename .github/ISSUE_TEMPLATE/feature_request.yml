@@ -1,0 +1,26 @@
+name: Improvement proposal
+description: Propose a focused, evidence-backed improvement.
+title: "[Idea]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Who has the problem, and what decision is difficult?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe a concrete user workflow and why it helps.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Data, scientific sources and validation
+      description: Note new data/access needs and how the result could be evaluated.
+  - type: textarea
+    id: scope
+    attributes:
+      label: Minimum useful scope and alternatives

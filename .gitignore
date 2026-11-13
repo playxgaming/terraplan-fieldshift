@@ -1,0 +1,21 @@
+# Private hosting and credentials
+.openai/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local tooling and intermediate assets
+node_modules/
+coverage/
+*.log
+*.zip
+work/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+.vscode/
+
+# dist/ contains the tracked buildless application source; do not ignore it.

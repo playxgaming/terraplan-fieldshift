@@ -1,0 +1,21 @@
+{
+  "name": "terraplan-fieldshift",
+  "version": "2.1.0",
+  "private": true,
+  "description": "An explainable crop-rotation exploration workspace using NASA POWER weather history.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "dev": "node scripts/serve.mjs",
+    "check": "node scripts/check-project.mjs",
+    "test": "node --test test.mjs scripts/serve.test.mjs",
+    "test:model": "node --test test.mjs",
+    "verify": "npm run check && npm test"
+  },
+  "repository": { "type": "git", "url": "https://github.com/playxgaming/terraplan-fieldshift.git" },
+  "bugs": { "url": "https://github.com/playxgaming/terraplan-fieldshift/issues" },
+  "homepage": "https://terraplan-fieldshift.sarveshsehra1.chatgpt.site/",
+  "keywords": ["nasa", "space-apps", "agriculture", "crop-rotation", "webgl", "nasa-power"]
+}
