@@ -1,5 +1,9 @@
 /** Terms currently used in the app. The remaining climate glossary arrives in step 8. */
 export const GLOSSARY = Object.freeze({
+  dry_spell: Object.freeze({ title: 'Dry spell', definition: 'Consecutive days with less rain than the rule threshold. A missing day breaks the known run; it is not assumed dry.' }),
+  heavy_rain: Object.freeze({ title: 'Heavy rain', definition: 'A day whose rainfall meets or exceeds the threshold used by these rules. Area rainfall may differ from rain at your field.' }),
+  soil_wetness: Object.freeze({ title: 'Soil wetness', definition: 'A model estimate of how wet the soil is relative to its capacity. POWER uses the MERRA-2 model; this is not a direct satellite or field measurement.' }),
+  resolution: Object.freeze({ title: 'Grid and resolution', definition: 'A dataset groups information into map cells that cover an area. A value for a large cell cannot describe every field within it.' }),
   'nitrogen-fixer': Object.freeze({ title: 'Nitrogen fixer', definition: 'A crop that can work with root microbes to add nitrogen to the soil. The amount depends on the variety, soil and management.' }),
   cover: Object.freeze({ title: 'Cover crop', definition: 'A crop that helps keep the soil surface covered. Coverage depends on growth and how crop residues are managed.' }),
   'deep-rooted': Object.freeze({ title: 'Deep-rooted crop', definition: 'A crop with roots that may reach deeper soil layers. Actual root depth depends on the soil and growing conditions.' }),

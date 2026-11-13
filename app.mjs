@@ -1,10 +1,10 @@
 import { ROUTES, resolveRoute, renderNotFound } from './views.mjs';
 import { openGlossary } from './glossary.mjs';
-import { DEMO_FARM, loadCrops } from './data.mjs';
-import { generateRotations } from './engine.mjs';
+import { DEMO_FARM, loadCrops, loadClimate, powerPoint, latestCompleteAgYear } from './data.mjs';
+import { generateRotations, seasonClimate } from './engine.mjs';
 import { SEASONS, emptyField, loadField, saveField, validateField } from './field.mjs';
 
-// Only this field-specific adapter touches storage; scenario keys are left alone.
+// Field and weather adapters write only their own keys; scenario storage is left alone.
 const fieldStorage = {
   getItem: key => window.localStorage.getItem(key),
   setItem: (key, value) => window.localStorage.setItem(key, value),
@@ -14,6 +14,9 @@ let fieldDraft = restored.field ?? emptyField();
 let fieldMessage = restored.field ? 'Your saved field is loaded. Edit it and save again when ready.' : '';
 let storageError = restored.error;
 let cropData = { crops: [], errors: [], status: 'loading' };
+let climateState = { status: 'idle', data: null, error: '', key: '' };
+let climateRequestId = 0;
+const climateKey = field => JSON.stringify({ ...powerPoint(field), ag_year: latestCompleteAgYear() });
 
 const app = document.getElementById('app');
 const navigation = document.getElementById('primary-nav');
@@ -32,8 +35,12 @@ function render({ focus = false } = {}) {
   const route = resolveRoute(window.location.hash);
   navigation.innerHTML = ROUTES.map(item => `<a href="#${item.path}"${route?.path === item.path ? ' aria-current="page"' : ''}>${item.label}</a>`).join('');
   const field = validateField(fieldDraft).field;
-  const generated = route?.path === '/compare' && field && cropData.status !== 'loading' ? generateRotations(cropData.crops, field) : null;
-  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field }) : renderNotFound();
+  const generated = ['/compare','/climate'].includes(route?.path) && field && cropData.status !== 'loading' ? generateRotations(cropData.crops, field) : null;
+  const climateMatches = Boolean(field && climateState.key === climateKey(field));
+  const current = generated?.rotations.find(rotation => rotation.is_current);
+  const metrics = route?.path === '/climate' && climateMatches && climateState.data && current
+    ? Object.fromEntries(SEASONS.map(season => [season, seasonClimate(climateState.data, current.seasons[season])])) : null;
+  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics }) : renderNotFound();
   document.title = `TerraPlan V3 · ${route?.label ?? 'Page not found'}`;
   menuOpen = false;
   syncMenu();
@@ -61,6 +68,8 @@ document.querySelector('.skip-link').addEventListener('click', event => {
 });
 
 document.addEventListener('click', event => {
+  const weather = event.target.closest('[data-load-climate]');
+  if (weather) refreshClimate(weather.dataset.loadClimate);
   if (event.target.closest('[data-retry-crops]')) refreshCrops();
   if (event.target.closest('[data-load-demo]')) {
     fieldDraft = structuredClone(DEMO_FARM);
@@ -156,9 +165,27 @@ render();
 
 async function refreshCrops() {
   cropData = { crops: [], errors: [], status: 'loading' };
-  if (['#/compare', '#/evidence'].includes(window.location.hash)) render();
+  if (['#/compare', '#/climate', '#/evidence'].includes(window.location.hash)) render();
   cropData = await loadCrops();
   // Avoid replacing an in-progress field form or stealing focus when the file arrives.
-  if (['#/compare', '#/evidence'].includes(window.location.hash)) render();
+  if (['#/compare', '#/climate', '#/evidence'].includes(window.location.hash)) render();
 }
 refreshCrops();
+
+async function refreshClimate(mode) {
+  const field = validateField(fieldDraft).field;
+  if (!field) return;
+  const requestId = ++climateRequestId;
+  const key = climateKey(field);
+  climateState = { status: 'loading', data: null, error: '', key };
+  render();
+  try {
+    const data = await loadClimate(field, { mode, storage: fieldStorage });
+    if (requestId !== climateRequestId) return;
+    climateState = { status: 'loaded', data, error: '', key };
+  } catch (error) {
+    if (requestId !== climateRequestId) return;
+    climateState = { status: 'error', data: null, error: error.message, key };
+  }
+  if (['#/climate', '#/evidence'].includes(window.location.hash)) render();
+}

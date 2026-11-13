@@ -158,3 +158,38 @@ export function generateRotations(input, field) {
   }
   return { rotations, excluded };
 }
+
+/** Conservative complete-day metrics: a missing input breaks a dry spell and is counted. */
+export function seasonClimate(climate, window, crop = window?.crop) {
+  if (!window) return null;
+  const unavailable = reason => ({ rain_mm: null, heat_days: null, cold_days: null, dry_spell_max: null, heavy_rain: null,
+    soil_wet_mean: null, days: 0, missing: null, start_date: null, end_date: null, reason });
+  if (!Number.isInteger(climate?.ag_year) || !Array.isArray(climate.daily) || !crop || crop.unavailable
+    || !Number.isFinite(crop.heat_threshold_c) || !Number.isFinite(crop.cold_threshold_c)) return unavailable('Crop or climate inputs are unavailable.');
+  let start = window.start_offset, end = window.end_offset;
+  if (!Number.isInteger(start) || !Number.isInteger(end)) {
+    if (!Number.isInteger(window.start) || window.start < 1 || window.start > 12 || !Number.isInteger(window.end) || window.end < 1 || window.end > 12) return unavailable('The current crop has no known calendar window.');
+    start = monthOffset(window.start);
+    end = start + ((window.end - window.start + 12) % 12);
+  }
+  if (start < 0 || end < start || end - start >= 12 || end > 35) return unavailable('The crop calendar window is invalid.');
+  const first = new Date(Date.UTC(climate.ag_year, 5 + start, 1));
+  const last = new Date(Date.UTC(climate.ag_year, 5 + end + 1, 0));
+  const byDate = new Map(climate.daily.map(row => [row.date, row]));
+  const required = ['rain', 't2m', 'tmax', 'tmin', 'gwetroot', 'gwettop'];
+  let days = 0, missing = 0, rain = 0, heat = 0, cold = 0, heavy = 0, wetness = 0, dry = 0, dryMax = 0;
+  for (let day = first; day <= last; day = new Date(day.getTime() + 86400000)) {
+    const row = byDate.get(day.toISOString().slice(0,10));
+    if (!row || !required.every(key => typeof row[key] === 'number' && Number.isFinite(row[key]) && row[key] !== -999)) { missing++; dry = 0; continue; }
+    days++; rain += row.rain; wetness += row.gwetroot;
+    if (row.tmax > crop.heat_threshold_c) heat++;
+    if (row.tmin < crop.cold_threshold_c) cold++;
+    if (row.rain >= MODEL.heavy_rain_mm) heavy++;
+    dry = row.rain < MODEL.dry_day_mm ? dry + 1 : 0;
+    dryMax = Math.max(dryMax, dry);
+  }
+  return { rain_mm: days ? rain : null, heat_days: days ? heat : null, cold_days: days ? cold : null,
+    dry_spell_max: days ? dryMax : null, heavy_rain: days ? heavy : null, soil_wet_mean: days ? wetness / days : null,
+    days, missing, start_date: first.toISOString().slice(0,10), end_date: last.toISOString().slice(0,10),
+    reason: missing ? 'Days with any missing required value are left out of every metric; missing days break dry spells. Rain is a partial sum when days are missing.' : '' };
+}

@@ -13,7 +13,7 @@ test('the one demo definition is Rajkot and includes the farmer current rotation
   assert(Object.isFrozen(DEMO_FARM.current_rotation));
 });
 
-test('crop assumptions are explicitly unverified and weather placeholders contain no observations', async () => {
+test('crop assumptions are unverified and weather bundles retain NASA responses and provenance', async () => {
   const crops = JSON.parse(await readFile(new URL('../data/crops.json', import.meta.url), 'utf8'));
   assert.equal(crops.length, 12);
   for (const crop of crops) {
@@ -23,9 +23,12 @@ test('crop assumptions are explicitly unverified and weather placeholders contai
   }
   for (const file of ['demo-power-daily.json', 'demo-power-monthly.json']) {
     const fixture = JSON.parse(await readFile(new URL(`../data/${file}`, import.meta.url), 'utf8'));
-    assert.equal(fixture.status, 'not-loaded');
-    assert.equal(fixture.properties, undefined);
-    assert.match(fixture.note, /No .*NASA observations/);
+    assert(fixture.properties.parameter);
+    assert.equal(fixture.header.fill_value, -999);
+    assert.equal(fixture._terraplan.point.lat, DEMO_FARM.lat);
+    assert.equal(fixture._terraplan.point.lon, DEMO_FARM.lon);
+    assert.match(fixture._terraplan.request_url, /^https:\/\/power\.larc\.nasa\.gov\//);
+    assert(Number.isFinite(Date.parse(fixture._terraplan.retrieved_at)));
   }
   assert(Object.values(DATA_STATUS).every(status => status === 'not-loaded'));
 });

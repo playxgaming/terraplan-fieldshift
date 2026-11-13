@@ -6,19 +6,19 @@ NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 
 V3 is a fresh build for small farms in western India. The planned workflow starts with the farmer's **current rotation** and compares it with two alternatives using stated rules and clearly labelled NASA evidence.
 
-## Current status: steps 1–3
+## Current status: steps 1–4
 
-This branch implements the first three build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, and crop validation/rotation generation. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
+This branch implements the first four build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, and NASA POWER loading with offline demo fallback. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
 
-Field entry, saving, editable Rajkot demo loading and unranked rotation generation are available. NASA requests, climate metrics, scoring, confidence labels, timelines and scenarios are **not implemented yet**.
+Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. Scoring, confidence labels, timelines, monthly trends and scenarios are **not implemented yet**.
 
 Choose **Start** for a blank field or **Load demo farm** for the shared Rajkot definition. Fill in the location, soil, water, equipment, market access and current crop for each season. Every season supports **Bare (no crop)**. Choose **Save field** to keep entries after reloading. Demo loading fills a draft and does not overwrite a saved field until you save it. Draft edits survive navigation between pages in the current tab, but unsaved edits do not survive a reload.
 
 All numeric values must be finite: latitude −90…90, longitude −180…180, area greater than 0 and at most 100 hectares, and extra irrigation 0…1500 mm per season. Invalid entries show linked summary errors and inline messages. Zero is valid for coordinates and irrigation; missing values are never converted into zero.
 
-Storage uses `terraplan.v3.field` with the envelope `{ "version": 1, "field": { ... } }`. Only this key is written; future What-if storage and unrelated keys are untouched. Corrupt, invalid or unsupported records show a recovery message and are kept unchanged until the user saves a valid replacement. Blocked storage or quota failures leave the editable draft visible and do not claim success. Browser storage is local to the origin/browser; it is not an account or a cloud backup.
+Storage uses `terraplan.v3.field` with the envelope `{ "version": 1, "field": { ... } }`. Field saves write only this key. Weather requests write their own versioned cache keys; future What-if storage and unrelated keys are untouched. Corrupt, invalid or unsupported records show a recovery message and are kept unchanged until the user saves a valid replacement. Blocked storage or quota failures leave the editable draft visible and do not claim success. Browser storage is local to the origin/browser; it is not an account or a cloud backup.
 
-The 12-crop starter contains explicitly illustrative, AI-drafted values: every row has `verified: false` and `source_note: "illustrative (AI-drafted, not verified)"`. These are not NASA measurements or verified farming advice. Fodder means fodder sorghum. Photo URLs are empty; initials serve as placeholders. Daily/monthly JSON placeholders still contain no NASA observations. The optional satellite file is absent. No missing value is shown as zero.
+The 12-crop starter contains explicitly illustrative, AI-drafted values: every row has `verified: false` and `source_note: "illustrative (AI-drafted, not verified)"`. These are not NASA measurements or verified farming advice. Fodder means fodder sorghum. Photo URLs are empty; initials serve as placeholders. The daily and monthly demo files now contain actual NASA POWER responses plus retrieval metadata. The optional satellite file is absent. No missing value is shown as zero.
 
 ## Run locally
 
@@ -38,11 +38,11 @@ With Python on your PATH, `npm start` serves the same root at http://127.0.0.1:3
 | --- | --- | --- |
 | `#/` | Welcome | Start a field or load an editable Rajkot demo |
 | `#/field` | My field | Validated form, current-rotation pickers, save/reload and recovery messages |
-| `#/climate` | Your climate (NASA) | Missing/unconnected weather placeholder |
+| `#/climate` | Your climate (NASA) | Explicit live/bundle loading, source labels, current-crop metrics, missing-data notes and retry |
 | `#/priorities` | Priorities | Placeholder for scoring priorities |
 | `#/compare` | Compare rotations | Unranked generation preview, current warnings and expandable generated/excluded lists; scoring columns remain placeholders |
 | `#/whatif` | What if? | Scenario and sensitivity placeholder |
-| `#/evidence` | Evidence | Crop-source cards, row validation errors, glossary help and data/model limitations |
+| `#/evidence` | Evidence | Crop assumptions plus weather request URLs, retrieval times, source labels, parameter metadata and limitations |
 
 Unknown routes provide a return-to-Welcome action. Direct hashes and browser back/forward are supported. Mobile navigation can be expanded/collapsed; each route updates the title, active link and main-content focus. The decision-support message remains outside the routed content.
 
@@ -55,18 +55,18 @@ index.html / style.css     Shared shell and mobile-first presentation
 app.mjs                    Hash navigation, field state/form events and storage adapter
 field.mjs                  Shared choices/limits, validation and versioned persistence helpers
 views.mjs                  Seven screen renderers and route resolution
-engine.mjs                 Pure crop validation and rotation generation; MODEL constants; no scoring yet
-data.mjs                   Rajkot DEMO_FARM, bundled-crop loading/validation and weather readiness states
+engine.mjs                 Pure crop validation, rotation generation and seasonClimate; MODEL constants; no scoring yet
+data.mjs                   Crop loading plus POWER requests, parsing, caching and demo fallback
 glossary.mjs               Scaffold definitions and popup helper
 data/crops.json            12 illustrative, unverified starter crops
-data/demo-power-daily.json Explicit not-loaded placeholder until step 4
-data/demo-power-monthly.json Explicit not-loaded placeholder
-scripts/fetch-demo.mjs     Non-downloading stub until step 4
+data/demo-power-daily.json Actual POWER daily response: June 2022–May 2026
+data/demo-power-monthly.json Actual POWER monthly response: 1991–2024
+scripts/fetch-demo.mjs     Validated NASA downloader; refreshes both demo bundles
 tests/                     Field validation/storage, configuration, data and routing checks
 AGENTS.md                  User-supplied V3 specification, preserved verbatim
 ```
 
-The downloader stub exits with a clear message and changes no files. It must not be mistaken for a completed NASA integration.
+The downloader validates both responses before replacing the existing files. Request failures leave the previous bundles intact. No API key is needed.
 
 ## Checks
 
@@ -76,15 +76,15 @@ npm run check
 npm run verify
 ```
 
-The suite contains 28 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 40 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 
-Generator tests check complete calendars, month wrapping, earliest valid starts, backtracking, the 12-month horizon, exclusions with reasons, input purity and retention of overlapping/off-season/Bare/missing-data current rotations. Crop validation checks every required key, ranges, types, duplicate IDs and known role tags. Data/view tests cover partial-row recovery and safe source/error rendering. Climate-parsing and scoring tests belong to later steps. Browser checks complement these unit checks.
+Generator tests check complete calendars, month wrapping, earliest valid starts, backtracking, the 12-month horizon, exclusions with reasons, input purity and retention of overlapping/off-season/Bare/missing-data current rotations. Crop validation checks every required key, ranges, types, duplicate IDs and known role tags. Data/view tests cover partial-row recovery and safe source/error rendering. Weather tests cover fill values, absent dates, a known dry spell, all-missing windows, leap years, year wrapping, request ranges, timeout/body aborts, source fallback, cache corruption, wrong-location/range rejection, blocked storage, monthly failure and safe missing-value/provenance rendering. All tests run without network access. Scoring tests belong to step 5. Browser checks complement these unit checks.
 
 ## Crop validation and generator contract
 
-`validateCrops(rows)` returns `{ crops, errors }`. Each error has a one-based `row` (or null for the file), crop `id` where available, and `messages`. Invalid rows are skipped; the first valid occurrence of a duplicate ID is kept. The browser loads only bundled `data/crops.json` in this step, shows validation errors on Evidence and provides retry on load failure. Schema validation does not establish scientific accuracy. Temperatures must be finite within −100…100 °C, attributes within 0…10, months/duration integers within 1…12, water need positive and finite, and roles/seasons/soil/equipment must be supported values. Metadata and booleans are required; nonempty photo URLs require HTTPS plus attribution/licence.
+`validateCrops(rows)` returns `{ crops, errors }`. Each error has a one-based `row` (or null for the file), crop `id` where available, and `messages`. Invalid rows are skipped; the first valid occurrence of a duplicate ID is kept. The browser validates bundled `data/crops.json`, shows errors on Evidence and provides retry on load failure. Schema validation does not establish scientific accuracy. Temperatures must be finite within −100…100 °C, attributes within 0…10, months/duration integers within 1…12, water need positive and finite, and roles/seasons/soil/equipment must be supported values. Metadata and booleans are required; nonempty photo URLs require HTTPS plus attribution/licence.
 
 `generateRotations(crops, field)` returns `{ rotations, excluded }`. It validates the supplied rows, enumerates per-season crop choices plus Bare, then searches all listed starts in June-to-May order. It returns the earliest complete non-overlapping calendar per unique crop sequence, in Kharif→Rabi→Zaid order, within 12 months from the first crop's sowing. A bare Kharif requires a non-bare Rabi. Soil/equipment rules, rice on sand, and impossible calendars produce explicit exclusion reasons. Generated results have no scores, confidence or water-feasibility labels.
 
@@ -94,9 +94,37 @@ The current rotation is returned exactly once as `is_current: true`, including o
 
 For the current illustrative Rajkot fixture: **84 retained rotations (current + 83 alternatives), 36 excluded**. This is a generator test result, not a recommendation count or evidence of water feasibility. Counts will change when the crop person replaces the starter values. The Compare preview uses current field entries, including a valid unsaved draft; use Save field for reload persistence.
 
+## NASA loading and offline use
+
+1. Load the Rajkot demo or complete your own field. Save it if you want it to survive a reload.
+2. Open **Your climate**. **Load NASA climate** sends coordinates rounded to two decimal places to NASA POWER and loads daily/monthly records. Requests are user-triggered, with a 20-second timeout covering headers and response body.
+3. **Use bundled demo data** is available at the Rajkot point. It fetches local JSON and sends no NASA request. Serve the project locally to demonstrate this without internet access. This is an offline NASA-data fallback, not a service worker or a guarantee that an uncached site shell can open offline.
+4. Evidence lists each dataset independently as live, browser cache or demo bundle, with original URL/retrieval time, provider units, date range and fallback reason. Switching locations hides old metrics until weather is loaded for the new point.
+
+Daily parameters: `PRECTOTCORR,T2M,T2M_MAX,T2M_MIN,GWETROOT,GWETTOP`. For agricultural year Y, the requested range is June 1 of Y−3 through May 31 of Y+1. The default Y follows the specification: current month ≥ July gives current year−1; January–June gives current year−2. Dates use UTC calendar arithmetic while the provider's default daily data time standard is LST (recorded in metadata).
+
+Monthly parameters: `PRECTOTCORR_SUM,T2M_MAX`, 1991–2024. Parsing emits 408 monthly entries and skips month 13 (annual values). Raw sums and provider units are retained. The downloaded API metadata labels `PRECTOTCORR_SUM` as `mm/day`; no conversion or monthly trend is performed in step 4. Unit interpretation must remain explicit when step 8 adds trends. Missing values, including −999 and absent dates, become null.
+
+Fallback order is **live → validated cache → matching Rajkot bundle**. Cache keys include temporal level, coordinates rounded to two decimal places, start and end dates; records are versioned and checked against request URL, location and range before use. Cache fallback keeps the original retrieval time. Corrupt cache bytes are left untouched when a fallback is used. A bundle for another point or date range is rejected. Monthly failure is reported separately while daily data remain usable. Storage quota/blocking errors do not hide successful live data.
+
+The bundled daily response covers **2022-06-01 through 2026-05-31** (1,461 daily entries); the monthly file covers **1991–2024**. NASA responses are preserved with `_terraplan` metadata (request URL, point, range, version and retrieval timestamp). Refresh them with:
+
+```bash
+node scripts/fetch-demo.mjs --year 2025
+# Or omit --year to use the latest complete agricultural year.
+```
+
+When the default agricultural year advances, regenerate the daily bundle; the app will not silently use an old range as current data.
+
+`seasonClimate(climate, window, crop)` is pure. It uses the crop window's inclusive calendar months/June-based offsets and returns rain, heat/cold-day counts, heavy-rain days, longest known dry spell, mean root-zone wetness, complete-day count and missing-day count. A day is used only when all six required daily values are valid; this conservative policy keeps every metric on the same denominator for step 5. Missing days break dry spells. Rain totals are labelled partial when any days are omitted. All-missing metrics are null, not zero. Bare returns null; unknown crop windows return unavailable metrics with a reason. Windows extending beyond the fetched period report missing days rather than reusing another year's data.
+
+The small test fixture is explicitly synthetic and lives only in `tests/fixtures/power-small.json`. Demo files under `data/` contain the real downloads. The fixture's expected June metrics are 205 mm partial rain, 2 heat days, 1 cold day, 2 heavy-rain days, a 10-day dry spell, 27 complete days and 3 missing days.
+
+NASA references: [daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/), [monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/), [data methodology/FAQ](https://power.larc.nasa.gov/docs/faqs/data/). POWER area patterns are not field measurements; soil wetness is a MERRA-2 model value. Crop thresholds remain illustrative. Full climate cards and trends remain scheduled for step 8.
+
 ## Next build step
 
-**Step 4:** NASA POWER daily/monthly loading, caching and demo fallback, plus per-season climate metrics and fill-value handling. Do one build step per prompt, test and check the app, then commit as specified in AGENTS.md.
+**Step 5:** scoring, water feasibility, confidence reasons and six priority sliders, with ranking/feasibility tests. Do one build step per prompt, test and check the app, then commit as specified in AGENTS.md.
 
 Public GitHub Pages deployment is scheduled for step 11. This scaffold does not replace the existing V2 live Site.
 
@@ -104,6 +132,6 @@ Public GitHub Pages deployment is scheduled for step 11. This scaffold does not 
 
 Future scores must be relative comparisons from stated rules, never yield/profit predictions. Crop constants need local agricultural validation. NASA/model/satellite/ground sources must be distinguished when their actual integrations are added.
 
-Planned data credits: NASA POWER (LaRC), GPM IMERG, SMAP and GRACE/GRACE-FO. None is connected in this step. No V2 photographs or external libraries are bundled in the fresh V3 scaffold. Built with help from OpenAI Codex. Team names have not been supplied yet.
+Connected data: NASA POWER (LaRC), with MERRA-2 model soil wetness. Planned satellite credits: GPM IMERG, SMAP and GRACE/GRACE-FO. No V2 photographs or external libraries are bundled in the fresh V3 scaffold. Built with help from OpenAI Codex. Team names have not been supplied yet.
 
 Original project software is covered by [LICENSE](LICENSE). Provider data and future photos retain their own terms. Independent hackathon project; no NASA endorsement is claimed.

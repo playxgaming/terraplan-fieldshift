@@ -1,8 +1,8 @@
 {
   "name": "terraplan-fieldshift",
-  "version": "3.0.0-step.3",
+  "version": "3.0.0-step.4",
   "private": true,
-  "description": "A fresh TerraPlan V3 build: farmer current rotation, transparent NASA evidence and two alternatives. Step 3 crop validation and rotation generation.",
+  "description": "A fresh TerraPlan V3 build: farmer current rotation, transparent NASA evidence and two alternatives. Step 4 NASA climate loading and offline fallback.",
   "type": "module",
   "license": "MIT",
   "engines": { "node": ">=22" },

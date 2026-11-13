@@ -38,7 +38,7 @@ test('all screens share the persistent decision-support banner outside their rou
   assert.match(shell, /<main id="app" tabindex="-1"><\/main>/);
   assert(shell.indexOf('decision-banner') < shell.indexOf('<main'));
   assert.match(shell, /data-glossary="kvk"/);
-  assert.match(shell, /No crop scores or NASA measurements are loaded/);
+  assert.match(shell, /Crop scoring is not implemented yet/);
 });
 
 test('terms used in the scaffold have definitions and unsupported terms are rejected', () => {

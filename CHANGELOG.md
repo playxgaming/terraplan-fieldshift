@@ -1,5 +1,16 @@
 # Changelog
 
+## V3 — step 4 NASA climate loading and offline fallback — 2026-11-13
+
+- Added user-triggered daily/monthly POWER requests, 20-second aborts, validated versioned caches and live→cache→matching-Rajkot-bundle fallback.
+- Downloaded real Rajkot daily records for June 2022–May 2026 and monthly records for 1991–2024, preserving provider responses and request/retrieval metadata.
+- Replaced the downloader stub with a Node script that validates both requests before replacing existing bundles.
+- Added null handling for −999/absent days and monthly parsing that excludes annual month-13 entries; raw monthly values and provider units are retained without trend calculations.
+- Added pure seasonal metrics with complete-day counts, conservative missing-day handling, dry-spell breaks, partial-rain labels and leap/year-wrap handling.
+- Added basic current-crop metric previews, explicit bundled-demo mode, stale-location protection and per-dataset provenance on Evidence.
+- Added 12 weather tests (40 total), including a clearly synthetic test-only fixture, cache/bundle recovery, aborts, wrong-location/range rejection and monthly-only failure.
+- Scoring remains step 5; full climate cards and trends remain step 8. Monthly PRECTOTCORR_SUM provider metadata currently reports mm/day; this step preserves raw values and does not infer a trend or apply a unit conversion.
+
 ## V3 — step 3 crop validation and rotation generation — 2026-11-13
 
 - Replaced the original empty crop placeholder with the 12 requested starter crops, using fodder sorghum. Every row is explicitly AI-drafted, illustrative and unverified, with no photo URL.
