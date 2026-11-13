@@ -1,7 +1,8 @@
-import { ROUTES, resolveRoute, renderNotFound, renderRankingPreview, renderRotationsTable, tableDataFor, ROTATION_SORT_COLUMNS } from './views.mjs';
+import {loadScenario,saveScenario} from './scenario.mjs';
+import { ROUTES, resolveRoute, renderNotFound, renderRankingPreview, renderRotationsTable, tableDataFor, ROTATION_SORT_COLUMNS, renderScenarioResults } from './views.mjs';
 import { openGlossary } from './glossary.mjs';
 import { DEMO_FARM, loadSatellite, loadCrops, loadClimate, powerPoint, latestCompleteAgYear } from './data.mjs';
-import { generateRotations, seasonClimate, defaultPriorities, PRIORITIES, validatePriorities, prepareScoring, rankRotations } from './engine.mjs';
+import { generateRotations, seasonClimate, defaultPriorities, PRIORITIES, validatePriorities, prepareScoring, rankRotations, defaultScenario, validateScenario, evaluateScenario } from './engine.mjs';
 import { SEASONS, emptyField, loadField, saveField, validateField } from './field.mjs';
 
 // Field and weather adapters write only their own keys; scenario storage is left alone.
@@ -18,6 +19,11 @@ let climateState = { status: 'idle', data: null, error: '', key: '' };
 let climateRequestId = 0;
 let priorities = defaultPriorities();
 let satelliteState = {status:'loading',data:null,errors:[]};
+const restoredScenario = loadScenario(fieldStorage);
+let scenarioSettings = restoredScenario.scenario;
+let scenarioError = restoredScenario.error;
+let scenarioCache = null;
+let scenarioTimer = null;
 let scoringCache = null;
 let comparisonSort = { key: 'total', direction: 'desc' };
 const climateKey = field => JSON.stringify({ ...powerPoint(field), ag_year: latestCompleteAgYear() });
@@ -39,13 +45,15 @@ function render({ focus = false } = {}) {
   const route = resolveRoute(window.location.hash);
   navigation.innerHTML = ROUTES.map(item => `<a href="#${item.path}"${route?.path === item.path ? ' aria-current="page"' : ''}>${item.label}</a>`).join('');
   const field = validateField(fieldDraft).field;
-  const generated = ['/compare','/climate','/priorities'].includes(route?.path) && field && cropData.status !== 'loading' ? generateRotations(cropData.crops, field) : null;
+  const generated = ['/compare','/climate','/priorities','/whatif'].includes(route?.path) && field && cropData.status !== 'loading' ? generateRotations(cropData.crops, field) : null;
   const climateMatches = Boolean(field && climateState.key === climateKey(field));
   const current = generated?.rotations.find(rotation => rotation.is_current);
   const metrics = route?.path === '/climate' && climateMatches && climateState.data && current
     ? Object.fromEntries(SEASONS.map(season => [season, seasonClimate(climateState.data, current.seasons[season])])) : null;
   const scoring = ['/priorities','/compare'].includes(route?.path) && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
-  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort, satelliteState }) : renderNotFound();
+  const scenario = scenarioSettings ?? defaultScenario(field);
+  const scenarioResult = route?.path === '/whatif' && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? experimentFor(field,generated,scenario) : null;
+  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort, satelliteState, scenario, scenarioResult, scenarioError }) : renderNotFound();
   document.title = `TerraPlan V3 · ${route?.label ?? 'Page not found'}`;
   menuOpen = false;
   syncMenu();
@@ -97,6 +105,7 @@ document.addEventListener('click', event => {
     document.getElementById('priority-error').textContent = '';
     updatePriorityRanking();
   }
+  if (event.target.closest('[data-reset-scenario]')) setScenario(defaultScenario(validateField(fieldDraft).field));
   const weather = event.target.closest('[data-load-climate]');
   if (weather) refreshClimate(weather.dataset.loadClimate);
   if (event.target.closest('[data-retry-crops]')) refreshCrops();
@@ -213,10 +222,10 @@ render();
 
 async function refreshCrops() {
   cropData = { crops: [], errors: [], status: 'loading' };
-  if (['#/compare', '#/climate', '#/evidence', '#/priorities'].includes(window.location.hash)) render();
+  if (['#/compare', '#/climate', '#/evidence', '#/priorities', '#/whatif'].includes(window.location.hash)) render();
   cropData = await loadCrops();
   // Avoid replacing an in-progress field form or stealing focus when the file arrives.
-  if (['#/compare', '#/climate', '#/evidence', '#/priorities'].includes(window.location.hash)) render();
+  if (['#/compare', '#/climate', '#/evidence', '#/priorities', '#/whatif'].includes(window.location.hash)) render();
 }
 refreshCrops();
 
@@ -235,7 +244,7 @@ async function refreshClimate(mode) {
     if (requestId !== climateRequestId) return;
     climateState = { status: 'error', data: null, error: error.message, key };
   }
-  if (['#/climate', '#/evidence', '#/priorities', '#/compare'].includes(window.location.hash)) render();
+  if (['#/climate', '#/evidence', '#/priorities', '#/compare', '#/whatif'].includes(window.location.hash)) render();
 }
 
 function rankingFor(field,generated) {
@@ -262,4 +271,49 @@ function updatePriorityRanking() {
 loadSatellite().then(result => {
   satelliteState = result;
   if (['#/climate','#/evidence'].includes(window.location.hash)) render();
+});
+
+function experimentFor(field,generated,scenario) {
+  const key=JSON.stringify({field,scenario,priorities});
+  if(!scenarioCache || scenarioCache.key!==key || scenarioCache.crops!==cropData.crops || scenarioCache.climate!==climateState.data) {
+    scenarioCache={key,crops:cropData.crops,climate:climateState.data,result:evaluateScenario(generated,field,climateState.data,priorities,scenario)};
+  }
+  return scenarioCache.result;
+}
+
+function setScenario(raw) {
+  const checked=validateScenario(raw),error=document.getElementById('scenario-error');
+  if(!checked.valid) {
+    error.textContent='What-if settings were not changed. '+Object.values(checked.errors).join(' ');
+    return;
+  }
+  scenarioSettings=checked.scenario;
+  scenarioError=saveScenario(fieldStorage,scenarioSettings).error;
+  document.getElementById('scenario-storage').textContent=scenarioError || 'What-if settings saved on this browser.';
+  error.textContent='';
+  for(const input of document.querySelectorAll('[data-scenario]')) {
+    const key=input.dataset.scenario,value=key.startsWith('irrigation_')?scenarioSettings.irrigation_mm[key.slice(11)]:scenarioSettings[key];
+    input.value=String(value);input.removeAttribute('aria-invalid');
+    document.getElementById('scenario-value-'+key).textContent=String(value);
+  }
+  clearTimeout(scenarioTimer);
+  document.getElementById('scenario-status').textContent='Updating the historical experiment…';
+  scenarioTimer=setTimeout(()=>{
+    if(window.location.hash!=='#/whatif')return;
+    const field=validateField(fieldDraft).field;
+    const ready=field && climateState.key===climateKey(field) && climateState.data && cropData.status==='loaded';
+    const result=ready?experimentFor(field,generateRotations(cropData.crops,field),scenarioSettings):null;
+    document.getElementById('scenario-results').innerHTML=renderScenarioResults(result);
+    document.getElementById('scenario-status').textContent=result?'Experiment updated. Scores: '+result.columns.map(column=>column?.changed?.total==null?'not scored':column.changed.total.toFixed(2)).join(', ')+'.':'Settings updated. Load matching field weather to calculate scores.';
+  },120);
+}
+app.addEventListener('input',event=>{
+  const key=event.target.dataset.scenario;
+  if(!key)return;
+  const current=scenarioSettings??defaultScenario(validateField(fieldDraft).field);
+  const raw={...current,irrigation_mm:{...current.irrigation_mm}};
+  if(key.startsWith('irrigation_') && SEASONS.includes(key.slice(11))) raw.irrigation_mm[key.slice(11)]=event.target.value;
+  else if(['rain_pct','temperature_c'].includes(key))raw[key]=event.target.value;
+  else return;
+  setScenario(raw);
 });

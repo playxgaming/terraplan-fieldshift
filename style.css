@@ -309,3 +309,7 @@ summary:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
 .climate-card p { font-size:0.85rem; }
 .trend-panel { margin-block:2rem; min-width:0; }
 .table-scroll { max-width:100%; overflow-x:auto; }
+
+.scenario-controls { max-width:44rem; padding:1.25rem; border:1px solid var(--line); background:var(--paper); }
+.scenario-controls .priority-control { margin-block:1.3rem; }
+#scenario-results { min-width:0; }

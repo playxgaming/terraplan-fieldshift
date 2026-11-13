@@ -1,5 +1,6 @@
 /** Plain-language terms used throughout the app. */
 export const GLOSSARY = Object.freeze({
+  sensitivity: Object.freeze({title:'Sensitivity experiment',definition:'Changing one or more assumptions and checking how the same plans score. Applying settings to past years tests dependence on those assumptions; it does not forecast the weather or crop yields.'}),
   grace: Object.freeze({title:'GRACE and GRACE-FO',definition:'Gravity satellites estimate changes in total stored water across very large areas. Separating groundwater needs other water-storage information; this is not a reading of your well.'}),
   smap: Object.freeze({title:'SMAP anomaly',definition:'A satellite-based soil-moisture product compared with its reference baseline. Confirm the baseline and units supplied with the data; it is different from POWER model root-zone wetness.'}),
   imerg: Object.freeze({title:'GPM IMERG',definition:'A combined precipitation estimate using satellite observations and other inputs. Compare area rain estimates over the same months; differences are not proof that either equals rain on your field.'}),

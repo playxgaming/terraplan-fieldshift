@@ -1,5 +1,12 @@
 # Changelog
 
+## V3 — step 10 What-if and historical sensitivity — 2026-11-13
+
+- Added validated rain, temperature and absolute seasonal irrigation sliders, saved separately from the field with recovery from invalid/blocked storage.
+- Recomputed the same baseline current/A/B plans under active experiment settings, without silently selecting replacement alternatives.
+- Added four agricultural-year scores with best/worst available years, missing totals and water/confidence warnings. Original NASA records, baseline scores and field entries stay unchanged.
+- Added pure perturbation, input validation, persistence, numeric recalculation, fixed-ID, purity and missing-year tests.
+
 ## V3 — step 9 satellite evidence — 2026-11-13
 
 - Added optional Rajkot IMERG, SMAP and GRACE cards and Evidence source entries, with a not-loaded manifest instead of invented values.

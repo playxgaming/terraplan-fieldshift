@@ -29,6 +29,62 @@ export const MODEL = Object.freeze({
   flowering_fraction: 0.6,
 });
 
+export const SCENARIO_LIMITS = Object.freeze({
+  rain_pct:Object.freeze({min:-50,max:30,step:1}),
+  temperature_c:Object.freeze({min:0,max:3,step:0.1}),
+  irrigation_mm:Object.freeze({...FIELD_LIMITS.irrigation_mm,step:10}),
+});
+
+export function defaultScenario(field = null) {
+  return {rain_pct:0,temperature_c:0,irrigation_mm:Object.fromEntries(SEASONS.map(season=>[season,field?.irrigation_mm?.[season] ?? 0]))};
+}
+
+export function validateScenario(raw) {
+  const errors={};
+  const number=(value,key,limit)=>{
+    const numeric=typeof value==='number' || typeof value==='string' && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(value.trim());
+    const parsed=numeric?Number(value):NaN;
+    if (!Number.isFinite(parsed) || parsed<limit.min || parsed>limit.max) errors[key]=`Enter a number from ${limit.min} to ${limit.max}.`;
+    return parsed;
+  };
+  const scenario={rain_pct:number(raw?.rain_pct,'rain_pct',SCENARIO_LIMITS.rain_pct),temperature_c:number(raw?.temperature_c,'temperature_c',SCENARIO_LIMITS.temperature_c),
+    irrigation_mm:Object.fromEntries(SEASONS.map(season=>[season,number(raw?.irrigation_mm?.[season],`irrigation_${season}`,SCENARIO_LIMITS.irrigation_mm)]))};
+  return {valid:!Object.keys(errors).length,scenario:Object.keys(errors).length?null:scenario,errors};
+}
+
+/** Perturb copies of historical observations; preserve null/fill values and soil wetness. */
+export function applyScenario(field,climate,settings) {
+  const checked=validateScenario(settings);
+  if (!checked.valid) throw new Error('Invalid What-if settings.');
+  const scenario=checked.scenario;
+  const usable=value=>typeof value==='number' && Number.isFinite(value) && value!==-999;
+  return {field:{...field,irrigation_mm:{...scenario.irrigation_mm}},climate:{...climate,
+    daily:climate.daily.map(row=>({...row,rain:usable(row.rain)?row.rain*(1+scenario.rain_pct/100):row.rain,
+      ...Object.fromEntries(['tmax','tmin','t2m'].map(key=>[key,usable(row[key])?row[key]+scenario.temperature_c:row[key]]))}))},scenario};
+}
+
+/** Evaluate the SAME baseline current/A/B IDs for every experiment and historical year. */
+export function evaluateScenario(generated,field,climate,weights,settings) {
+  const baseline=scoreRotations(generated,field,climate,weights);
+  const selected=[baseline.current,baseline.options[0]??null,baseline.options[1]??null];
+  const modified=applyScenario(field,climate,settings);
+  const scoreYear=year=>scoreRotations(generated,modified.field,{...modified.climate,ag_year:year},weights);
+  const find=(scores,id)=>[scores.current,...scores.ranked].find(row=>row?.id===id)??null;
+  const active=scoreYear(climate.ag_year);
+  const columns=selected.map(row=>row?{baseline:row,changed:find(active,row.id)}:null);
+  const years=[...new Set((climate.years_available??[]).filter(year=>Number.isInteger(year) && year>=climate.ag_year-3 && year<=climate.ag_year))].sort((a,b)=>a-b);
+  const sensitivity=years.map(year=>{
+    const scores=year===climate.ag_year?active:scoreYear(year);
+    return {year,rotations:selected.map(row=>row?find(scores,row.id):null)};
+  });
+  const extremes=selected.map((rotation,index)=>{
+    const available=sensitivity.map(row=>({year:row.year,score:row.rotations[index]?.total})).filter(row=>typeof row.score==='number' && Number.isFinite(row.score));
+    if (!available.length) return {best:null,worst:null};
+    return {best:available.reduce((a,b)=>b.score>a.score?b:a),worst:available.reduce((a,b)=>b.score<a.score?b:a)};
+  });
+  return {columns,sensitivity,extremes,scenario:modified.scenario,ag_year:climate.ag_year,source:climate.source,retrieved_at:climate.retrieved_at};
+}
+
 const COMPLETE_DAY_FIELDS = Object.freeze(['rain','t2m','tmax','tmin','gwetroot','gwettop']);
 const completeClimateDay = row => Boolean(row && COMPLETE_DAY_FIELDS.every(key => typeof row[key] === 'number' && Number.isFinite(row[key]) && row[key] !== -999));
 
