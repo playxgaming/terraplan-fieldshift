@@ -2,9 +2,9 @@ import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 
 const files = [
-  'app.mjs', 'views.mjs', 'engine.mjs', 'data.mjs', 'glossary.mjs',
+  'app.mjs', 'views.mjs', 'engine.mjs', 'data.mjs', 'glossary.mjs', 'field.mjs',
   'scripts/check.mjs', 'scripts/fetch-demo.mjs',
-  'tests/index.js', 'tests/engine.test.mjs', 'tests/data.test.mjs', 'tests/routes.test.mjs',
+  'tests/index.js', 'tests/engine.test.mjs', 'tests/data.test.mjs', 'tests/routes.test.mjs', 'tests/field.test.mjs',
 ];
 
 for (const file of files) {

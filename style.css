@@ -22,6 +22,7 @@ a { color: inherit; text-underline-offset: 0.2em; }
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { line-height: 1.2; }
 button:focus-visible, a:focus-visible, main:focus-visible { outline: 3px solid #9b6630; outline-offset: 4px; }
+input:focus-visible, select:focus-visible, .error-summary:focus { outline: 3px solid #9b6630; outline-offset: 3px; }
 [hidden] { display: none !important; }
 
 .skip-link { position: fixed; z-index: 5; top: -5rem; left: 1rem; background: var(--ink); color: #fff; padding: 0.75rem 1rem; }
@@ -99,6 +100,36 @@ dialog::backdrop { background: #183728aa; }
 .dialog-heading h2 { font-size: 1.35rem; }
 dialog > p { color: #506347; font-size: 0.95rem; }
 .noscript-note { padding: 1.25rem; text-align: center; }
+
+.field-intro { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem; background: var(--soft); border: 1px solid var(--line); border-radius: 6px; }
+.field-intro p { max-width: 40rem; font-size: 0.85rem; }
+.field-status { min-height: 1.5rem; font-size: 0.87rem; margin-block: 1rem; }
+#field-form { max-width: 65rem; }
+#field-form fieldset { min-width: 0; margin: 0 0 1.5rem; padding: 1.25rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+#field-form legend { font-size: 1.1rem; font-weight: 650; padding-inline: 0.4rem; }
+.fieldset-note { font-size: 0.85rem; color: var(--muted); margin-block: 0.25rem 1.25rem; }
+.form-grid, .season-grid { display: grid; gap: 1.25rem; }
+.form-grid + .fieldset-note { margin-top: 1.5rem; }
+.form-control { min-width: 0; }
+.form-control > label { display: block; font-size: 0.87rem; font-weight: 600; margin-bottom: 0.4rem; }
+.form-control input:not([type="checkbox"]), .form-control select { width: 100%; min-width: 0; min-height: 2.9rem; border: 1px solid #9faa95; background: #fffefb; border-radius: 4px; padding: 0.6rem; color: var(--ink); }
+.form-control .checkbox-label { display: flex; gap: 0.65rem; align-items: center; min-height: 2.75rem; font-weight: 450; }
+.checkbox-label input { width: 1.2rem; height: 1.2rem; flex-shrink: 0; accent-color: var(--ink); }
+.input-help { color: var(--muted); font-size: 0.75rem; margin-top: 0.4rem; }
+.field-error { display: block; color: #9a322b; font-size: 0.8rem; margin-top: 0.4rem; }
+[aria-invalid="true"] { border: 2px solid #ac3b30 !important; }
+.error-summary, .storage-error { padding: 1rem; margin-block: 1rem; border: 2px solid #ac3b30; background: #fff2ec; color: #78352a; border-radius: 5px; font-size: 0.85rem; overflow-wrap: anywhere; }
+.error-summary p { font-weight: 650; }
+.error-summary ul { padding-left: 1.25rem; }
+.season-help { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 1rem; font-size: 0.8rem; }
+#field-form .small-note { margin-top: 1rem; }
+#field-form fieldset > .glossary-link { margin-top: 1rem; font-size: 0.8rem; }
+
+@media (min-width: 40rem) {
+  .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .season-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .full-width { grid-column: 1 / -1; }
+}
 
 @media (min-width: 40rem) {
   .decision-banner { border: 1px solid #d9e3cc; border-radius: 6px; margin-inline: 1.25rem; }

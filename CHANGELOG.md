@@ -1,5 +1,15 @@
 # Changelog
 
+## V3 — step 2 field entry and saving — 2026-11-13
+
+- Added labelled field inputs, a soil-report checkbox, seasonal irrigation and current-crop pickers including Bare.
+- Enabled editable Rajkot demo loading on Welcome and My field without automatically replacing the saved field.
+- Added centralized numeric limits, inline/linked summary errors and rejection of empty/nonfinite/out-of-range values.
+- Added validated, versioned field storage, recovery messages for corrupt/blocked storage and preservation of other storage keys.
+- Kept drafts through route changes; explicit saves survive reloads. Added field and season glossary help.
+- Added seven field tests (16 total) covering boundaries, persistence, error recovery, scenario preservation and escaped rendering.
+- Crop generation, NASA retrieval, scoring and scenarios remain scheduled for subsequent steps.
+
 ## V3 — step 1 scaffold — 2026-11-13
 
 - Started a fresh root-level HTML/CSS/ES-module application from the supplied AGENTS.md.

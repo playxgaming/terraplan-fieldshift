@@ -2,3 +2,4 @@
 import './engine.test.mjs';
 import './data.test.mjs';
 import './routes.test.mjs';
+import './field.test.mjs';

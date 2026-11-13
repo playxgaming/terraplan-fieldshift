@@ -1,8 +1,8 @@
 {
   "name": "terraplan-fieldshift",
-  "version": "3.0.0-step.1",
+  "version": "3.0.0-step.2",
   "private": true,
-  "description": "A fresh TerraPlan V3 build: farmer current rotation, transparent NASA evidence and two alternatives. Step 1 scaffold.",
+  "description": "A fresh TerraPlan V3 build: farmer current rotation, transparent NASA evidence and two alternatives. Step 2 field entry and persistence.",
   "type": "module",
   "license": "MIT",
   "engines": { "node": ">=22" },
