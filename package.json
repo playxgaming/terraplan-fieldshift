@@ -1,8 +1,8 @@
 {
   "name": "terraplan-fieldshift",
-  "version": "3.0.0-step.11",
+  "version": "3.0.0-step.12",
   "private": true,
-  "description": "TerraPlan V3: sourced NASA climate, transparent crop comparisons, historical timelines and What-if sensitivity. Core steps 1\u201311.",
+  "description": "TerraPlan V3: sourced NASA climate, transparent crop comparisons, historical timelines and What-if sensitivity. Steps 1–12 with optional field map, regional labels and print.",
   "type": "module",
   "license": "MIT",
   "engines": {

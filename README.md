@@ -6,9 +6,9 @@ NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 
 V3 is a fresh build for small farms in western India. The planned workflow starts with the farmer's **current rotation** and compares it with two alternatives using stated rules and clearly labelled NASA evidence.
 
-## Current status: steps 1–11
+## Current status: steps 1–12
 
-This branch implements the first eleven build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison with crop timelines, full climate cards and What-if sensitivity. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
+This branch implements the all twelve build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison with crop timelines, full climate cards and What-if sensitivity. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
 
 Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. June–May crop timelines now show historical weather markers and known Bare months. Climate cards, complete-year monthly trends, optional satellite evidence and What-if sensitivity are now implemented. Satellite observations have not been supplied; the cards show **Not loaded yet**.
 
@@ -76,7 +76,7 @@ npm run check
 npm run verify
 ```
 
-The suite contains 90 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 97 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 
@@ -184,20 +184,30 @@ The three plans are the baseline current/A/B for the present field and prioritie
 
 Validated settings are stored separately as `{version:1,scenario:{rain_pct,temperature_c,irrigation_mm}}` under `terraplan.v3.whatif`. Field saving does not reset them. Reset uses the current field irrigation and zero weather change. Invalid stored bytes are preserved with a recovery notice; blocked storage leaves tab edits usable without claiming they were saved. Priority weights remain tab-local.
 
+## Optional map, regional labels and printing
+
+My field includes **Open field map**. Opening it loads integrity-pinned Leaflet 1.9.4 CSS/JS from unpkg and visible map tiles from OpenStreetMap. Those services receive normal browser request details and the viewed map area. No map requests occur before opening, and no geolocation permission is requested. The map has visible attribution and uses normal browser tile caching without bulk downloads. Coordinate entry remains available if the map cannot load.
+
+Click to position the pin, or focus the map, pan with arrow keys and choose **Use map centre as field location**. **Show entered coordinates** centres on the current inputs. Picks change the unsaved form only; Save field still controls persistence. Empty or invalid coordinates never turn into a zero-location pin. Locations outside the map projection keep their typed coordinates and show a coverage message. The pin represents a point, not a field boundary, soil test or NASA grid. Navigation disposes of the map and ignores stale loading results.
+
+The header selector adds Hindi, Gujarati or Marathi navigation and crop names alongside English. This is partial localization; explanations, evidence, warnings and technical terms remain English. Regional names are starter labels and should be reviewed by a local speaker. Labels do not change crop IDs, inputs, scores, priority weights or What-if settings. The language preference uses its own versioned `terraplan.v3.labels` key; invalid stored bytes are retained with a recovery message. Maps remain open and field drafts remain editable during a language change.
+
+**Print this page** uses the browser print/Save as PDF dialog, including Ctrl+P. The print header includes the field, current priority weights, print time and page URL. It keeps decision-support warnings, scores, sources and limitations; comparison confidence and benefit explanations open temporarily and restore after printing or cancellation. Timelines wrap into twelve visible cells; map tiles, navigation and controls are omitted. The comparison printout focuses on current/A/B; full retained/excluded lists remain online. Printing does not change saved fields, labels or experiments. The browser controls paper size, margins and PDF output.
+
 ## Deployment and verification
 
 Public site: [TerraPlan V3 on GitHub Pages](https://playxgaming.github.io/terraplan-fieldshift/). Repository source stays private; the existing V2 Site and main branch are preserved. The workflow publishes the `codex/terraplan-v3` branch after verification. Each deployed artifact includes `build-info.json` with its source commit and version.
 
 `npm run package:site` creates a fresh `.pages-dist` directory containing only allowlisted app modules, public demo JSON, licence and build metadata. It refuses to reuse an existing output directory. No repository history, instructions, tests, credentials or private hosting files are published. All imports and asset URLs are relative so project-site paths work. No build or runtime dependency is required.
 
-The 90-test suite checks prior field/generator/scoring/timeline contracts plus trend arithmetic and units, satellite provenance/location boundaries, scenario validation/storage/purity/fixed IDs, exact historical recalculation and deployment contents. Browser verification covers the demo flow, 360 px reflow, desktop columns, keyboard ranges, native month disclosures, horizontal data regions, glossary dismissal/focus and route/menu labels. Full certification with every screen reader/device is not claimed.
+The 97-test suite checks prior field/generator/scoring/timeline contracts plus trend arithmetic and units, satellite provenance/location boundaries, scenario validation/storage/purity/fixed IDs, exact historical recalculation and deployment contents. Browser verification covers the demo flow, 360 px reflow, desktop columns, keyboard ranges, native month disclosures, horizontal data regions, glossary dismissal/focus and route/menu labels. Full certification with every screen reader/device is not claimed.
 
-Steps 1–11 are implemented. Step 12 remains optional: map pin, regional-language labels and print view. Crop values and satellite observations still need the data/agronomy team; photos remain explicitly labelled initial placeholders until licensed images are supplied.
+Steps 1–12 are implemented, including the optional map, regional labels and print view. Crop values and satellite observations still need the data/agronomy team; photos remain explicitly labelled initial placeholders until licensed images are supplied.
 
 ## Honesty and credits
 
 Scores must be relative comparisons from stated rules, never yield/profit predictions. Crop constants need local agricultural validation. NASA/model/satellite/ground sources must be distinguished when their actual integrations are added.
 
-Connected data: NASA POWER (LaRC), with MERRA-2 model soil wetness. Planned satellite credits: GPM IMERG, SMAP and GRACE/GRACE-FO. No V2 photographs or external libraries are bundled in the fresh V3 scaffold. Built with help from OpenAI Codex. Team names have not been supplied yet.
+Connected data: NASA POWER (LaRC), with MERRA-2 model soil wetness. Planned satellite credits: GPM IMERG, SMAP and GRACE/GRACE-FO. No V2 photographs or external libraries are bundled. Optional Leaflet 1.9.4 loads from unpkg only when the field map is opened; it is covered by the [BSD-2-Clause licence](https://github.com/Leaflet/Leaflet/blob/v1.9.4/LICENSE). Map tiles are © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright). Built with help from OpenAI Codex. Team names have not been supplied yet.
 
 Original project software is covered by [LICENSE](LICENSE). Provider data and future photos retain their own terms. Independent hackathon project; no NASA endorsement is claimed.

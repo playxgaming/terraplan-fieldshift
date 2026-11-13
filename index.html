@@ -16,6 +16,11 @@
       <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
       <nav id="primary-nav" aria-label="Main navigation"></nav>
     </header>
+    <div class="page-tools" data-language-static>
+      <div class="label-controls"><label for="label-language">Navigation &amp; crop labels</label><select id="label-language" aria-describedby="label-scope"><option value="en">English</option><option value="hi" lang="hi">हिन्दी · Hindi</option><option value="gu" lang="gu">ગુજરાતી · Gujarati</option><option value="mr" lang="mr">मराठी · Marathi</option></select><p id="label-scope">Local labels only. Explanations remain in English.</p><p id="label-status" class="small-note" role="status"></p></div>
+      <button type="button" class="secondary" id="print-page">Print this page</button>
+    </div>
+    <div class="print-heading"><strong>TerraPlan V3 · Planning notes</strong><p id="print-context"></p></div>
 
     <aside class="decision-banner" aria-label="Decision support and local advice">
       <span class="banner-mark" aria-hidden="true">i</span>
@@ -29,9 +34,9 @@
 
     <footer class="site-footer">
       <div><strong>TerraPlan V3</strong><span>NASA Space Apps 2026 · Field Shift</span></div>
-      <p>Steps 1–11 · Climate cards, crop comparisons, timelines and What-if experiments. All starter crop values are unverified.</p>
+      <p>Steps 1–12 · Climate cards, crop comparisons, timelines and What-if experiments. All starter crop values are unverified.</p>
       <p>Planned data credits: NASA POWER (LaRC), GPM IMERG, SMAP, GRACE/GRACE-FO. POWER is connected. Satellite summary cards are available; sourced summary data have not been supplied.</p>
-      <p>Built with help from OpenAI Codex · Team names: not supplied yet.</p>
+      <p>Built with help from OpenAI Codex · Team names: not supplied yet. Optional map: Leaflet 1.9.4 (BSD-2-Clause), © OpenStreetMap contributors.</p>
     </footer>
 
     <dialog id="glossary-dialog" aria-labelledby="glossary-title">

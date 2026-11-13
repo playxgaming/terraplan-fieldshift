@@ -3,7 +3,7 @@ import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 export const PUBLIC_FILES=Object.freeze([
-  'index.html','style.css','app.mjs','views.mjs','engine.mjs','data.mjs','field.mjs','scenario.mjs','glossary.mjs','LICENSE',
+  'index.html','style.css','app.mjs','views.mjs','engine.mjs','data.mjs','field.mjs','scenario.mjs','glossary.mjs','labels.mjs','map.mjs','print.mjs','LICENSE',
   'data/crops.json','data/demo-power-daily.json','data/demo-power-monthly.json','data/demo-satellite.json',
 ]);
 const root=fileURLToPath(new URL('../',import.meta.url));

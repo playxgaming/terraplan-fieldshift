@@ -11,3 +11,4 @@ import './climate.test.mjs';
 import './satellite.test.mjs';
 import './scenario.test.mjs';
 import './deployment.test.mjs';
+import './optional.test.mjs';

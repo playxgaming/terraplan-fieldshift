@@ -320,3 +320,58 @@ summary:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
 input[type="range"] { min-height:2.75rem; width:100%; accent-color:var(--ink); }
 .satellite-panel { margin-top:2rem; min-width:0; }
 .climate-preview, .trend-panel, .scenario-controls { overflow-wrap:anywhere; }
+
+.page-tools { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; max-width:80rem; margin:0 auto; padding:0.8rem 1.25rem; border-bottom:1px solid var(--line); }
+.label-controls { min-width:0; max-width:100%; }
+.label-controls label { display:block; font-size:0.8rem; font-weight:650; }
+.label-controls select { max-width:100%; min-height:2.75rem; padding:0.3rem 0.5rem; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:4px; }
+.label-controls p { font-size:0.75rem; overflow-wrap:anywhere; }
+.nav-native { display:block; font-size:0.85em; line-height:1.5; }
+[data-native-label] { font-weight:inherit; }
+.field-map-panel { padding:1.25rem; margin-block:1.5rem; border:1px solid var(--line); background:var(--surface); border-radius:6px; min-width:0; }
+.field-map-panel h2 { font-size:1.1rem; }
+.field-map-panel p { margin-block:0.8rem; font-size:0.85rem; }
+.field-map { height:20rem; width:100%; margin-block:1rem; border:1px solid var(--line); border-radius:4px; z-index:0; }
+.field-map:focus-visible { outline:3px solid #9b6630; outline-offset:3px; }
+.leaflet-container a { color:#244938; }
+.leaflet-container .leaflet-control-attribution { font-size:0.7rem; }
+.print-heading, .print-only { display:none; }
+@media print {
+  @page { margin:14mm; }
+  :root, body { color:#000; background:#fff; font-size:10pt; }
+  .site-header, .page-tools, .field-map-panel, .page-actions, .welcome-actions, .glossary-link, .season-help, dialog, .skip-link, #table-sort-status { display:none !important; }
+  button, input[type="range"] { display:none !important; }
+  .print-heading, .print-only { display:block; }
+  .print-heading { padding-bottom:0.8rem; overflow-wrap:anywhere; }
+  .print-heading strong { font-size:16pt; }
+  .print-heading p { font-size:8pt; margin-top:0.4rem; }
+  .decision-banner { display:block; margin:0 0 1rem; max-width:none; border:1px solid #555; background:#fff; color:#000; }
+  .banner-mark { display:none; }
+  #app { max-width:none; padding:0; margin:0; }
+  .page-heading { margin-block:1rem; }
+  h1 { font-size:20pt; }
+  h2, h3, h4, summary { break-after:avoid; }
+  p, li { orphans:3; widows:3; }
+  .comparison-grid, .priority-layout, .welcome { display:block; }
+  .comparison-column { border:1px solid #777; padding:0.8rem; margin-bottom:1rem; min-width:0; }
+  .comparison-column + .comparison-column { break-before:page; }
+  .comparison-confidence, .benefit-badge { break-inside:avoid; }
+  .comparison-column p, .comparison-column li, .small-note, .source-note { color:#000; }
+  .comparison-grid ~ .rotation-details { display:none; }
+  .timeline-help { display:none; }
+  .timeline-strip { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); overflow:visible; gap:0.25rem; background:#fff; padding:0.3rem; }
+  .timeline-cell, .timeline-cell[open] { width:auto; min-width:0; border:1px solid #777; background:#fff; }
+  .timeline-cell > summary { min-height:0; padding:0.25rem; }
+  .timeline-cell > summary::after, .timeline-month-details { display:none; }
+  .timeline-crop, .timeline-month, .timeline-marker { font-size:8pt; color:#000; }
+  .timeline-marker { background:#fff; border-color:#aaa; }
+  .table-scroll, .rotations-table-scroll { overflow:visible; max-width:none; }
+  .rotations-table { min-width:0; width:100%; font-size:8pt; table-layout:fixed; overflow-wrap:anywhere; }
+  .rotations-table th[scope="row"] { min-width:0; }
+  .rotations-table th, .rotations-table td { padding:0.35rem; }
+  .climate-card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .climate-card { break-inside:avoid; }
+  .site-footer { margin-top:1rem; padding:0.8rem 0; font-size:8pt; }
+  .scenario-controls { border:1px solid #777; padding:0.6rem; }
+  .scenario-controls .priority-control { margin-block:0.5rem; }
+}

@@ -1,3 +1,6 @@
+import {LABELS,validLanguage,loadLabelLanguage,saveLabelLanguage,applyCropLabels} from './labels.mjs';
+import {mapPoint,createFieldMap} from './map.mjs';
+import {installPrintView} from './print.mjs';
 import {loadScenario,saveScenario} from './scenario.mjs';
 import { ROUTES, resolveRoute, renderNotFound, renderRankingPreview, renderRotationsTable, tableDataFor, ROTATION_SORT_COLUMNS, renderScenarioResults } from './views.mjs';
 import { openGlossary } from './glossary.mjs';
@@ -10,6 +13,8 @@ const fieldStorage = {
   getItem: key => window.localStorage.getItem(key),
   setItem: (key, value) => window.localStorage.setItem(key, value),
 };
+const restoredLabels = loadLabelLanguage(fieldStorage);
+let labelLanguage = restoredLabels.language;
 const restored = loadField(fieldStorage);
 let fieldDraft = restored.field ?? emptyField();
 let fieldMessage = restored.field ? 'Your saved field is loaded. Edit it and save again when ready.' : '';
@@ -33,6 +38,36 @@ const navigation = document.getElementById('primary-nav');
 const menuButton = document.getElementById('menu-toggle');
 const desktop = window.matchMedia('(min-width: 54rem)');
 let menuOpen = false;
+let mapController = null;
+let mapRequest = 0;
+const languageControl = document.getElementById('label-language');
+languageControl.value = labelLanguage;
+document.getElementById('label-status').textContent = restoredLabels.error;
+
+function renderNavigation() {
+  const route=resolveRoute(window.location.hash);
+  navigation.replaceChildren(...ROUTES.map(item=>{
+    const link=document.createElement('a');link.href='#'+item.path;
+    if(route?.path===item.path)link.setAttribute('aria-current','page');
+    link.append(document.createTextNode(item.label));
+    const native=LABELS[labelLanguage]?.nav[item.path];
+    if(native){const span=document.createElement('span');span.lang=labelLanguage;span.className='nav-native';span.textContent=native;link.append(span);}
+    return link;
+  }));
+}
+function localize(root=app) {applyCropLabels(root,labelLanguage,cropData.crops);}
+languageControl.addEventListener('change',()=>{
+  if(!validLanguage(languageControl.value)){languageControl.value=labelLanguage;return;}
+  labelLanguage=languageControl.value;
+  document.getElementById('label-status').textContent=saveLabelLanguage(fieldStorage,labelLanguage)||'Navigation and crop labels updated. Explanations remain in English.';
+  renderNavigation();localize();
+});
+
+installPrintView(window,app,document.getElementById('print-context'),()=>{
+  const field=validateField(fieldDraft).field;
+  return `${document.title}. ${field?`${field.name} · ${field.lat}, ${field.lon} · ${field.area_ha} ha.`:'Field entries incomplete.'} Priority weights: ${PRIORITIES.map(row=>row.label+' '+priorities[row.key]).join(', ')}. Printed ${new Date().toLocaleString()}. ${window.location.href}`;
+});
+document.getElementById('print-page').addEventListener('click',()=>window.print());
 
 function syncMenu() {
   navigation.hidden = !desktop.matches && !menuOpen;
@@ -43,7 +78,7 @@ function syncMenu() {
 
 function render({ focus = false } = {}) {
   const route = resolveRoute(window.location.hash);
-  navigation.innerHTML = ROUTES.map(item => `<a href="#${item.path}"${route?.path === item.path ? ' aria-current="page"' : ''}>${item.label}</a>`).join('');
+  renderNavigation();
   const field = validateField(fieldDraft).field;
   const generated = ['/compare','/climate','/priorities','/whatif'].includes(route?.path) && field && cropData.status !== 'loading' ? generateRotations(cropData.crops, field) : null;
   const climateMatches = Boolean(field && climateState.key === climateKey(field));
@@ -53,7 +88,10 @@ function render({ focus = false } = {}) {
   const scoring = ['/priorities','/compare'].includes(route?.path) && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
   const scenario = scenarioSettings ?? defaultScenario(field);
   const scenarioResult = route?.path === '/whatif' && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? experimentFor(field,generated,scenario) : null;
+  mapRequest++;
+  mapController?.destroy();mapController=null;
   app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort, satelliteState, scenario, scenarioResult, scenarioError }) : renderNotFound();
+  localize();
   document.title = `TerraPlan V3 · ${route?.label ?? 'Page not found'}`;
   menuOpen = false;
   syncMenu();
@@ -85,6 +123,9 @@ document.querySelector('.skip-link').addEventListener('click', event => {
 });
 
 document.addEventListener('click', event => {
+  if (event.target.closest('[data-open-map]')) openFieldMap();
+  if (event.target.closest('[data-map-centre]')) mapController?.chooseCentre();
+  if (event.target.closest('[data-map-recentre]')) mapController?.setPoint(mapPoint(readFieldForm(document.getElementById('field-form'))));
   const sort = event.target.closest('[data-sort-rotations]');
   if (sort && ROTATION_SORT_COLUMNS.some(column => column.key === sort.dataset.sortRotations)) {
     const key = sort.dataset.sortRotations;
@@ -95,6 +136,7 @@ document.addEventListener('click', event => {
       const scoring = climateState.key === climateKey(field) && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
       document.getElementById('rotations-table-region').innerHTML = renderRotationsTable(tableDataFor(scoring,generated),comparisonSort);
       [...document.querySelectorAll('[data-sort-rotations]')].find(button => button.dataset.sortRotations === key)?.focus({preventScroll:true});
+      localize(document.getElementById('rotations-table-region'));
       document.getElementById('table-sort-status').textContent = `Sorted by ${ROTATION_SORT_COLUMNS.find(column => column.key === key).label}, ${comparisonSort.direction === 'asc' ? 'ascending' : 'descending'}. Missing values remain last.`;
     }
   }
@@ -149,6 +191,7 @@ function rememberDraft(event) {
   fieldDraft = readFieldForm(event.target.form);
   fieldMessage = 'You have unsaved changes. Choose Save field to keep them.';
   document.getElementById('field-status').textContent = fieldMessage;
+  if (event.type === 'change' && ['lat','lon'].includes(event.target.id)) mapController?.setPoint(mapPoint(fieldDraft));
 }
 app.addEventListener('input', rememberDraft);
 app.addEventListener('change', rememberDraft);
@@ -269,6 +312,7 @@ function updatePriorityRanking() {
   const scoring = rankingFor(field,generateRotations(cropData.crops,field));
   // Keep range controls in place so dragging and keyboard focus are never interrupted.
   document.getElementById('ranking-preview').innerHTML = renderRankingPreview(scoring);
+  localize(document.getElementById('ranking-preview'));
   document.getElementById('ranking-status').textContent = `Ranking updated. ${scoring.ranked.filter(row => row.total !== null).length} alternatives have a score. ${scoring.options[0] ? `First comparison candidate: ${SEASONS.map(season => scoring.options[0].seasons[season]?.crop.name ?? 'Bare').join(', ')}. ${scoring.options[0].feasibility_label}.` : 'No scored comparison candidate is available.'}`;
 }
 
@@ -308,6 +352,7 @@ function setScenario(raw) {
     const ready=field && climateState.key===climateKey(field) && climateState.data && cropData.status==='loaded';
     const result=ready?experimentFor(field,generateRotations(cropData.crops,field),scenarioSettings):null;
     document.getElementById('scenario-results').innerHTML=renderScenarioResults(result);
+    localize(document.getElementById('scenario-results'));
     document.getElementById('scenario-status').textContent=result?'Experiment updated. Scores: '+result.columns.map(column=>column?.changed?.total==null?'not scored':column.changed.total.toFixed(2)).join(', ')+'.':'Settings updated. Load matching field weather to calculate scores.';
   },120);
 }
@@ -321,3 +366,28 @@ app.addEventListener('input',event=>{
   else return;
   setScenario(raw);
 });
+
+async function openFieldMap() {
+  const container=document.getElementById('field-map'),button=document.querySelector('[data-open-map]');
+  if(!container || button.disabled || mapController)return;
+  const request=++mapRequest;
+  button.disabled=true;button.textContent='Loading field map…';container.hidden=false;
+  const status=document.getElementById('map-status');status.textContent='Loading optional map. Coordinate entry remains available.';
+  try {
+    const controller=await createFieldMap({container,point:mapPoint(readFieldForm(document.getElementById('field-form'))),
+      onStatus:message=>{if(container.isConnected)status.textContent=message;},
+      onPick:point=>{
+        if(!container.isConnected)return;
+        for(const key of ['lat','lon']){
+          const input=document.getElementById(key);input.value=point[key].toFixed(5);input.dispatchEvent(new Event('input',{bubbles:true}));
+        }
+      }});
+    if(request!==mapRequest || !container.isConnected){controller?.destroy();return;}
+    mapController=controller;
+    document.getElementById('map-actions').hidden=false;
+    button.hidden=true;
+  } catch(error) {
+    if(request!==mapRequest || !container.isConnected)return;
+    container.hidden=true;button.disabled=false;button.textContent='Retry field map';status.textContent=error.message;
+  }
+}

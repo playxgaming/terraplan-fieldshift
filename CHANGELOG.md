@@ -1,5 +1,12 @@
 # Changelog
 
+## V3 — step 12 optional field map, regional labels and print — 2026-11-13
+
+- Added an opt-in Leaflet 1.9.4 field-location pin with integrity-pinned CDN files, OpenStreetMap attribution, keyboard centre selection, manual-coordinate sync and failure/retry states. Picks remain unsaved until Save field; route changes dispose maps and ignore stale loads.
+- Added Hindi, Gujarati and Marathi navigation/crop labels alongside English without rebuilding field forms or changing crop IDs, priorities or experiments. Stored label preference has validation/recovery.
+- Added browser printing with field/source context, wrapping timelines, preserved warnings and temporary disclosure expansion/restoration.
+- Added seven tests for catalog coverage, label storage, coordinate bounds, map lifecycle/loading failures and print-state restoration (97 total). Extended the public artifact allowlist.
+
 ## V3 — step 11 accessibility and Pages deployment — 2026-11-13
 
 - Audited mobile routes and keyboard controls; added consistent glossary hit areas and focus indicators for scrolling tables.
