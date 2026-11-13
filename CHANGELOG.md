@@ -1,5 +1,13 @@
 # Changelog
 
+## V3 — step 7 crop timelines — 2026-11-13
+
+- Added pure twelve-cell June–May timelines to current and both populated alternatives, with crop colours, hatched Bare months and native keyboard-accessible month disclosures.
+- Added historical heat, assumed-flowering heat, cold, dry-spell and heavy-rain markers with source labels, per-crop counts and explicit model assumptions. Heavy rain does not claim confirmed flooding.
+- Tracked qualifying dry runs across month boundaries; missing days break runs and missing weather stays unknown.
+- Preserved overlapping current crops and unknown calendars; explained windows outside the display without wrapping them backward. Timeline presentation leaves scoring and option selection unchanged.
+- Added 12 timeline tests (75 total). Full climate cards and monthly trends remain step 8.
+
 ## V3 — step 6 explained three-column comparison — 2026-11-13
 
 - Replaced comparison placeholders with current / Option A / Option B, assumed crop windows, photo/initial placeholders, scores, confidence reasons and water warnings.

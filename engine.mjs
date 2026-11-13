@@ -26,7 +26,11 @@ export const MODEL = Object.freeze({
   priority_weight: 0.5,
   benefit_water_ratio: 0.85,
   benefit_market_gain: 10,
+  flowering_fraction: 0.6,
 });
+
+const COMPLETE_DAY_FIELDS = Object.freeze(['rain','t2m','tmax','tmin','gwetroot','gwettop']);
+const completeClimateDay = row => Boolean(row && COMPLETE_DAY_FIELDS.every(key => typeof row[key] === 'number' && Number.isFinite(row[key]) && row[key] !== -999));
 
 export const CROP_SCHEMA = Object.freeze({
   month_min: 1, month_max: 12, attribute_min: 0, attribute_max: 10,
@@ -188,11 +192,10 @@ export function seasonClimate(climate, window, crop = window?.crop) {
   const first = new Date(Date.UTC(climate.ag_year, 5 + start, 1));
   const last = new Date(Date.UTC(climate.ag_year, 5 + end + 1, 0));
   const byDate = new Map(climate.daily.map(row => [row.date, row]));
-  const required = ['rain', 't2m', 'tmax', 'tmin', 'gwetroot', 'gwettop'];
   let days = 0, missing = 0, rain = 0, heat = 0, cold = 0, heavy = 0, wetness = 0, dry = 0, dryMax = 0;
   for (let day = first; day <= last; day = new Date(day.getTime() + 86400000)) {
     const row = byDate.get(day.toISOString().slice(0,10));
-    if (!row || !required.every(key => typeof row[key] === 'number' && Number.isFinite(row[key]) && row[key] !== -999)) { missing++; dry = 0; continue; }
+    if (!completeClimateDay(row)) { missing++; dry = 0; continue; }
     days++; rain += row.rain; wetness += row.gwetroot;
     if (row.tmax > crop.heat_threshold_c) heat++;
     if (row.tmin < crop.cold_threshold_c) cold++;
@@ -406,4 +409,98 @@ export function rotationAdvice(rotation, field, climate) {
   gaps.push('Sowing and harvest windows are crop-table assumptions, not dates reported from your field.');
   checks.push('Check local prices, varieties, seed availability and your water supply before changing the farm plan.');
   return { gaps: [...new Set(gaps)], checks: [...new Set(checks)] };
+}
+
+function timelineWindows(rotation) {
+  let previous = null;
+  return SEASONS.flatMap(season => {
+    const window = rotation?.seasons?.[season];
+    if (!window) return [];
+    let start = window.start_offset, end = window.end_offset;
+    if (!Number.isInteger(start) || !Number.isInteger(end)) {
+      if (Number.isInteger(window.start) && window.start >= 1 && window.start <= 12 && Number.isInteger(window.end) && window.end >= 1 && window.end <= 12) {
+        start = monthOffset(window.start);
+        if (previous !== null) while (start < previous) start += 12;
+        end = start + (window.end - window.start + 12) % 12;
+      } else { start = null; end = null; }
+    }
+    const known = !window.crop.unavailable && Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end >= start
+      && end - start < CROP_SCHEMA.month_max && end < CROP_SCHEMA.month_max * SEASONS.length;
+    if (known) previous = start;
+    return [{season,crop:window.crop,start,end,known}];
+  });
+}
+
+export function timelineWarnings(rotation) {
+  return timelineWindows(rotation).flatMap(window => !window.known
+    ? [`${window.season}: the calendar for ${window.crop.name} is unknown. Unoccupied months cannot be assumed Bare.`]
+    : window.end >= 12 ? [`${window.crop.name} extends outside this June–May display. Later months are not wrapped into the start of the year.`] : []);
+}
+
+/** Pure June→May cells. Risk markers describe complete historical daily records, not forecasts. */
+export function buildTimeline(rotation, climate) {
+  const windows = timelineWindows(rotation);
+  const weather = Number.isInteger(climate?.ag_year) && Array.isArray(climate.daily);
+  const daily = new Map((weather ? climate.daily : []).map(row => [row.date,row]));
+  const perWindow = windows.filter(window => window.known).map(window => {
+    const monthly = new Map();
+    for (let offset = window.start; offset <= window.end; offset++) monthly.set(offset, { days:0,missing:weather ? 0 : null,
+      heat_days:weather && Number.isFinite(window.crop.heat_threshold_c) ? 0 : null,
+      cold_days:weather && Number.isFinite(window.crop.cold_threshold_c) ? 0 : null,
+      heavy_rain:weather ? 0 : null, dry_spells:[], flags:[] });
+    const flowering = Number.isInteger(window.crop.duration_months) ? window.start + Math.floor(window.crop.duration_months * MODEL.flowering_fraction) : null;
+    if (weather) {
+      const first = new Date(Date.UTC(climate.ag_year,5 + window.start,1));
+      const last = new Date(Date.UTC(climate.ag_year,5 + window.end + 1,0));
+      let dry = [];
+      const finishDry = () => {
+        if (dry.length >= MODEL.vuln_dry_spell) {
+          const spell = {start_date:dry[0],end_date:dry.at(-1),days:dry.length};
+          // A qualifying run can cross a month boundary; mark every month it touches.
+          for (const [offset,metrics] of monthly) {
+            const start = new Date(Date.UTC(climate.ag_year,5 + offset,1)).toISOString().slice(0,10);
+            const end = new Date(Date.UTC(climate.ag_year,5 + offset + 1,0)).toISOString().slice(0,10);
+            if (spell.start_date <= end && spell.end_date >= start) metrics.dry_spells.push(spell);
+          }
+        }
+        dry = [];
+      };
+      for (let day = first; day <= last; day = new Date(day.getTime() + 86400000)) {
+        const date = day.toISOString().slice(0,10), row = daily.get(date);
+        const offset = (day.getUTCFullYear() - climate.ag_year) * 12 + day.getUTCMonth() - 5;
+        const metrics = monthly.get(offset);
+        if (!completeClimateDay(row)) { metrics.missing++; finishDry(); continue; }
+        metrics.days++;
+        if (metrics.heat_days !== null && row.tmax > window.crop.heat_threshold_c) metrics.heat_days++;
+        if (metrics.cold_days !== null && row.tmin < window.crop.cold_threshold_c) metrics.cold_days++;
+        if (row.rain >= MODEL.heavy_rain_mm) metrics.heavy_rain++;
+        if (row.rain < MODEL.dry_day_mm) dry.push(date);
+        else finishDry();
+      }
+      finishDry();
+    }
+    for (const [offset,metrics] of monthly) {
+      if (metrics.heat_days !== null && metrics.heat_days >= MODEL.vuln_heat_days) {
+        metrics.flags.push('heat');
+        if (offset === flowering) metrics.flags.push('heat at flowering');
+      }
+      if (metrics.cold_days !== null && metrics.cold_days >= MODEL.vuln_cold_days) metrics.flags.push('cold');
+      if (metrics.dry_spells.length) metrics.flags.push('dry');
+      if (metrics.heavy_rain !== null && metrics.heavy_rain >= MODEL.vuln_heavy_days) metrics.flags.push('flood');
+      if (!metrics.days) { metrics.heat_days = null; metrics.cold_days = null; metrics.heavy_rain = null; }
+    }
+    return {...window,monthly,flowering};
+  });
+  const uncertain = windows.some(window => !window.known);
+  return Array.from({length:12},(_,offset) => {
+    const active = perWindow.filter(window => offset >= window.start && offset <= window.end);
+    const assessments = active.map(window => ({season:window.season,crop:window.crop,...window.monthly.get(offset),assumed_flowering:offset === window.flowering}));
+    const date = weather ? new Date(Date.UTC(climate.ag_year,5 + offset,1)) : null;
+    return {month:calendarMonth(offset),year:date?.getUTCFullYear() ?? null,crop:active[0]?.crop ?? null,crops:active.map(window => window.crop),
+      bare:active.length === 0 && !uncertain,unknown_calendar:uncertain,overlap:active.length > 1,
+      flags:[...new Set(assessments.flatMap(assessment => assessment.flags))],assessments,
+      days:assessments.length ? Math.max(...assessments.map(assessment => assessment.days)) : 0,
+      missing:weather && assessments.length ? Math.max(...assessments.map(assessment => assessment.missing)) : null,
+      data_status:!active.length ? uncertain ? 'unknown-calendar' : 'bare' : !weather ? 'not-loaded' : assessments.some(assessment => assessment.missing > 0) ? 'partial' : 'complete' };
+  });
 }

@@ -235,6 +235,35 @@ summary:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
 .rotations-table th button { min-height: 2.75rem; border: 0; padding: 0.35rem; color: var(--ink); background: transparent; text-align: left; font-weight: 650; }
 .rotations-table th[scope="row"] { font-weight: 450; min-width: 15rem; }
 .rotations-table th[scope="row"] > span { display: block; color: var(--ink); font-weight: 750; margin-bottom: 0.4rem; }
+.timeline-panel { min-width: 0; max-width: 100%; padding-top: 1rem; margin-top: 1rem; border-top: 1px solid var(--line); }
+.timeline-panel > h3 { font-size: 1rem; margin-bottom: 0.6rem; }
+.timeline-panel > p { margin-block: 0.6rem; }
+.timeline-help { color: var(--muted); font-size: 0.76rem !important; }
+.timeline-strip { display: flex; align-items: flex-start; gap: 0.45rem; max-width: 100%; overflow-x: auto; padding: 0.45rem; border: 1px solid var(--line); border-radius: 5px; background: var(--paper); }
+.timeline-strip:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
+.timeline-cell { flex: 0 0 5.75rem; min-width: 0; border: 1px solid #aab79f; border-radius: 4px; overflow-wrap: anywhere; background: #e8eee1; }
+.timeline-cell[open] { flex-basis: 16rem; }
+.timeline-cell > summary { min-height: 8.5rem; padding: 0.5rem; list-style: none; }
+.timeline-cell > summary::-webkit-details-marker { display: none; }
+.timeline-cell > summary::after { display: block; content: 'Open month +'; font-size: 0.63rem; margin-top: 0.6rem; text-decoration: underline; }
+.timeline-cell[open] > summary::after { content: 'Close month −'; }
+.timeline-month { display: block; font-size: 0.85rem; font-weight: 750; }
+.timeline-month small { display: block; font-size: 0.65rem; font-weight: 450; }
+.timeline-crop { display: block; font-size: 0.74rem; font-weight: 600; line-height: 1.4; margin-top: 0.5rem; }
+.timeline-markers, .timeline-legend { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+.timeline-marker { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.66rem; line-height: 1.45; padding: 0.15rem 0.25rem; color: #3f402a; background: #fffdf1; border: 1px solid #c5bfa0; border-radius: 3px; }
+.timeline-caution { display: block; font-size: 0.66rem; font-weight: 650; margin-top: 0.4rem; }
+.timeline-month-details { padding: 0 0.65rem 0.65rem; border-top: 1px solid #b7c3ab; }
+.timeline-month-details p, .timeline-month-details li { font-size: 0.76rem; margin-top: 0.6rem; }
+.timeline-tone-0 { background: #e2edd9; }
+.timeline-tone-1 { background: #e2edf2; }
+.timeline-tone-2 { background: #f1e9ce; }
+.timeline-tone-3 { background: #eee2df; }
+.timeline-tone-4 { background: #e8e3f0; }
+.timeline-tone-5 { background: #dfede8; }
+.timeline-bare { background: repeating-linear-gradient(135deg,#e5e6de 0,#e5e6de 4px,#f6f6ee 4px,#f6f6ee 9px); }
+.timeline-unknown { background: #f3e9d9; border-style: dashed; }
+.timeline-overlap { border: 3px double #785b32; }
 @media (min-width: 54rem) {
   .season-climate-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
   .priority-layout { display: grid; grid-template-columns: minmax(0,0.8fr) minmax(0,1.2fr); align-items: start; gap: 2rem; }

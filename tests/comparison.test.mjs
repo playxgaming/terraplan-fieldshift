@@ -86,7 +86,7 @@ test('actual demo displays current and two distinct selected alternatives, each 
   assert(html.includes('877.4 mm'));
   assert(html.includes('Root-zone wetness (model)'));
   assert(html.includes('Not feasible without extra water'));
-  assert(!html.includes('timeline-strip'));
+  assert.equal((html.match(/class="timeline-strip"/g)??[]).length,3);
 });
 
 test('empty alternative slots explain missing results, and infeasible fallback labels remain visible',()=>{

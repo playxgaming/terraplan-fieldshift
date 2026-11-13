@@ -6,11 +6,11 @@ NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 
 V3 is a fresh build for small farms in western India. The planned workflow starts with the farmer's **current rotation** and compares it with two alternatives using stated rules and clearly labelled NASA evidence.
 
-## Current status: steps 1–6
+## Current status: steps 1–7
 
-This branch implements the first six build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
+This branch implements the first seven build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison with crop timelines. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
 
-Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. Timelines, monthly trends and scenarios are **not implemented yet**.
+Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. June–May crop timelines now show historical weather markers and known Bare months. Full climate cards, monthly trends and scenarios are **not implemented yet**.
 
 Choose **Start** for a blank field or **Load demo farm** for the shared Rajkot definition. Fill in the location, soil, water, equipment, market access and current crop for each season. Every season supports **Bare (no crop)**. Choose **Save field** to keep entries after reloading. Demo loading fills a draft and does not overwrite a saved field until you save it. Draft edits survive navigation between pages in the current tab, but unsaved edits do not survive a reload.
 
@@ -40,7 +40,7 @@ With Python on your PATH, `npm start` serves the same root at http://127.0.0.1:3
 | `#/field` | My field | Validated form, current-rotation pickers, save/reload and recovery messages |
 | `#/climate` | Your climate (NASA) | Explicit live/bundle loading, source labels, current-crop metrics, missing-data notes and retry |
 | `#/priorities` | Priorities | Six weights, live ranking preview, current score, water labels and confidence/rule reasons |
-| `#/compare` | Compare rotations | Current / Option A / Option B, ordered explanations, badges, sortable retained-rotation table and exclusions |
+| `#/compare` | Compare rotations | Current / Option A / Option B, crop timelines, ordered explanations, badges, sortable retained-rotation table and exclusions |
 | `#/whatif` | What if? | Scenario and sensitivity placeholder |
 | `#/evidence` | Evidence | Crop assumptions plus weather request URLs, retrieval times, source labels, parameter metadata and limitations |
 
@@ -76,7 +76,7 @@ npm run check
 npm run verify
 ```
 
-The suite contains 63 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 75 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 
@@ -152,17 +152,25 @@ Load matching weather, adjust weights on Priorities if desired, then open **Comp
 
 Each column always has these five sections in order: **Why**, **Evidence (NASA numbers)**, **Benefits**, **Information gaps**, **Check locally (KVK / agri officer)**. Evidence includes crop-window rain, heat/cold days, longest known dry spell, heavy-rain days, model root-zone wetness, complete/missing days and derived usable water/gap. NASA source/retrieval time and crop/model/irrigation provenance stay explicit. Missing weather remains Missing; partial rain is labelled partial.
 
-Badges are native keyboard-accessible disclosures with one-line explanations on tap/click and hover titles. Rules are: crop water need ≤85% of current; a nitrogen-fixer role; no cyclic consecutive same-family pair and at least one new family; a cover/deep-rooted role with fewer assumed Bare months; market priority ≥current+10. These describe potential matches to illustrative rules, not measured water savings, nitrogen, pest control, infiltration or profit. Unknown calendars prevent a Bare-month comparison. Coverage is counted as unique months so overlaps cannot inflate cover; this count is not the step-7 timeline.
+Badges are native keyboard-accessible disclosures with one-line explanations on tap/click and hover titles. Rules are: crop water need ≤85% of current; a nitrogen-fixer role; no cyclic consecutive same-family pair and at least one new family; a cover/deep-rooted role with fewer assumed Bare months; market priority ≥current+10. These describe potential matches to illustrative rules, not measured water savings, nitrogen, pest control, infiltration or profit. Unknown calendars prevent a Bare-month comparison. Coverage is counted as unique months so overlaps cannot inflate cover; this badge count is independent of the June–May display.
 
 Gap/check text identifies unverified or missing crop values, missing weather days, lack of soil test, coarse POWER coverage, assumed crop dates and absent local prices. Local checks name the crop and sowing month and, where known, each season's additional water gap beyond entered irrigation. Advice is a prompt to verify locally, not an instruction to plant.
 
 **See all rotations** opens a semantic sortable table containing current and every retained alternative, including infeasible and unscored rows. It marks current/A/B, exposes sort direction to assistive technology, preserves missing values last in both directions and keeps keyboard focus on the chosen sort button. Table sorting changes presentation only; it cannot change selected A/B or scores. On 360-pixel screens the columns stack and the table scrolls within its own labelled region. The **Excluded** disclosure lists every excluded calendar with its reasons. When weather has not loaded, the table still lists known calendars with unavailable numerical columns.
 
-Option IDs are derived anew from the current scoring result, so editing field entries or priorities cannot retain obsolete selected IDs. Sorting and page navigation do not clear priority weights or field/What-if storage. No timeline or vulnerable-window UI is included yet.
+Option IDs are derived anew from the current scoring result, so editing field entries or priorities cannot retain obsolete selected IDs. Sorting and page navigation do not clear priority weights or field/What-if storage. Timeline markers update from the same current rotations and matching weather.
+
+## Crop timelines
+
+Each populated comparison has twelve June–May cells. Crop names and colours identify occupied months; known Bare months have hatching and a text label. Scroll the labelled region horizontally and open any month with a tap, click or keyboard to see per-crop counts, missing days and qualifying dry-run dates. Overlapping current crops remain visible together. Unknown crop calendars cannot create false Bare months. Crops extending beyond May are explained and are never wrapped onto the first June.
+
+`buildTimeline(rotation, climate)` is pure. Each cell contains `month`, `crop`, `bare` and `flags`, with calendar year, overlapping crops, per-crop assessments and data status. Flags use complete historical daily records, the same six required parameters as seasonal metrics, and illustrative crop temperature thresholds. Heat needs at least 3 days above the threshold; cold needs 2 below; heavy rain needs 1 day at or above 64.5 mm. The internal `flood` flag is labelled **Heavy rain** in the UI: it does not establish flooding. Heat at flowering additionally needs the assumed month `start + floor(duration × 0.6)`, never observed flowering.
+
+A known dry run needs at least 10 consecutive days below 2.5 mm inside that crop window. Every month touched by the qualifying run is marked, including runs crossing a month boundary. Missing days break runs. Missing weather stays unknown rather than zero; no weather flag is placed in a Bare month. Markers describe historical area weather under rules, not forecasts or confirmed crop damage. Timeline tests cover threshold boundaries, cross-month runs, missing records, leap years, unknown calendars, overlap, year clipping, safe rendering and unchanged demo scoring.
 
 ## Next build step
 
-**Step 7:** the 12-month timeline with Bare months and vulnerable-window markers. Do one build step per prompt, test and check the app, then commit as specified in AGENTS.md.
+**Step 8:** full POWER climate cards, monthly trends, glossary and resolution notes. Do one build step per prompt, test and check the app, then commit as specified in AGENTS.md.
 
 Public GitHub Pages deployment is scheduled for step 11. This scaffold does not replace the existing V2 live Site.
 

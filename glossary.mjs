@@ -1,5 +1,7 @@
 /** Terms currently used in the app. The remaining climate glossary arrives in step 8. */
 export const GLOSSARY = Object.freeze({
+  flowering: Object.freeze({ title: 'Assumed flowering month', definition: 'TerraPlan estimates this month from the listed sowing month and crop duration using an illustrative rule. Actual flowering depends on the variety and conditions and has not been observed by this app.' }),
+  heat_stress: Object.freeze({ title: 'Heat stress marker', definition: 'A marker for days above the crop-table heat threshold. The threshold is illustrative; the marker does not confirm crop damage at your field.' }),
   benefit: Object.freeze({ title: 'Benefit badge', definition: 'A match to a stated comparison rule using crop-table roles and assumptions. A badge describes a potential benefit; it is not a measured change at your field.' }),
   infiltration: Object.freeze({ title: 'Infiltration', definition: 'Water moving into the soil. A crop-role and cover comparison may suggest a potential benefit, but TerraPlan has not measured how fast water enters your soil.' }),
   priority: Object.freeze({ title: 'Priority weight', definition: 'How much importance you give a factor in the comparison. A zero weight leaves it out of the priority component; it does not turn off climate or water checks.' }),
