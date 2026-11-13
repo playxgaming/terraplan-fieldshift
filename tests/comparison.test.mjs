@@ -77,7 +77,7 @@ test('actual demo displays current and two distinct selected alternatives, each 
   for(const column of columns) {
     assert.deepEqual([...column.matchAll(/data-explanation="([^"]+)"/g)].slice(0,5).map(match=>match[1]),expected);
     assert(column.includes('Confidence: Low'));
-    assert(column.includes('Initial placeholder'));
+    assert(column.includes('Representative photo'));
   }
   assert(html.includes('data-comparison="Your current"'));
   assert(html.includes('data-comparison="Option A"'));
@@ -153,7 +153,9 @@ test('comparison output escapes crop text and never fabricates photos, sources o
   assert(!html.includes('<img src=x'));
   assert(!html.includes('<script>'));
   assert(html.includes('&lt;img'));
-  assert(!html.includes('<img class="comparison-crop-photo"'));
+  assert(html.includes('<img class="comparison-crop-photo"'));
+  assert(html.includes('Representative photo'));
+  assert(html.includes('./assets/crops/groundnut.jpg'));
   assert(html.includes(climate.retrieved_at));
   assert(html.includes('Excluded (36)'));
 });

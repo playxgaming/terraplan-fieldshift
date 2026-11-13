@@ -1,0 +1,109 @@
+/** Representative crop photographs. Source and licence retained per image. */
+export const CROP_PHOTOS=Object.freeze({
+  "rice": {
+    "url": "./assets/crops/rice.jpg",
+    "credit": "Basile Morin",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Green_rice_sheaves_planted_in_a_paddy_field_with_long_shadows_at_golden_hour_in_Don_Det_Laos.jpg",
+    "description": "File:Green rice sheaves planted in a paddy field with long shadows at golden hour in Don Det Laos.jpg"
+  },
+  "wheat": {
+    "url": "./assets/crops/wheat.jpg",
+    "credit": "User:Bluemoose",
+    "licence": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:Wheat_close-up.JPG",
+    "description": "Wheat.",
+    "width": 640,
+    "height": 480
+  },
+  "sorghum": {
+    "url": "./assets/crops/sorghum.jpg",
+    "credit": "Evelyn Simak ",
+    "licence": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sorghum_crop_field_-_geograph.org.uk_-_5214668.jpg",
+    "description": "File:Sorghum crop field - geograph.org.uk - 5214668.jpg"
+  },
+  "maize": {
+    "url": "./assets/crops/maize.jpg",
+    "credit": "Jonathan Clitheroe ",
+    "licence": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Field_of_Maize_at_Burrow_Fields_-_geograph.org.uk_-_7821216.jpg",
+    "description": "File:Field of Maize at Burrow Fields - geograph.org.uk - 7821216.jpg"
+  },
+  "bajra": {
+    "url": "./assets/crops/bajra.jpg",
+    "credit": "Shanmugamp7",
+    "licence": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Pearl_millet_-_Pennisetum_glaucum.jpg",
+    "description": "Pennisetum glaucum - Pearl millet field",
+    "width": 640,
+    "height": 427
+  },
+  "soybean": {
+    "url": "./assets/crops/soybean.jpg",
+    "credit": "H. Zell",
+    "licence": "CC BY-SA 3.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Glycine_max_003.JPG",
+    "description": "Glycine max, Fabeceae, Soybean, fruits; Botanical Garden KIT, Karlsruhe, Germany.",
+    "width": 640,
+    "height": 480
+  },
+  "groundnut": {
+    "url": "./assets/crops/groundnut.jpg",
+    "credit": "Ibn Dagara",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Groundnuts_farm.jpg",
+    "description": "This is a groundnuts plant at its flowering stage, from the Northern Region of Ghana.",
+    "width": 640,
+    "height": 853
+  },
+  "chickpea": {
+    "url": "./assets/crops/chickpea.jpg",
+    "credit": "AlixSaz",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Ordinary_chickpeas_in_a_ceramic_bowl.jpg",
+    "description": "File:Ordinary chickpeas in a ceramic bowl.jpg"
+  },
+  "tur": {
+    "url": "./assets/crops/tur.jpg",
+    "credit": "Filo gèn'",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Cajanus_cajan,_flowers.jpg",
+    "description": "Pigeon-pea",
+    "width": 640,
+    "height": 853
+  },
+  "moong": {
+    "url": "./assets/crops/moong.jpg",
+    "credit": "Sanjay Acharya",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Green_Mung_Beans.jpg",
+    "description": "File:Green Mung Beans.jpg"
+  },
+  "cotton": {
+    "url": "./assets/crops/cotton.jpg",
+    "credit": "USDA NRCS Texas",
+    "licence": "Public domain",
+    "licence_url": "https://commons.wikimedia.org/wiki/File:Cotton_harvest_on_the_South_Plains_near_Lubbock,_Texas._Cotton_stripper_header_pulls_the_cotton_bolls_and_leaves_off_of_the_plant._(24749608509).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Cotton_harvest_on_the_South_Plains_near_Lubbock,_Texas._Cotton_stripper_header_pulls_the_cotton_bolls_and_leaves_off_of_the_plant._(24749608509).jpg",
+    "description": "Representative cotton bolls"
+  },
+  "fodder": {
+    "url": "./assets/crops/sorghum.jpg",
+    "credit": "Evelyn Simak ",
+    "licence": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sorghum_crop_field_-_geograph.org.uk_-_5214668.jpg",
+    "description": "Representative sorghum; illustrative fodder crop is fodder sorghum."
+  }
+});

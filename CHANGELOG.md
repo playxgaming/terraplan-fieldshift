@@ -1,5 +1,13 @@
 # Changelog
 
+## V3 Field Studio — separate visual release — 2026-11-13
+
+- Added a refined sidebar workspace, locally bundled typography and a field-first overview, with an original interactive WebGL farm, reduced-motion/visibility handling and a static fallback.
+- Added twelve representative crop-photo entries with Commons source links and per-image attribution/licence, without changing crop values or verification flags.
+- Improved mobile menu/tool placement, Compare density, relative-score visibility and direct plan jumps; source details and all five explanation sections remain available.
+- Rechecked all seven routes, validation, scoring, priorities, stale-weather protection, scenario persistence, regional labels and printing. Added two source/scene tests (99 total) and retained rendered design evidence.
+- Studio uses a separate branch and Site; the earlier V2 and public V3 publications remain unchanged.
+
 ## V3 — step 12 optional field map, regional labels and print — 2026-11-13
 
 - Added an opt-in Leaflet 1.9.4 field-location pin with integrity-pinned CDN files, OpenStreetMap attribution, keyboard centre selection, manual-coordinate sync and failure/retry states. Picks remain unsaved until Save field; route changes dispose maps and ignore stale loads.

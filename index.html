@@ -8,16 +8,18 @@
     <title>TerraPlan V3 · Welcome</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="studio.css">
   </head>
-  <body>
+  <body class="studio-shell">
     <a class="skip-link" href="#app">Skip to main content</a>
-    <header class="site-header">
+    <header class="site-header"><p class="sidebar-label">YOUR PLANNING WORKSPACE</p>
       <a class="brand" href="#/" aria-label="TerraPlan V3 welcome"><span class="brand-mark" aria-hidden="true">✳</span> TerraPlan <span class="version">V3</span></a>
-      <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav page-tools">Menu</button>
       <nav id="primary-nav" aria-label="Main navigation"></nav>
+      <div class="sidebar-bottom"><span class="orbit-mark" aria-hidden="true">⌁</span><p>A view from above.<br><strong>A decision on the ground.</strong></p><a href="#/evidence">Explore the evidence ↗</a><span class="local-device"><i></i> Your plans stay on this device</span></div>
     </header>
-    <div class="page-tools" data-language-static>
-      <div class="label-controls"><label for="label-language">Navigation &amp; crop labels</label><select id="label-language" aria-describedby="label-scope"><option value="en">English</option><option value="hi" lang="hi">हिन्दी · Hindi</option><option value="gu" lang="gu">ગુજરાતી · Gujarati</option><option value="mr" lang="mr">मराठी · Marathi</option></select><p id="label-scope">Local labels only. Explanations remain in English.</p><p id="label-status" class="small-note" role="status"></p></div>
+    <div class="page-tools" id="page-tools" data-language-static><div class="workspace-crumb"><span>Field Studio</span><span aria-hidden="true">/</span><strong id="route-crumb">Welcome</strong></div>
+      <div class="label-controls"><label for="label-language">Navigation &amp; crop labels</label><select id="label-language" aria-describedby="label-scope"><option value="en">English</option><option value="hi" lang="hi">हिन्दी · Hindi</option><option value="gu" lang="gu">ગુજરાતી · Gujarati</option><option value="mr" lang="mr">मराठी · Marathi</option></select><p id="label-scope">Labels only · explanations in English.</p><p id="label-status" class="small-note" role="status"></p></div>
       <button type="button" class="secondary" id="print-page">Print this page</button>
     </div>
     <div class="print-heading"><strong>TerraPlan V3 · Planning notes</strong><p id="print-context"></p></div>
@@ -33,7 +35,7 @@
     <main id="app" tabindex="-1"></main>
 
     <footer class="site-footer">
-      <div><strong>TerraPlan V3</strong><span>NASA Space Apps 2026 · Field Shift</span></div>
+      <div><strong>TerraPlan · Field Studio</strong><span>NASA Space Apps 2026 · Field Shift</span></div>
       <p>Steps 1–12 · Climate cards, crop comparisons, timelines and What-if experiments. All starter crop values are unverified.</p>
       <p>Planned data credits: NASA POWER (LaRC), GPM IMERG, SMAP, GRACE/GRACE-FO. POWER is connected. Satellite summary cards are available; sourced summary data have not been supplied.</p>
       <p>Built with help from OpenAI Codex · Team names: not supplied yet. Optional map: Leaflet 1.9.4 (BSD-2-Clause), © OpenStreetMap contributors.</p>

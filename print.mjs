@@ -10,7 +10,7 @@ export function installPrintView(win,root,contextElement,getContext) {
   const before=()=>{
     if(restore)return;
     contextElement.textContent=getContext();
-    restore=expandPrintDetails(root.querySelectorAll('.comparison-confidence,.benefit-badge,.trend-panel > details'));
+    restore=expandPrintDetails(root.querySelectorAll('.comparison-confidence,.benefit-badge,.trend-panel > details,.compare-context'));
   };
   const after=()=>{restore?.();restore=null;};
   win.addEventListener('beforeprint',before);win.addEventListener('afterprint',after);

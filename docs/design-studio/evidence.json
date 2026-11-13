@@ -1,0 +1,63 @@
+{
+  "contract": "contract.md: seven-route agricultural planner; independent Studio; existing scoring and originals preserved; 3D is illustrative; 360x800 and 1440x1000; accessible controls and partial labels.",
+  "targetViewports": [
+    "360x800",
+    "1440x1000"
+  ],
+  "accessibility": {
+    "status": "pass",
+    "evidence": "Checked native labels, zero unlabelled form controls on all seven routes, keyboard range focus retention, plan-jump heading focus, glossary/print state restoration, reduced-motion starts paused, and simulated no-WebGL fallback. Darkened supporting text below contrast target."
+  },
+  "responsive": {
+    "status": "pass",
+    "evidence": "Rendered at 360x800 and 1440x1000; no body overflow. Mobile tools moved into menu after capture; comparison notes grouped so first score fits in the initial viewport. All four language selections retain fitting layouts."
+  },
+  "contentStates": {
+    "loading": {
+      "status": "pass",
+      "evidence": "Bundled daily/monthly loading produces progress status before sourced climate cards; the 3D fallback occupies stable dimensions until initialization."
+    },
+    "empty": {
+      "status": "pass",
+      "evidence": "Blank field routes show a next action; Compare keeps current/A/B places without invented scores."
+    },
+    "error": {
+      "status": "pass",
+      "evidence": "Area 0 produces inline and summary validation errors, aria-invalid and no save. Map load failures/retries are covered by optional-feature tests; simulated no-WebGL retains the planner and static art."
+    },
+    "partial": {
+      "status": "pass",
+      "evidence": "Satellite cards explicitly say Not loaded yet; moved-location comparison shows Not scored and no stale markers. Missing weather and incomplete annual trends remain covered by regression tests."
+    },
+    "success": {
+      "status": "pass",
+      "evidence": "Saved Rajkot flow loads 17 cards, 36 timeline cells and scores 56.35/71.42/70.13; scenario/priority changes update correctly and reset reproduces those values."
+    },
+    "permission": {
+      "status": "pass",
+      "evidence": "Map remains opt-in with provider disclosure; no external map request before opening was observed. The separate Site is owner-private; no access change is made to existing sites."
+    }
+  },
+  "renderedEvidence": [
+    {
+      "viewport": "1440x1000",
+      "artifact": "welcome-desktop.png",
+      "observation": "Fresh desktop overview: sidebar, task actions, actual WebGL model and pause/rotate controls, source/illustration limitations. Reduced-motion preference starts paused."
+    },
+    {
+      "viewport": "360x800",
+      "artifact": "welcome-mobile.png",
+      "observation": "Mobile overview with compact menu, retained decision-support message, visible planning CTA and living-field illustration; no body overflow."
+    },
+    {
+      "viewport": "360x800",
+      "artifact": "compare-mobile.png",
+      "observation": "Mobile comparison after hierarchy revision: one-row actions, source disclosure, direct plan jumps and relative score in first viewport."
+    },
+    {
+      "viewport": "1440x1000",
+      "artifact": "compare-desktop.png",
+      "observation": "Populated comparison: three 367-pixel columns, all six sourced crop photos loaded, scores 56.35/71.42/70.13, no body overflow or console errors."
+    }
+  ]
+}

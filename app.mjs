@@ -1,3 +1,4 @@
+import {mountFieldScene} from './field-scene.mjs';
 import {LABELS,validLanguage,loadLabelLanguage,saveLabelLanguage,applyCropLabels} from './labels.mjs';
 import {mapPoint,createFieldMap} from './map.mjs';
 import {installPrintView} from './print.mjs';
@@ -39,6 +40,7 @@ const menuButton = document.getElementById('menu-toggle');
 const desktop = window.matchMedia('(min-width: 54rem)');
 let menuOpen = false;
 let mapController = null;
+let disposeScene = ()=>{};
 let mapRequest = 0;
 const languageControl = document.getElementById('label-language');
 languageControl.value = labelLanguage;
@@ -49,7 +51,7 @@ function renderNavigation() {
   navigation.replaceChildren(...ROUTES.map(item=>{
     const link=document.createElement('a');link.href='#'+item.path;
     if(route?.path===item.path)link.setAttribute('aria-current','page');
-    link.append(document.createTextNode(item.label));
+    const icon=document.createElement('span');icon.className='nav-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=navIcon(item.path);link.append(icon,document.createTextNode(item.label));
     const native=LABELS[labelLanguage]?.nav[item.path];
     if(native){const span=document.createElement('span');span.lang=labelLanguage;span.className='nav-native';span.textContent=native;link.append(span);}
     return link;
@@ -72,6 +74,7 @@ document.getElementById('print-page').addEventListener('click',()=>window.print(
 function syncMenu() {
   navigation.hidden = !desktop.matches && !menuOpen;
   menuButton.hidden = desktop.matches;
+  document.getElementById('page-tools').hidden = !desktop.matches && !menuOpen;
   menuButton.setAttribute('aria-expanded', String(!navigation.hidden));
   menuButton.textContent = menuOpen ? 'Close menu' : 'Menu';
 }
@@ -88,10 +91,14 @@ function render({ focus = false } = {}) {
   const scoring = ['/priorities','/compare'].includes(route?.path) && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
   const scenario = scenarioSettings ?? defaultScenario(field);
   const scenarioResult = route?.path === '/whatif' && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? experimentFor(field,generated,scenario) : null;
+  disposeScene();
   mapRequest++;
   mapController?.destroy();mapController=null;
   app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort, satelliteState, scenario, scenarioResult, scenarioError }) : renderNotFound();
   localize();
+  disposeScene=mountFieldScene(app);
+  document.getElementById('route-crumb').textContent=route?.label??'Page not found';
+  document.body.dataset.route=route?.path??'unknown';
   document.title = `TerraPlan V3 · ${route?.label ?? 'Page not found'}`;
   menuOpen = false;
   syncMenu();
@@ -111,7 +118,7 @@ menuButton.addEventListener('click', () => {
 });
 
 desktop.addEventListener('change', () => {
-  const moveFocus = !desktop.matches && navigation.contains(document.activeElement);
+  const moveFocus = !desktop.matches && (navigation.contains(document.activeElement) || document.getElementById('page-tools').contains(document.activeElement));
   menuOpen = false;
   syncMenu();
   if (moveFocus) menuButton.focus();
@@ -123,6 +130,8 @@ document.querySelector('.skip-link').addEventListener('click', event => {
 });
 
 document.addEventListener('click', event => {
+  const jump=event.target.closest('[data-jump-plan]');
+  if(jump && ['Your current','Option A','Option B'].includes(jump.dataset.jumpPlan)){const column=[...document.querySelectorAll('[data-comparison]')].find(element=>element.dataset.comparison===jump.dataset.jumpPlan);if(column){column.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});const heading=column.querySelector('h2');heading.tabIndex=-1;heading.focus({preventScroll:true});}}
   if (event.target.closest('[data-open-map]')) openFieldMap();
   if (event.target.closest('[data-map-centre]')) mapController?.chooseCentre();
   if (event.target.closest('[data-map-recentre]')) mapController?.setPoint(mapPoint(readFieldForm(document.getElementById('field-form'))));
@@ -269,10 +278,10 @@ render();
 
 async function refreshCrops() {
   cropData = { crops: [], errors: [], status: 'loading' };
-  if (['#/compare', '#/climate', '#/evidence', '#/priorities', '#/whatif'].includes(window.location.hash)) render();
+  if (['#/', '', '#/compare', '#/climate', '#/evidence', '#/priorities', '#/whatif'].includes(window.location.hash)) render();
   cropData = await loadCrops();
   // Avoid replacing an in-progress field form or stealing focus when the file arrives.
-  if (['#/compare', '#/climate', '#/evidence', '#/priorities', '#/whatif'].includes(window.location.hash)) render();
+  if (['#/', '', '#/compare', '#/climate', '#/evidence', '#/priorities', '#/whatif'].includes(window.location.hash)) render();
 }
 refreshCrops();
 
@@ -390,4 +399,9 @@ async function openFieldMap() {
     if(request!==mapRequest || !container.isConnected)return;
     container.hidden=true;button.disabled=false;button.textContent='Retry field map';status.textContent=error.message;
   }
+}
+
+function navIcon(path){
+  const paths={'/':'M3 10 12 3l9 7v10H6V10m3 10v-7h6v7','/field':'m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6m6-3v15m6-12v15','/climate':'M4 16a4 4 0 0 1 0-8 6 6 0 0 1 11-2 5 5 0 0 1 3 10M8 19v2m5-2v2m5-2v2','/priorities':'M5 3v18m7-18v18m7-18v18M2 8h6m1 8h6m1-10h6','/compare':'M3 4h7v16H3V4m11 0h7v16h-7V4M6 9h1m-1 5h1m10-5h1m-1 5h1','/whatif':'m7 3-4 4 4 4M3 7h11a6 6 0 0 1 0 12h-4m7-4 4 4-4 4','/evidence':'M3 4h7l2 2 2-2h7v16h-7l-2 2-2-2H3V4m9 2v16'};
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="${paths[path]??paths['/']}"/></svg>`;
 }

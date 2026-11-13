@@ -1,4 +1,8 @@
-# TerraPlan V3
+# TerraPlan V3 · Field Studio
+
+Studio: [TerraPlan V3 · Field Studio](https://terraplan-v3-studio.sarveshsehra1.chatgpt.site). This separate Site uses owner-private access, matching the earlier Site.
+
+The separately hosted Studio redesign lives on `codex/terraplan-v3-studio`. The original public V3 Pages site and earlier V2 Site remain unchanged. Studio adds a refined planning workspace, an original animated WebGL field and sourced crop photographs while preserving V3 calculations. See [the UI/UX and regression review](docs/design-studio/review.md).
 
 NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 
@@ -18,7 +22,7 @@ All numeric values must be finite: latitude −90…90, longitude −180…180, 
 
 Storage uses `terraplan.v3.field` with the envelope `{ "version": 1, "field": { ... } }`. Field saves write only this key. Weather requests write their own versioned cache keys; future What-if storage and unrelated keys are untouched. Corrupt, invalid or unsupported records show a recovery message and are kept unchanged until the user saves a valid replacement. Blocked storage or quota failures leave the editable draft visible and do not claim success. Browser storage is local to the origin/browser; it is not an account or a cloud backup.
 
-The 12-crop starter contains explicitly illustrative, AI-drafted values: every row has `verified: false` and `source_note: "illustrative (AI-drafted, not verified)"`. These are not NASA measurements or verified farming advice. Fodder means fodder sorghum. Photo URLs are empty; initials serve as placeholders. The daily and monthly demo files now contain actual NASA POWER responses plus retrieval metadata. The optional satellite file is a not-loaded manifest, with no invented observations. No missing value is shown as zero.
+The 12-crop starter contains explicitly illustrative, AI-drafted values: every row has `verified: false` and `source_note: "illustrative (AI-drafted, not verified)"`. These are not NASA measurements or verified farming advice. Fodder means fodder sorghum. The scientific crop rows retain empty photo URLs; a separate representative-photo registry supplies licensed imagery without changing crop inputs. The daily and monthly demo files now contain actual NASA POWER responses plus retrieval metadata. The optional satellite file is a not-loaded manifest, with no invented observations. No missing value is shown as zero.
 
 ## Run locally
 
@@ -76,7 +80,7 @@ npm run check
 npm run verify
 ```
 
-The suite contains 97 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 99 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 
@@ -196,18 +200,24 @@ The header selector adds Hindi, Gujarati or Marathi navigation and crop names al
 
 ## Deployment and verification
 
-Public site: [TerraPlan V3 on GitHub Pages](https://playxgaming.github.io/terraplan-fieldshift/). Repository source stays private; the existing V2 Site and main branch are preserved. The workflow publishes the `codex/terraplan-v3` branch after verification. Each deployed artifact includes `build-info.json` with its source commit and version.
+Public site: [TerraPlan V3 on GitHub Pages](https://playxgaming.github.io/terraplan-fieldshift/). Repository source stays private; the existing V2 Site and main branch are preserved. Studio is hosted separately through Sites and does not trigger the existing Pages branch workflow. The workflow publishes the `codex/terraplan-v3` branch after verification. Each deployed artifact includes `build-info.json` with its source commit and version.
 
 `npm run package:site` creates a fresh `.pages-dist` directory containing only allowlisted app modules, public demo JSON, licence and build metadata. It refuses to reuse an existing output directory. No repository history, instructions, tests, credentials or private hosting files are published. All imports and asset URLs are relative so project-site paths work. No build or runtime dependency is required.
 
-The 97-test suite checks prior field/generator/scoring/timeline contracts plus trend arithmetic and units, satellite provenance/location boundaries, scenario validation/storage/purity/fixed IDs, exact historical recalculation and deployment contents. Browser verification covers the demo flow, 360 px reflow, desktop columns, keyboard ranges, native month disclosures, horizontal data regions, glossary dismissal/focus and route/menu labels. Full certification with every screen reader/device is not claimed.
+The 99-test suite checks prior field/generator/scoring/timeline contracts plus trend arithmetic and units, satellite provenance/location boundaries, scenario validation/storage/purity/fixed IDs, exact historical recalculation and deployment contents. Browser verification covers the demo flow, 360 px reflow, desktop columns, keyboard ranges, native month disclosures, horizontal data regions, glossary dismissal/focus and route/menu labels. Full certification with every screen reader/device is not claimed.
 
-Steps 1–12 are implemented, including the optional map, regional labels and print view. Crop values and satellite observations still need the data/agronomy team; photos remain explicitly labelled initial placeholders until licensed images are supplied.
+Steps 1–12 are implemented, including the optional map, regional labels and print view. Crop values and satellite observations still need the data/agronomy team; Studio supplies a separate registry of twelve representative crop-image entries, with source and licence links on Evidence. Scientific crop values remain unchanged.
 
 ## Honesty and credits
 
 Scores must be relative comparisons from stated rules, never yield/profit predictions. Crop constants need local agricultural validation. NASA/model/satellite/ground sources must be distinguished when their actual integrations are added.
 
-Connected data: NASA POWER (LaRC), with MERRA-2 model soil wetness. Planned satellite credits: GPM IMERG, SMAP and GRACE/GRACE-FO. No V2 photographs or external libraries are bundled. Optional Leaflet 1.9.4 loads from unpkg only when the field map is opened; it is covered by the [BSD-2-Clause licence](https://github.com/Leaflet/Leaflet/blob/v1.9.4/LICENSE). Map tiles are © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright). Built with help from OpenAI Codex. Team names have not been supplied yet.
+Connected data: NASA POWER (LaRC), with MERRA-2 model soil wetness. Planned satellite credits: GPM IMERG, SMAP and GRACE/GRACE-FO. No V2 photographs or application code are reused. Representative crop images were newly sourced from Commons with their licences retained; the two local fonts include OFL files under assets/fonts. Optional Leaflet 1.9.4 loads from unpkg only when the field map is opened; it is covered by the [BSD-2-Clause licence](https://github.com/Leaflet/Leaflet/blob/v1.9.4/LICENSE). Map tiles are © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright). Built with help from OpenAI Codex. Team names have not been supplied yet.
 
 Original project software is covered by [LICENSE](LICENSE). Provider data and future photos retain their own terms. Independent hackathon project; no NASA endorsement is claimed.
+
+## Studio design and 3D boundaries
+
+`studio.css` refines the existing route views without replacing engine/data logic. `field-scene.mjs` is an original procedural WebGL scene: no Three.js, model CDN or tracking request. Wind and season appearance affect illustration pixels only. Motion pauses offscreen and on hidden tabs; reduced-motion preferences start paused. Devices without usable WebGL keep a local SVG fallback. All planner routes remain usable. English nav/crop text remains present alongside regional labels.
+
+Crop-photo sources and licences are preserved in `assets/photo-credits.json` and on Evidence. Photographs are representative, not field observations; images may depict a plant, seed or harvested crop. Font licences are in `assets/fonts/OFL-*.txt`. The public packager allowlists all runtime modules and these assets, excluding repository files and review screenshots.
