@@ -1,0 +1,4 @@
+// Directory entrypoint for the specification's exact command: node --test tests/
+import './engine.test.mjs';
+import './data.test.mjs';
+import './routes.test.mjs';

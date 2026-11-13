@@ -18,4 +18,4 @@ __pycache__/
 Thumbs.db
 .vscode/
 
-# dist/ contains the tracked buildless application source; do not ignore it.
+# V3 uses root-level HTML, CSS and ES modules. Public data JSON stays tracked.

@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   verify:
-    name: Source, assets and tests
+    name: V3 scaffold and tests
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

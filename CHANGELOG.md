@@ -1,5 +1,14 @@
 # Changelog
 
+## V3 — step 1 scaffold — 2026-11-13
+
+- Started a fresh root-level HTML/CSS/ES-module application from the supplied AGENTS.md.
+- Added seven routes, responsive navigation, unknown-route recovery and the shared decision-support banner.
+- Added honest placeholder screens, the single Rajkot demo definition and not-loaded JSON placeholders.
+- Added nine scaffold tests, syntax/JSON checks and initial KVK/rotation glossary popups.
+- Field entry, persistence, crop generation, NASA retrieval, scoring and deployment are deferred to their specified build steps.
+- V2 application code and assets remain available in main/history and were not copied into the V3 runtime.
+
 ## 2.1.0 — GitHub project packaging — 2026-11-13
 
 - Added a standalone GitHub distribution, project metadata, dependency-free Node preview, npm scripts and lockfile.

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#244938">
+    <meta name="description" content="TerraPlan V3 helps farmers compare their current crop rotation with alternatives using stated rules and NASA weather evidence.">
+    <title>TerraPlan V3 · Welcome</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Skip to main content</a>
+    <header class="site-header">
+      <a class="brand" href="#/" aria-label="TerraPlan V3 welcome"><span class="brand-mark" aria-hidden="true">✳</span> TerraPlan <span class="version">V3</span></a>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      <nav id="primary-nav" aria-label="Main navigation"></nav>
+    </header>
+
+    <aside class="decision-banner" aria-label="Decision support and local advice">
+      <span class="banner-mark" aria-hidden="true">i</span>
+      <div>
+        <p><strong>TerraPlan supports your decision. It does not replace your judgment or local advice.</strong></p>
+        <p>Supports your decision — doesn't replace it. Check with your <button class="glossary-link" type="button" data-glossary="kvk" aria-label="What is a KVK?">KVK</button> or agri officer.</p>
+      </div>
+    </aside>
+
+    <main id="app" tabindex="-1"></main>
+
+    <footer class="site-footer">
+      <div><strong>TerraPlan V3</strong><span>NASA Space Apps 2026 · Field Shift</span></div>
+      <p>Step 1 scaffold · No crop scores or NASA measurements are loaded.</p>
+      <p>Planned data credits: NASA POWER (LaRC), GPM IMERG, SMAP, GRACE/GRACE-FO. These integrations are not connected in this step.</p>
+      <p>Built with help from OpenAI Codex · Team names: not supplied yet.</p>
+    </footer>
+
+    <dialog id="glossary-dialog" aria-labelledby="glossary-title">
+      <div class="dialog-heading"><h2 id="glossary-title"></h2><button id="glossary-close" class="secondary" type="button">Close</button></div>
+      <p id="glossary-definition"></p>
+    </dialog>
+    <noscript><p class="noscript-note">Turn on JavaScript to use the page navigation. No data are loaded without it.</p></noscript>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>
