@@ -29,7 +29,7 @@ test('comparison placeholders keep the current rotation and required explanation
   const html = resolveRoute('#/compare').render();
   for (const label of ['Your current', 'Option A', 'Option B', 'Why', 'Evidence (NASA numbers)', 'Benefits', 'Information gaps', 'Check locally (KVK / agri officer)']) assert(html.includes(label));
   assert.equal((html.match(/Not calculated yet/g) || []).length, 3);
-  assert.equal((html.match(/No score or confidence label is available/g) || []).length, 3);
+  assert.equal((html.match(/This column is not connected yet. Use Priorities for scores and confidence./g) || []).length, 3);
 });
 
 test('all screens share the persistent decision-support banner outside their route content', async () => {
@@ -38,7 +38,7 @@ test('all screens share the persistent decision-support banner outside their rou
   assert.match(shell, /<main id="app" tabindex="-1"><\/main>/);
   assert(shell.indexOf('decision-banner') < shell.indexOf('<main'));
   assert.match(shell, /data-glossary="kvk"/);
-  assert.match(shell, /Crop scoring is not implemented yet/);
+  assert.match(shell, /Relative scoring and priority sliders available/);
 });
 
 test('terms used in the scaffold have definitions and unsupported terms are rejected', () => {
@@ -57,7 +57,7 @@ test('generation preview keeps current warnings and exclusions visible without s
   assert(html.includes('Rice on sandy soil loses too much water'));
   assert(html.includes(`Excluded (${generated.excluded.length})`));
   assert(html.includes('unranked'));
-  assert(html.includes('not been scored or checked against weather'));
+  assert(html.includes('No scores are displayed in this calendar preview'));
   const failed = resolveRoute('#/compare').render({ generated:generateRotations([],field),field,cropData:{crops:[],errors:[],status:'error'} });
   assert(failed.includes('Your current · retained for comparison'));
   assert(failed.includes('crop data are unavailable'));
@@ -71,5 +71,5 @@ test('Evidence reports skipped rows, escapes diagnostics and labels every starte
   assert.equal((html.match(/illustrative \(AI-drafted, not verified\)/g) ?? []).length, 13);
   assert(html.includes('Row 13 (&lt;bad&gt;)'));
   assert(!html.includes('<script>'));
-  assert(html.includes('all starter-based results will be Low'));
+  assert(html.includes('All starter-based results are Low'));
 });

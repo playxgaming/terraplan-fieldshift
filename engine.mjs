@@ -1,6 +1,6 @@
-import { FIELD_CHOICES, SEASONS } from './field.mjs';
+import { FIELD_CHOICES, FIELD_LIMITS, SEASONS } from './field.mjs';
 
-/** Scoring is deliberately deferred to step 5. */
+/** Illustrative comparison rules, not yield or profit predictions. */
 export const MODEL = Object.freeze({
   effective_rain_factor: 0.65,
   dry_day_mm: 2.5,
@@ -14,6 +14,16 @@ export const MODEL = Object.freeze({
   vuln_cold_days: 2,
   vuln_dry_spell: 10,
   vuln_heavy_days: 1,
+  priority_min: 0,
+  priority_max: 5,
+  priority_default: 3,
+  priority_zero_score: 50,
+  score_min: 0,
+  score_max: 100,
+  climate_mean_weight: 0.5,
+  climate_min_weight: 0.5,
+  climate_weight: 0.5,
+  priority_weight: 0.5,
 });
 
 export const CROP_SCHEMA = Object.freeze({
@@ -193,3 +203,146 @@ export function seasonClimate(climate, window, crop = window?.crop) {
     days, missing, start_date: first.toISOString().slice(0,10), end_date: last.toISOString().slice(0,10),
     reason: missing ? 'Days with any missing required value are left out of every metric; missing days break dry spells. Rain is a partial sum when days are missing.' : '' };
 }
+
+export const PRIORITIES = Object.freeze([
+  { key: 'water', label: 'Water use', description: 'Give more weight to lower total crop water needs.' },
+  { key: 'forage', label: 'Forage', description: 'Give more weight to crops that can provide animal feed.' },
+  { key: 'n_fixation', label: 'Nitrogen fixation', description: 'Give more weight to crops with a nitrogen-fixing role.' },
+  { key: 'erosion_cover', label: 'Erosion control', description: 'Give more weight to the illustrative soil-cover score.' },
+  { key: 'organic_matter', label: 'Organic matter', description: 'Give more weight to the illustrative soil organic-matter score.' },
+  { key: 'market', label: 'Market', description: 'Give more weight to the crop-table market score. No local price data are included.' },
+].map(Object.freeze));
+
+export const defaultPriorities = () => Object.fromEntries(PRIORITIES.map(({key}) => [key, MODEL.priority_default]));
+
+export function validatePriorities(input) {
+  const errors = {}, priorities = {};
+  for (const { key } of PRIORITIES) {
+    const value = input?.[key];
+    if (!Number.isInteger(value) || value < MODEL.priority_min || value > MODEL.priority_max) errors[key] = `Choose a whole number from ${MODEL.priority_min} to ${MODEL.priority_max}.`;
+    else priorities[key] = value;
+  }
+  return Object.keys(errors).length ? { valid: false, errors, priorities: null } : { valid: true, errors, priorities };
+}
+
+const clampScore = value => Math.max(MODEL.score_min, Math.min(MODEL.score_max, value));
+const mean = values => values.reduce((sum, value) => sum + value, 0) / values.length;
+
+/** Missing climate is unknown, never a zero-rain observation or a neutral fitted score. */
+export function seasonFit(metrics, crop, irrigation) {
+  const unknown = reason => ({ effective_rain: null, usable_water: null, water_fit: null, heat_fit: null, cold_fit: null,
+    season_fit: null, water_gap: null, water_gap_ratio: null, feasible: null, reason });
+  if (!metrics || !crop || crop.unavailable || !Number.isFinite(crop.water_need_mm) || crop.water_need_mm <= 0
+    || !Number.isFinite(irrigation) || irrigation < FIELD_LIMITS.irrigation_mm.min || irrigation > FIELD_LIMITS.irrigation_mm.max) return unknown('Crop water need or irrigation is unavailable or outside its allowed range.');
+  if (!Number.isInteger(metrics.days) || metrics.days <= 0 || !Number.isFinite(metrics.rain_mm) || metrics.rain_mm < 0
+    || !Number.isInteger(metrics.heat_days) || metrics.heat_days < 0 || metrics.heat_days > metrics.days
+    || !Number.isInteger(metrics.cold_days) || metrics.cold_days < 0 || metrics.cold_days > metrics.days) return unknown('No complete daily climate data are available for this crop window.');
+  const effective_rain = metrics.rain_mm * MODEL.effective_rain_factor;
+  const usable_water = effective_rain + irrigation;
+  const water_fit = Math.min(MODEL.score_max, usable_water / crop.water_need_mm * MODEL.score_max);
+  const heat_fit = MODEL.score_max * (1 - metrics.heat_days / metrics.days);
+  const cold_fit = MODEL.score_max * (1 - metrics.cold_days / metrics.days);
+  const water_gap = Math.max(0, crop.water_need_mm - usable_water);
+  return { effective_rain, usable_water, water_fit, heat_fit, cold_fit, season_fit: mean([water_fit,heat_fit,cold_fit]),
+    water_gap, water_gap_ratio: water_gap / crop.water_need_mm, feasible: water_gap <= MODEL.infeasible_gap * crop.water_need_mm,
+    reason: metrics.missing ? 'Water and temperature fits use the available complete days only. Missing days lower confidence; the rain total is partial.' : '' };
+}
+
+function confidenceFor(rotation, field, metrics) {
+  const reasons = [];
+  let low = false, count = 0;
+  for (const season of SEASONS) {
+    const window = rotation.seasons[season];
+    if (!window) continue;
+    count++;
+    const crop = window.crop, data = metrics[season];
+    if (crop.unavailable) { low = true; reasons.push(`${season}: crop values or calendar are unavailable.`); continue; }
+    if (crop.verified !== true) { low = true; reasons.push(`${crop.name}: crop values are unverified.`); }
+    if (crop.regional_common !== true) { low = true; reasons.push(`${crop.name}: not listed as regionally common.`); }
+    if (!crop.seasons.includes(season) || !crop.start_months.includes(window.start)) { low = true; reasons.push(`${crop.name}: outside its listed season or sowing months.`); }
+    if (!data || data.days === 0 || data.missing === null || data.missing > 0) {
+      low = true; reasons.push(`${season}: ${data?.missing ?? 'an unknown number of'} missing days, or no usable climate window.`);
+    }
+  }
+  if (!count) { low = true; reasons.push('All seasons are Bare; there is no crop climate window to assess.'); }
+  if (!low) reasons.push('Every crop window has complete daily data; all crop values are verified and listed as regionally common.');
+  reasons.push(field.soil_tested ? 'A soil test report is available.' : 'Soil type only; no soil test report is available.');
+  return { level: low ? 'Low' : field.soil_tested ? 'High' : 'Medium', reasons: [...new Set(reasons)] };
+}
+
+/** Compute weather-dependent values once; slider changes need only rankRotations(). */
+export function prepareScoring(generated, field, climate) {
+  const fitCache = new Map();
+  const rows = generated.rotations.map(rotation => {
+    const season_metrics = {}, season_fits = {};
+    for (const season of SEASONS) {
+      const window = rotation.seasons[season];
+      if (!window) { season_metrics[season] = null; season_fits[season] = null; continue; }
+      const key = JSON.stringify([season,window.crop.id,window.start_offset,window.end_offset,window.start,window.end]);
+      if (!fitCache.has(key)) {
+        const metrics = seasonClimate(climate,window);
+        fitCache.set(key, { metrics, fit: seasonFit(metrics,window.crop,field.irrigation_mm[season]) });
+      }
+      const { metrics,fit } = fitCache.get(key);
+      season_metrics[season] = metrics; season_fits[season] = fit;
+    }
+    const active = SEASONS.filter(season => rotation.seasons[season]);
+    const known = active.every(season => !rotation.seasons[season].crop.unavailable);
+    const water_need_mm = known ? active.reduce((sum,season) => sum + rotation.seasons[season].crop.water_need_mm,0) : null;
+    const fits = active.map(season => season_fits[season].season_fit);
+    const climate_fit = fits.length && fits.every(Number.isFinite)
+      ? MODEL.climate_mean_weight * mean(fits) + MODEL.climate_min_weight * Math.min(...fits) : null;
+    const failed = active.filter(season => season_fits[season].feasible === false);
+    const feasible = failed.length ? false : active.length && active.every(season => season_fits[season].feasible === true) ? true : null;
+    const feasibility_reasons = failed.map(season => `${season}: water gap ${Number(season_fits[season].water_gap.toFixed(2))} mm exceeds ${MODEL.infeasible_gap * 100}% of ${rotation.seasons[season].crop.water_need_mm} mm crop need.`);
+    if (active.some(season => season_fits[season].feasible === null) || !active.length) feasibility_reasons.push('Water feasibility cannot be determined for every crop window.');
+    const priority_values = Object.fromEntries(PRIORITIES.filter(({key}) => key !== 'water').map(({key}) => [key,
+      known ? SEASONS.reduce((sum,season) => sum + (rotation.seasons[season]?.crop[key] ?? 0),0) / SEASONS.length * MODEL.score_max / CROP_SCHEMA.attribute_max : null]));
+    return { ...rotation, season_metrics, season_fits, water_need_mm, climate_fit, priority_values, feasible, feasibility_reasons,
+      feasibility_label: feasible === false ? 'Not feasible without extra water' : feasible === true ? 'Passes the water-gap rule' : 'Water feasibility unknown',
+      confidence: confidenceFor(rotation,field,season_metrics),
+      unscored_reasons: climate_fit === null ? ['A crop window or its climate fit is unavailable; no total score can be calculated.'] : [] };
+  });
+  const max_rotation_water_need = Math.max(0,...rows.map(row => row.water_need_mm ?? 0));
+  const cover_possible = Object.fromEntries(SEASONS.map(season => [season,rows.some(row => (!row.is_current || !row.warnings.length)
+    && row.seasons[season] && row.season_fits[season].water_fit !== null && row.season_fits[season].water_fit >= MODEL.cover_possible_fit)]));
+  const rotations = rows.map(row => {
+    const rule_reasons = [];
+    const add = (code,delta,text) => rule_reasons.push({code,delta,text});
+    SEASONS.forEach((season,index) => {
+      const next = SEASONS[(index + 1) % SEASONS.length];
+      const crop = row.seasons[season]?.crop, after = row.seasons[next]?.crop;
+      const pair = `${season} → ${index === SEASONS.length - 1 ? 'next ' : ''}${next}`;
+      if (crop && after && !crop.unavailable && !after.unavailable) {
+        if (crop.family === after.family) add('same-family',-MODEL.penalty_same_family,`${pair}: ${crop.name} then ${after.name}: same family, pest cycle not broken (−${MODEL.penalty_same_family}).`);
+        if (crop.heavy_feeder && after.roles.includes('nitrogen-fixer')) add('nitrogen-after-heavy',MODEL.bonus_nfixer_after_heavy,`${pair}: ${after.name} adds nitrogen after ${crop.name}, a crop with high nutrient demand (+${MODEL.bonus_nfixer_after_heavy}).`);
+      }
+      if (!row.seasons[season] && cover_possible[season]) add('bare-when-possible',-MODEL.penalty_bare_when_possible,`${season} is Bare while some allowed crop window reaches water fit ${MODEL.cover_possible_fit} or more (−${MODEL.penalty_bare_when_possible}).`);
+    });
+    return { ...row, priority_values: { ...row.priority_values, water: row.water_need_mm !== null && max_rotation_water_need > 0 ? clampScore(MODEL.score_max - row.water_need_mm / max_rotation_water_need * MODEL.score_max) : null },
+      rule_adjust: rule_reasons.reduce((sum,reason) => sum + reason.delta,0), rule_reasons };
+  });
+  return { rotations, excluded: generated.excluded, max_rotation_water_need, cover_possible };
+}
+
+export function rankRotations(prepared, weights = defaultPriorities()) {
+  const validation = validatePriorities(weights);
+  if (!validation.valid) throw new RangeError('Priority weights must all be whole numbers from 0 to 5.');
+  const weight_sum = Object.values(validation.priorities).reduce((sum,weight) => sum + weight,0);
+  const scored = prepared.rotations.map(rotation => {
+    const weighted = PRIORITIES.filter(({key}) => weights[key] > 0);
+    const priority_score = weight_sum === 0 ? MODEL.priority_zero_score : weighted.every(({key}) => Number.isFinite(rotation.priority_values[key]))
+      ? weighted.reduce((sum,{key}) => sum + weights[key] * rotation.priority_values[key],0) / weight_sum : null;
+    const total = rotation.climate_fit !== null && priority_score !== null ? clampScore(MODEL.climate_weight * rotation.climate_fit + MODEL.priority_weight * priority_score + rotation.rule_adjust) : null;
+    return { ...rotation, priority_score, total };
+  });
+  const ranked = scored.filter(rotation => !rotation.is_current).sort((a,b) => (b.total ?? -1) - (a.total ?? -1) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const eligible = ranked.filter(rotation => rotation.total !== null);
+  const passing = eligible.filter(rotation => rotation.feasible === true), failing = eligible.filter(rotation => rotation.feasible === false);
+  const options = [...passing,...failing].slice(0,2);
+  return { current: scored.find(rotation => rotation.is_current) ?? null, ranked, options, weights: validation.priorities,
+    excluded: prepared.excluded, max_rotation_water_need: prepared.max_rotation_water_need,
+    selection_note: options.length < 2 ? 'Fewer than two scored alternatives are available; missing scores are not invented.' : passing.length < 2 ? 'Fewer than two alternatives pass the water-gap rule. The remaining place is filled by the highest-scoring infeasible alternative, with its warning kept.' : 'The two highest-scoring alternatives that pass the water-gap rule are available for the next comparison step.' };
+}
+
+export const scoreRotations = (generated,field,climate,weights = defaultPriorities()) => rankRotations(prepareScoring(generated,field,climate),weights);

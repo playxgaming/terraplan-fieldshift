@@ -1,5 +1,9 @@
 /** Terms currently used in the app. The remaining climate glossary arrives in step 8. */
 export const GLOSSARY = Object.freeze({
+  priority: Object.freeze({ title: 'Priority weight', definition: 'How much importance you give a factor in the comparison. A zero weight leaves it out of the priority component; it does not turn off climate or water checks.' }),
+  confidence: Object.freeze({ title: 'Confidence', definition: 'How complete and verified the inputs are under these rules. Low confidence means important uncertainties remain; even High does not guarantee that a crop will suit your field.' }),
+  feasibility: Object.freeze({ title: 'Water feasibility', definition: 'A rule check comparing estimated usable water with crop water need. Passing this check does not confirm your actual water supply or establish local crop suitability.' }),
+  effective_rain: Object.freeze({ title: 'Effective rain', definition: 'The portion of recorded rain the model treats as usable by a crop. TerraPlan uses an illustrative fraction; actual usable rain depends on soil, slope, timing and management.' }),
   dry_spell: Object.freeze({ title: 'Dry spell', definition: 'Consecutive days with less rain than the rule threshold. A missing day breaks the known run; it is not assumed dry.' }),
   heavy_rain: Object.freeze({ title: 'Heavy rain', definition: 'A day whose rainfall meets or exceeds the threshold used by these rules. Area rainfall may differ from rain at your field.' }),
   soil_wetness: Object.freeze({ title: 'Soil wetness', definition: 'A model estimate of how wet the soil is relative to its capacity. POWER uses the MERRA-2 model; this is not a direct satellite or field measurement.' }),

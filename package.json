@@ -1,8 +1,8 @@
 {
   "name": "terraplan-fieldshift",
-  "version": "3.0.0-step.4",
+  "version": "3.0.0-step.5",
   "private": true,
-  "description": "A fresh TerraPlan V3 build: farmer current rotation, transparent NASA evidence and two alternatives. Step 4 NASA climate loading and offline fallback.",
+  "description": "A fresh TerraPlan V3 build: farmer current rotation, transparent NASA evidence and two alternatives. Step 5 scoring, water feasibility, confidence and priority sliders.",
   "type": "module",
   "license": "MIT",
   "engines": { "node": ">=22" },

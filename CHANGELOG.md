@@ -1,5 +1,15 @@
 # Changelog
 
+## V3 — step 5 scoring, feasibility, confidence and priorities — 2026-11-13
+
+- Added pure seasonal fits, weakest-season weighted climate fit, six normalized priorities, cyclic rule adjustments with reasons and bounded relative scores.
+- Added strict water-gap feasibility, confidence levels with explanations and retention of infeasible/unscored/current rows.
+- Added feasible-first comparison-candidate selection with labelled infeasible fallback; the full comparison display remains step 6.
+- Added six accessible 0–5 sliders, tab-local weights, reset and an immediately updated ranking preview that preserves the range controls/focus.
+- Cached weather-dependent scoring preparation; weight changes recompute only the ranking component. Field saves and route changes preserve weights and leave What-if storage alone.
+- Printed model constants and formulas on Evidence with illustrative labels. Starter crop values remain unverified and all starter-based confidence is Low.
+- Added 13 scoring/view tests (53 total): arithmetic, weakest season, Bare normalization, priority reversals, zero weights, rule reasons, thresholds, confidence, candidate fallback, clamps, unknowns and purity.
+
 ## V3 — step 4 NASA climate loading and offline fallback — 2026-11-13
 
 - Added user-triggered daily/monthly POWER requests, 20-second aborts, validated versioned caches and live→cache→matching-Rajkot-bundle fallback.

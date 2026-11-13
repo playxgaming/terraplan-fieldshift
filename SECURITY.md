@@ -1,6 +1,8 @@
 # Security and data boundaries
 
-V3 step 4 is a static app with validated field entry and browser-local persistence. It has no login, backend or user file imports. User-triggered weather requests go to NASA POWER. Field names and loaded metadata are escaped when rendered. Field/cache records are versioned and validated before use. Storage failures show a message instead of claiming success; corrupt records are not deleted by fallback handling.
+V3 step 5 is a static app with validated field entry, browser-local persistence and locally computed relative scores. It has no login, backend or user file imports. User-triggered weather requests go to NASA POWER. Field names and loaded metadata are escaped when rendered. Field/cache records are versioned and validated before use. Storage failures show a message instead of claiming success; corrupt records are not deleted by fallback handling.
+
+Priority weights are validated whole numbers from 0 to 5 and are held in tab memory. Slider changes make no remote requests and write no browser storage. They reuse already loaded weather; missing/stale weather is not silently scored. Priority changes, field saves and weather caching leave What-if storage alone.
 
 The field profile, including coordinates, is stored under `terraplan.v3.field` only when Save field is chosen. Choosing Load NASA climate sends latitude/longitude rounded to two decimal places to NASA POWER, along with requested parameters/date ranges. Successful responses are cached under `terraplan.v3.power.v1:` keys. Field saves and weather caches do not change What-if keys. Bundled demo mode fetches local files without contacting NASA.
 
