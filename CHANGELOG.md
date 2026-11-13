@@ -1,5 +1,14 @@
 # Changelog
 
+## V3 — step 6 explained three-column comparison — 2026-11-13
+
+- Replaced comparison placeholders with current / Option A / Option B, assumed crop windows, photo/initial placeholders, scores, confidence reasons and water warnings.
+- Added the five ordered sections per column: Why, NASA evidence, Benefits, Information gaps and local checks. Missing alternatives remain explicit empty places.
+- Added pure badge and advice derivation, inclusive 85% water/10-point market thresholds, cyclic family checks and unique-month coverage counts; badge explanations distinguish rule matches from measured outcomes.
+- Added a semantic sortable all-rotations table that retains infeasible/unscored/current rows, keeps missing values last and never changes selected options. Exclusions retain every reason.
+- Reused current scoring state so field/priority edits derive fresh option IDs. Sorting preserves focus and leaves field, priority and What-if state alone.
+- Added 10 comparison tests (63 total) for boundaries, gaps, section order, fallback/missing states, sorting, purity and escaped output. Timeline work remains step 7.
+
 ## V3 — step 5 scoring, feasibility, confidence and priorities — 2026-11-13
 
 - Added pure seasonal fits, weakest-season weighted climate fit, six normalized priorities, cyclic rule adjustments with reasons and bounded relative scores.

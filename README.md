@@ -6,11 +6,11 @@ NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 
 V3 is a fresh build for small farms in western India. The planned workflow starts with the farmer's **current rotation** and compares it with two alternatives using stated rules and clearly labelled NASA evidence.
 
-## Current status: steps 1–5
+## Current status: steps 1–6
 
-This branch implements the first five build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, and a relative scoring/priority preview. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
+This branch implements the first six build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
 
-Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. The full comparison screen, benefit badges, timelines, monthly trends and scenarios are **not implemented yet**.
+Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. Timelines, monthly trends and scenarios are **not implemented yet**.
 
 Choose **Start** for a blank field or **Load demo farm** for the shared Rajkot definition. Fill in the location, soil, water, equipment, market access and current crop for each season. Every season supports **Bare (no crop)**. Choose **Save field** to keep entries after reloading. Demo loading fills a draft and does not overwrite a saved field until you save it. Draft edits survive navigation between pages in the current tab, but unsaved edits do not survive a reload.
 
@@ -40,7 +40,7 @@ With Python on your PATH, `npm start` serves the same root at http://127.0.0.1:3
 | `#/field` | My field | Validated form, current-rotation pickers, save/reload and recovery messages |
 | `#/climate` | Your climate (NASA) | Explicit live/bundle loading, source labels, current-crop metrics, missing-data notes and retry |
 | `#/priorities` | Priorities | Six weights, live ranking preview, current score, water labels and confidence/rule reasons |
-| `#/compare` | Compare rotations | Unranked generation preview, current warnings and expandable generated/excluded lists; scoring columns remain placeholders |
+| `#/compare` | Compare rotations | Current / Option A / Option B, ordered explanations, badges, sortable retained-rotation table and exclusions |
 | `#/whatif` | What if? | Scenario and sensitivity placeholder |
 | `#/evidence` | Evidence | Crop assumptions plus weather request URLs, retrieval times, source labels, parameter metadata and limitations |
 
@@ -76,7 +76,7 @@ npm run check
 npm run verify
 ```
 
-The suite contains 53 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 63 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 
@@ -126,14 +126,15 @@ NASA references: [daily API](https://power.larc.nasa.gov/docs/services/api/tempo
 
 Open **Priorities** after loading matching weather. Six labelled range inputs set water use, forage, nitrogen fixation, erosion control, organic matter and market weights from 0 to 5 (default 3). Changes update scores and ordering immediately, without replacing the controls or losing keyboard focus. Reset priorities restores 3. Weights are tab-local state: they survive route changes and field saves, reset on reload, and do not write or clear field/What-if storage.
 
-The current rotation is always kept. Every alternative remains in the ranking, including infeasible and unscored rows. Each scored row shows total, climate fit, priority component, rule adjustment, water label and confidence. Expand its reasons for seasonal water calculations, individual adjustments, confidence reasons and current-rotation warnings. Excluded calendars remain in a separate expandable list with reasons. The Compare page keeps its earlier unranked calendar preview until the full step-6 comparison is built.
+The current rotation is always kept. Every alternative remains in the ranking, including infeasible and unscored rows. Each scored row shows total, climate fit, priority component, rule adjustment, water label and confidence. Expand its reasons for seasonal water calculations, individual adjustments, confidence reasons and current-rotation warnings. Excluded calendars remain in a separate expandable list with reasons. Compare uses the same scoring result to show current and the two derived options, with full explanation sections.
 
 The pure engine exposes:
 
 - `seasonFit(metrics, crop, irrigation)` for the specified rain/water/heat/cold formulas and strict water-gap rule.
 - `prepareScoring(generated, field, climate)` for cached per-window metrics, normalized crop priorities, climate fit, feasibility, confidence and rule reasons. This stage does not depend on weights.
-- `rankRotations(prepared, weights)` for the weighted component, bounded total, deterministic ordering and two future comparison candidates.
+- `rankRotations(prepared, weights)` for the weighted component, bounded total, deterministic ordering and the two derived comparison options.
 - `scoreRotations(generated, field, climate, weights)` as the combined convenience call.
+- `benefitBadges(rotation, current)`, `bareMonthCount(rotation)` and `rotationAdvice(rotation, field, climate)` for pure benefit/gap/local-check derivation.
 
 Climate fit is half the mean plus half the minimum active-season fit. Bare is omitted from the climate fit but counts as zero in the three-slot crop-attribute priority averages. The water-priority denominator is the largest total crop water need among all retained rotations, including current. All-zero weights produce a priority component of 50; climate and rule adjustments remain active. Totals are clamped to 0–100 and are never yield/profit predictions.
 
@@ -145,15 +146,29 @@ Any active window without a computable fit leaves the total null/Not scored; all
 
 For the bundled Rajkot data and default weights, tests currently produce a **56.35 current score**, **77 scored alternatives** and **6 unavailable totals** (windows outside the loaded weather range). These are outputs of illustrative rules and crop assumptions; changing weights, water entries or crop data changes them. Evidence prints every MODEL constant with an illustrative tag and explains the formulas.
 
+## Full comparison
+
+Load matching weather, adjust weights on Priorities if desired, then open **Compare rotations**. The current rotation and derived Option A/B each show seasonal crop names and assumed sowing–harvest months, a crop photo or clearly labelled initial placeholder, relative total, confidence reasons and water-feasibility labels. The current rotation keeps all warnings. Missing options get explicit empty columns, not fabricated crops or zero scores. Before weather loads, current crop inputs remain visible without calculated scores; stale-location weather is not used.
+
+Each column always has these five sections in order: **Why**, **Evidence (NASA numbers)**, **Benefits**, **Information gaps**, **Check locally (KVK / agri officer)**. Evidence includes crop-window rain, heat/cold days, longest known dry spell, heavy-rain days, model root-zone wetness, complete/missing days and derived usable water/gap. NASA source/retrieval time and crop/model/irrigation provenance stay explicit. Missing weather remains Missing; partial rain is labelled partial.
+
+Badges are native keyboard-accessible disclosures with one-line explanations on tap/click and hover titles. Rules are: crop water need ≤85% of current; a nitrogen-fixer role; no cyclic consecutive same-family pair and at least one new family; a cover/deep-rooted role with fewer assumed Bare months; market priority ≥current+10. These describe potential matches to illustrative rules, not measured water savings, nitrogen, pest control, infiltration or profit. Unknown calendars prevent a Bare-month comparison. Coverage is counted as unique months so overlaps cannot inflate cover; this count is not the step-7 timeline.
+
+Gap/check text identifies unverified or missing crop values, missing weather days, lack of soil test, coarse POWER coverage, assumed crop dates and absent local prices. Local checks name the crop and sowing month and, where known, each season's additional water gap beyond entered irrigation. Advice is a prompt to verify locally, not an instruction to plant.
+
+**See all rotations** opens a semantic sortable table containing current and every retained alternative, including infeasible and unscored rows. It marks current/A/B, exposes sort direction to assistive technology, preserves missing values last in both directions and keeps keyboard focus on the chosen sort button. Table sorting changes presentation only; it cannot change selected A/B or scores. On 360-pixel screens the columns stack and the table scrolls within its own labelled region. The **Excluded** disclosure lists every excluded calendar with its reasons. When weather has not loaded, the table still lists known calendars with unavailable numerical columns.
+
+Option IDs are derived anew from the current scoring result, so editing field entries or priorities cannot retain obsolete selected IDs. Sorting and page navigation do not clear priority weights or field/What-if storage. No timeline or vulnerable-window UI is included yet.
+
 ## Next build step
 
-**Step 6:** the full three-column comparison (current + A + B), five explanation sections, benefit badges, local checks, sortable all-rotations table and exclusions; timeline remains step 7. Do one build step per prompt, test and check the app, then commit as specified in AGENTS.md.
+**Step 7:** the 12-month timeline with Bare months and vulnerable-window markers. Do one build step per prompt, test and check the app, then commit as specified in AGENTS.md.
 
 Public GitHub Pages deployment is scheduled for step 11. This scaffold does not replace the existing V2 live Site.
 
 ## Honesty and credits
 
-Future scores must be relative comparisons from stated rules, never yield/profit predictions. Crop constants need local agricultural validation. NASA/model/satellite/ground sources must be distinguished when their actual integrations are added.
+Scores must be relative comparisons from stated rules, never yield/profit predictions. Crop constants need local agricultural validation. NASA/model/satellite/ground sources must be distinguished when their actual integrations are added.
 
 Connected data: NASA POWER (LaRC), with MERRA-2 model soil wetness. Planned satellite credits: GPM IMERG, SMAP and GRACE/GRACE-FO. No V2 photographs or external libraries are bundled in the fresh V3 scaffold. Built with help from OpenAI Codex. Team names have not been supplied yet.
 

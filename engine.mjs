@@ -24,6 +24,8 @@ export const MODEL = Object.freeze({
   climate_min_weight: 0.5,
   climate_weight: 0.5,
   priority_weight: 0.5,
+  benefit_water_ratio: 0.85,
+  benefit_market_gain: 10,
 });
 
 export const CROP_SCHEMA = Object.freeze({
@@ -342,7 +344,66 @@ export function rankRotations(prepared, weights = defaultPriorities()) {
   const options = [...passing,...failing].slice(0,2);
   return { current: scored.find(rotation => rotation.is_current) ?? null, ranked, options, weights: validation.priorities,
     excluded: prepared.excluded, max_rotation_water_need: prepared.max_rotation_water_need,
-    selection_note: options.length < 2 ? 'Fewer than two scored alternatives are available; missing scores are not invented.' : passing.length < 2 ? 'Fewer than two alternatives pass the water-gap rule. The remaining place is filled by the highest-scoring infeasible alternative, with its warning kept.' : 'The two highest-scoring alternatives that pass the water-gap rule are available for the next comparison step.' };
+    selection_note: options.length < 2 ? 'Fewer than two scored alternatives are available; missing scores are not invented.' : passing.length < 2 ? 'Fewer than two alternatives pass the water-gap rule. The remaining place is filled by the highest-scoring infeasible alternative, with its warning kept.' : 'The two highest-scoring alternatives that pass the water-gap rule are selected for comparison.' };
 }
 
 export const scoreRotations = (generated,field,climate,weights = defaultPriorities()) => rankRotations(prepareScoring(generated,field,climate),weights);
+
+/** Coverage count for benefit rules only; the month-by-month timeline is step 7. */
+export function bareMonthCount(rotation) {
+  const windows = SEASONS.map(season => rotation.seasons[season]).filter(Boolean);
+  if (windows.some(window => !Number.isInteger(window.start_offset) || !Number.isInteger(window.end_offset)
+    || window.start_offset < 0 || window.end_offset < window.start_offset || window.end_offset - window.start_offset >= 12)) return null;
+  if (windows.length && Math.max(...windows.map(window => window.end_offset)) - Math.min(...windows.map(window => window.start_offset)) >= 12) return null;
+  const covered = new Set();
+  for (const window of windows) for (let month = window.start_offset; month <= window.end_offset; month++) covered.add(month % 12);
+  return 12 - covered.size;
+}
+
+export function benefitBadges(rotation, current) {
+  if (!rotation || !current) return [];
+  const badges = [], crops = SEASONS.map(season => rotation.seasons[season]?.crop).filter(Boolean);
+  const baseline = SEASONS.map(season => current.seasons[season]?.crop).filter(Boolean);
+  const allKnown = [...crops,...baseline].every(crop => !crop.unavailable && typeof crop.family === 'string');
+  const add = (key,label,explanation) => badges.push({key,label,explanation});
+  if (Number.isFinite(rotation.water_need_mm) && Number.isFinite(current.water_need_mm) && current.water_need_mm > 0
+    && rotation.water_need_mm <= MODEL.benefit_water_ratio * current.water_need_mm) add('water','💧 Less water',`Illustrative crop water need is ${rotation.water_need_mm} mm, at most ${MODEL.benefit_water_ratio * 100}% of the current ${current.water_need_mm} mm. This is not measured water saving.`);
+  if (crops.some(crop => crop.roles?.includes('nitrogen-fixer'))) add('nitrogen','🌱 Adds nitrogen','Contains a crop tagged nitrogen-fixer. This is a crop-table role, not a measured increase in soil nitrogen.');
+  const sameFamily = SEASONS.some((season,index) => {
+    const a = rotation.seasons[season]?.crop, b = rotation.seasons[SEASONS[(index + 1) % SEASONS.length]]?.crop;
+    return a && b && a.family === b.family;
+  });
+  if (allKnown && !sameFamily && crops.some(crop => !baseline.some(other => other.family === crop.family))) add('pest','🐛 Breaks pest cycle','No adjacent crop pair shares a family, including zaid → next kharif, and at least one family is new compared with current. This illustrative rule does not establish local pest control.');
+  const bare = bareMonthCount(rotation), baselineBare = bareMonthCount(current);
+  if (allKnown && bare !== null && baselineBare !== null && bare < baselineBare && crops.some(crop => crop.roles?.some(role => ['deep-rooted','cover'].includes(role)))) add('infiltration','🌧 Better infiltration',`Has a deep-rooted or cover crop and ${bare} assumed bare months versus ${baselineBare} for current. Infiltration itself has not been measured.`);
+  const market = rotation.priority_values?.market, currentMarket = current.priority_values?.market;
+  if (Number.isFinite(market) && Number.isFinite(currentMarket) && market >= currentMarket + MODEL.benefit_market_gain) add('market','₹ Market',`The illustrative market priority is at least ${MODEL.benefit_market_gain} points above current. No local price or profit data are included.`);
+  return badges;
+}
+
+export function rotationAdvice(rotation, field, climate) {
+  const gaps = [], checks = [];
+  const unverified = [], unknown = [];
+  for (const season of SEASONS) {
+    const window = rotation.seasons[season];
+    if (!window) continue;
+    const crop = window.crop, metrics = rotation.season_metrics?.[season], fit = rotation.season_fits?.[season];
+    if (crop.unavailable) unknown.push(crop.name);
+    else if (!crop.verified) unverified.push(crop.name);
+    if (metrics?.missing > 0) gaps.push(`${season}: ${metrics.missing} daily records are missing; rain is a partial total.`);
+    else if (!metrics || metrics.missing === null || metrics.days === 0) gaps.push(`${season}: a complete climate window is unavailable.`);
+    const month = Number.isInteger(window.start) ? new Date(Date.UTC(2000,window.start - 1,1)).toLocaleString('en',{month:'long',timeZone:'UTC'}) : 'your intended';
+    checks.push(`Ask your KVK if ${crop.name} varieties suit ${month} sowing here.`);
+    if (fit?.water_gap > 0) checks.push(`For ${season}, confirm whether an additional ${Number(fit.water_gap.toFixed(2))} mm beyond entered irrigation can be supplied. This gap uses illustrative crop need and area weather.`);
+    if (crop.unavailable) checks.push(`Confirm ${crop.name} crop values and actual sowing/harvest dates before relying on a score.`);
+  }
+  if (unverified.length) gaps.push(`Unverified crop values: ${[...new Set(unverified)].join(', ')}.`);
+  if (unknown.length) gaps.push(`Crop data are missing or invalid: ${[...new Set(unknown)].join(', ')}.`);
+  if (!field.soil_tested) { gaps.push('Soil type was entered without a soil test report.'); checks.push('Get a soil test for nitrogen and organic carbon.'); }
+  else checks.push('Review your soil test and these crop assumptions with your KVK or agricultural officer.');
+  gaps.push(climate?.grid_note ?? 'POWER covers a coarse area grid; rain may differ at your field.');
+  gaps.push('No local price data are included.');
+  gaps.push('Sowing and harvest windows are crop-table assumptions, not dates reported from your field.');
+  checks.push('Check local prices, varieties, seed availability and your water supply before changing the farm plan.');
+  return { gaps: [...new Set(gaps)], checks: [...new Set(checks)] };
+}

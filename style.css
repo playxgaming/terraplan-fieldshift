@@ -197,6 +197,44 @@ summary:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
 .model-constants dd { margin: 0; }
 .formula-list { padding-left: 1.1rem; }
 .formula-list li { margin-block: 0.7rem; }
+.comparison-grid { margin-top: 1.5rem; align-items: start; }
+.comparison-column { min-width: 0; padding: 1.25rem; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); overflow-wrap: anywhere; }
+.comparison-column > h2 { font-size: 1.35rem; margin-bottom: 1rem; }
+.comparison-column[data-comparison="Your current"] { border-top: 4px solid var(--ink); }
+.comparison-column p, .comparison-column li, .comparison-column dd { font-size: 0.8rem; }
+.comparison-column ul { padding-left: 1.1rem; }
+.comparison-column h4 { font-size: 0.85rem; margin-block: 0.9rem 0.4rem; }
+.comparison-crops { list-style: none; padding: 0; margin: 0; }
+.comparison-crops li { display: flex; gap: 0.6rem; align-items: flex-start; border-top: 1px solid var(--line); padding-block: 0.75rem; }
+.comparison-crops .crop-initial { margin: 0; width: 2rem; height: 2rem; flex-shrink: 0; }
+.comparison-crops strong { font-size: 0.85rem; }
+.comparison-crops p { margin-top: 0.3rem; }
+.comparison-crop-photo { width: 3.5rem; height: 3.5rem; border-radius: 4px; object-fit: cover; }
+.comparison-score { margin-block: 1rem; }
+.comparison-score > strong { display: block; font-size: 1.8rem; line-height: 1.3; }
+.comparison-score > span { font-size: 0.75rem; color: var(--muted); }
+.comparison-column .feasibility-label { display: block; }
+.comparison-confidence { font-size: 0.82rem; margin-block: 0.5rem; }
+.comparison-explanation { padding-top: 1rem; margin-top: 1rem; border-top: 1px solid var(--line); }
+.comparison-explanation > h3 { font-size: 1rem; margin-bottom: 0.6rem; }
+.comparison-season-evidence dl { margin: 0.7rem 0; }
+.comparison-season-evidence dl > div { display: flex; justify-content: space-between; gap: 0.75rem; padding-block: 0.35rem; border-bottom: 1px solid var(--line); }
+.comparison-season-evidence dt { font-size: 0.77rem; }
+.comparison-season-evidence dd { margin: 0; font-weight: 600; text-align: right; }
+.benefit-badges { display: grid; gap: 0.5rem; margin-block: 0.7rem; }
+.benefit-badge { border: 1px solid #cbd6bf; border-radius: 5px; padding: 0.2rem 0.6rem; background: var(--soft); }
+.benefit-badge summary { font-size: 0.8rem; font-weight: 600; }
+.benefit-badge > p { padding-bottom: 0.75rem; }
+.comparison-empty { background: #f1f2eb; }
+.rotations-table-scroll { max-width: 100%; overflow-x: auto; margin-top: 1rem; border: 1px solid var(--line); }
+.rotations-table-scroll:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
+.rotations-table { width: 100%; min-width: 48rem; border-collapse: collapse; font-size: 0.8rem; background: var(--surface); }
+.rotations-table caption { text-align: left; padding: 1rem; font-size: 0.8rem; background: var(--soft); }
+.rotations-table th, .rotations-table td { text-align: left; padding: 0.75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.rotations-table thead th { background: var(--soft); }
+.rotations-table th button { min-height: 2.75rem; border: 0; padding: 0.35rem; color: var(--ink); background: transparent; text-align: left; font-weight: 650; }
+.rotations-table th[scope="row"] { font-weight: 450; min-width: 15rem; }
+.rotations-table th[scope="row"] > span { display: block; color: var(--ink); font-weight: 750; margin-bottom: 0.4rem; }
 @media (min-width: 54rem) {
   .season-climate-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
   .priority-layout { display: grid; grid-template-columns: minmax(0,0.8fr) minmax(0,1.2fr); align-items: start; gap: 2rem; }

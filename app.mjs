@@ -1,4 +1,4 @@
-import { ROUTES, resolveRoute, renderNotFound, renderRankingPreview } from './views.mjs';
+import { ROUTES, resolveRoute, renderNotFound, renderRankingPreview, renderRotationsTable, tableDataFor, ROTATION_SORT_COLUMNS } from './views.mjs';
 import { openGlossary } from './glossary.mjs';
 import { DEMO_FARM, loadCrops, loadClimate, powerPoint, latestCompleteAgYear } from './data.mjs';
 import { generateRotations, seasonClimate, defaultPriorities, PRIORITIES, validatePriorities, prepareScoring, rankRotations } from './engine.mjs';
@@ -18,6 +18,7 @@ let climateState = { status: 'idle', data: null, error: '', key: '' };
 let climateRequestId = 0;
 let priorities = defaultPriorities();
 let scoringCache = null;
+let comparisonSort = { key: 'total', direction: 'desc' };
 const climateKey = field => JSON.stringify({ ...powerPoint(field), ag_year: latestCompleteAgYear() });
 
 const app = document.getElementById('app');
@@ -42,8 +43,8 @@ function render({ focus = false } = {}) {
   const current = generated?.rotations.find(rotation => rotation.is_current);
   const metrics = route?.path === '/climate' && climateMatches && climateState.data && current
     ? Object.fromEntries(SEASONS.map(season => [season, seasonClimate(climateState.data, current.seasons[season])])) : null;
-  const scoring = route?.path === '/priorities' && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
-  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring }) : renderNotFound();
+  const scoring = ['/priorities','/compare'].includes(route?.path) && field && generated && climateMatches && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
+  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort }) : renderNotFound();
   document.title = `TerraPlan V3 · ${route?.label ?? 'Page not found'}`;
   menuOpen = false;
   syncMenu();
@@ -71,6 +72,19 @@ document.querySelector('.skip-link').addEventListener('click', event => {
 });
 
 document.addEventListener('click', event => {
+  const sort = event.target.closest('[data-sort-rotations]');
+  if (sort && ROTATION_SORT_COLUMNS.some(column => column.key === sort.dataset.sortRotations)) {
+    const key = sort.dataset.sortRotations;
+    comparisonSort = { key, direction: comparisonSort.key === key && comparisonSort.direction === 'desc' ? 'asc' : 'desc' };
+    const field = validateField(fieldDraft).field;
+    if (field) {
+      const generated = generateRotations(cropData.crops,field);
+      const scoring = climateState.key === climateKey(field) && climateState.data && cropData.status === 'loaded' ? rankingFor(field,generated) : null;
+      document.getElementById('rotations-table-region').innerHTML = renderRotationsTable(tableDataFor(scoring,generated),comparisonSort);
+      [...document.querySelectorAll('[data-sort-rotations]')].find(button => button.dataset.sortRotations === key)?.focus({preventScroll:true});
+      document.getElementById('table-sort-status').textContent = `Sorted by ${ROTATION_SORT_COLUMNS.find(column => column.key === key).label}, ${comparisonSort.direction === 'asc' ? 'ascending' : 'descending'}. Missing values remain last.`;
+    }
+  }
   if (event.target.closest('[data-reset-priorities]')) {
     priorities = defaultPriorities();
     for (const {key} of PRIORITIES) {
@@ -220,7 +234,7 @@ async function refreshClimate(mode) {
     if (requestId !== climateRequestId) return;
     climateState = { status: 'error', data: null, error: error.message, key };
   }
-  if (['#/climate', '#/evidence', '#/priorities'].includes(window.location.hash)) render();
+  if (['#/climate', '#/evidence', '#/priorities', '#/compare'].includes(window.location.hash)) render();
 }
 
 function rankingFor(field,generated) {

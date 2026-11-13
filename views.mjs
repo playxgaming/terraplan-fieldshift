@@ -1,6 +1,6 @@
 import { FIELD_CHOICES, FIELD_LIMITS, SEASONS, emptyField } from './field.mjs';
 import { isDemoPoint, POWER } from './data.mjs';
-import { MODEL, PRIORITIES, defaultPriorities } from './engine.mjs';
+import { MODEL, PRIORITIES, defaultPriorities, benefitBadges, rotationAdvice } from './engine.mjs';
 
 const glossaryButton = '<button type="button" class="glossary-link" data-glossary="rotation" aria-label="What is a crop rotation?">What is a rotation?</button>';
 
@@ -17,7 +17,7 @@ function placeholder(step, heading, description) {
 }
 
 export function renderWelcome() {
-  return `<section class="welcome"><div class="welcome-copy"><p class="eyebrow">FOR SMALL FARMS IN WESTERN INDIA</p><h1>Your field.<br>Your next season.<br><em>Your decision.</em></h1><p class="welcome-purpose">Compare the crops you grow now with two alternatives, using NASA weather evidence and clearly stated rules.</p><p class="welcome-note">Start with your own field or explore an editable demo from Rajkot. NASA weather is available on the climate page; adjust priorities to explore the scoring preview.</p><div class="welcome-actions"><button type="button" class="primary" data-navigate="/field">Start <span aria-hidden="true">→</span></button><button type="button" class="secondary" data-load-demo aria-describedby="demo-status">Load demo farm</button></div><p id="demo-status" class="small-note">The demo fills an editable field. Save it when you are ready.</p>${glossaryButton}</div><aside class="journey-card" aria-label="How planning will work"><span class="stage-label">Build status · step 5 of 12</span><h2>Start with the farm<br>you know.</h2><ol><li><span>01</span><div><strong>Describe your field</strong><p>Your soil, water and current crops.</p></div></li><li><span>02</span><div><strong>Look at the evidence</strong><p>Weather history and its limits.</p></div></li><li><span>03</span><div><strong>Compare your choices</strong><p>Your current plan and two alternatives.</p></div></li></ol><p class="journey-footnote">Scores will be relative comparisons from stated rules. They will not predict yield or profit.</p></aside></section>`;
+  return `<section class="welcome"><div class="welcome-copy"><p class="eyebrow">FOR SMALL FARMS IN WESTERN INDIA</p><h1>Your field.<br>Your next season.<br><em>Your decision.</em></h1><p class="welcome-purpose">Compare the crops you grow now with two alternatives, using NASA weather evidence and clearly stated rules.</p><p class="welcome-note">Start with your own field or explore an editable demo from Rajkot. NASA weather is available on the climate page; adjust priorities to explore the scoring preview.</p><div class="welcome-actions"><button type="button" class="primary" data-navigate="/field">Start <span aria-hidden="true">→</span></button><button type="button" class="secondary" data-load-demo aria-describedby="demo-status">Load demo farm</button></div><p id="demo-status" class="small-note">The demo fills an editable field. Save it when you are ready.</p>${glossaryButton}</div><aside class="journey-card" aria-label="How planning will work"><span class="stage-label">Build status · step 6 of 12</span><h2>Start with the farm<br>you know.</h2><ol><li><span>01</span><div><strong>Describe your field</strong><p>Your soil, water and current crops.</p></div></li><li><span>02</span><div><strong>Look at the evidence</strong><p>Weather history and its limits.</p></div></li><li><span>03</span><div><strong>Compare your choices</strong><p>Your current plan and two alternatives.</p></div></li></ol><p class="journey-footnote">Scores will be relative comparisons from stated rules. They will not predict yield or profit.</p></aside></section>`;
 }
 
 export function renderField({ draft = emptyField(), message = '', storageError = '' } = {}) {
@@ -129,11 +129,7 @@ function renderModelEvidence() {
     <li>Rule adjustment = −${MODEL.penalty_same_family} per consecutive same-family pair; +${MODEL.bonus_nfixer_after_heavy} per nitrogen fixer directly after a crop with high nutrient demand; −${MODEL.penalty_bare_when_possible} per Bare season where an allowed crop window could reach water fit ≥ ${MODEL.cover_possible_fit}. Adjacent pairs include zaid → next kharif; Bare breaks adjacency. Cover possibility is checked across retained, field-allowed calendars and is independent of priorities.</li>
     <li>Total = clamp(${MODEL.score_min}, ${MODEL.score_max}, ${MODEL.climate_weight} × climate fit + ${MODEL.priority_weight} × priority score + rule adjustment).</li>
     <li>Water gap = max(0, crop water need − usable water). A season fails if its gap exceeds ${MODEL.infeasible_gap * 100}% of need. Infeasible alternatives remain listed; comparison candidates prefer passing alternatives, then use the best infeasible ones if fewer than two pass. Missing totals are not selected.</li>
-    <li>High confidence: complete windows, a soil test and all crops verified/regionally common. Medium: the same with soil type only. Low: missing weather, unavailable crop data, non-regional crops, off-season/start-month choices or unverified crop values. Reasons accompany every label.</li></ul><p>Partial-data fits use complete days only and carry missing-day warnings. An unknown climate window is not assigned a neutral score. Every adjustment is listed with its reason in the ranking preview. Full three-column explanations, benefits and local-check sections arrive in step 6.</p></section>`;
-}
-
-function comparisonPlaceholder(title) {
-  return `<article class="comparison-placeholder"><p class="column-label">${title}</p><h2>Not calculated yet</h2><p class="score-placeholder">This column is not connected yet. Use Priorities for scores and confidence.</p><dl><div><dt>Why</dt><dd>Full explanations for this column arrive in step 6.</dd></div><div><dt>Evidence (NASA numbers)</dt><dd>Weather evidence is not connected to these comparison columns yet.</dd></div><div><dt>Benefits</dt><dd>No benefit has been calculated.</dd></div><div><dt>Information gaps</dt><dd>Review field, crop and weather assumptions. The full explanation layout arrives in step 6.</dd></div><div><dt>Check locally (KVK / agri officer)</dt><dd>Ask for local advice before changing your farm plan.</dd></div></dl></article>`;
+    <li>High confidence: complete windows, a soil test and all crops verified/regionally common. Medium: the same with soil type only. Low: missing weather, unavailable crop data, non-regional crops, off-season/start-month choices or unverified crop values. Reasons accompany every label.</li></ul><p>Benefit rules: water need ≤ ${MODEL.benefit_water_ratio * 100}% of current; a nitrogen-fixer role; no adjacent same-family pair plus a family new to current; a cover/deep-rooted role plus fewer assumed bare months; market priority ≥ current + ${MODEL.benefit_market_gain}. All use illustrative crop assumptions, not measured outcomes. Unknown calendars prevent a cover-month comparison.</p><p>Partial-data fits use complete days only and carry missing-day warnings. An unknown climate window is not assigned a neutral score. Every adjustment is listed with its reason in the ranking preview. Compare shows the current rotation and two derived alternatives with benefit rules, gaps and local checks. The timeline remains step 7.</p></section>`;
 }
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -148,24 +144,90 @@ function cropLoading(cropData) {
   return '';
 }
 
-function renderGenerator(generated, cropData, field) {
-  const loading = cropLoading(cropData);
-  if (loading && !generated) return `<section class="generator-preview"><h2>Rotation generation</h2>${loading}<p><a href="#/evidence">See crop-data errors in Evidence</a></p></section>`;
-  if (!field || !generated) return '<section class="generator-preview"><h2>Rotation generation</h2><p>Complete the field entries before generating crop sequences.</p><button type="button" class="secondary" data-navigate="/field">Go to My field</button></section>';
-  const current = generated.rotations.find(rotation => rotation.is_current);
-  const alternatives = generated.rotations.filter(rotation => !rotation.is_current);
-  return `<section class="generator-preview"><span class="stage-label">Step 3 · calendar preview</span><h2>Your current rotation is kept.</h2>${loading}<p class="source-note">Source: rotation generator using ${cropData.status === 'error' ? 'your current field entries; crop data are unavailable' : 'the illustrative crop table and your current field entries'}. Calendar windows use the earliest listed sowing months, not dates reported by you. This is not a recommendation.</p>
-    ${cropData.errors.length ? '<p class="screen-status">Crop data need attention. <a href="#/evidence">Read the errors in Evidence.</a></p>' : ''}
-    <article class="current-rotation"><h3>Your current · retained for comparison</h3><p>${escapeHtml(rotationDescription(current))}</p>${current.warnings.length ? `<ul class="rotation-warnings">${current.warnings.map(reason => `<li>${escapeHtml(reason)}</li>`).join('')}</ul>` : '<p class="small-note">No calendar, soil or equipment warning from these illustrative rules. This calendar preview does not check water availability; use Priorities after loading weather.</p>'}</article>
-    <p>${cropData.status === 'error' ? 'No alternative crop sequences can be generated until crop data load.' : `${alternatives.length} alternative crop sequences pass the calendar, soil and equipment rules. No scores are displayed in this calendar preview. Open Priorities to calculate a ranking after loading matching weather.`}</p>
-    <details class="rotation-details"><summary>Generated sequences (${alternatives.length}) · unranked</summary><ol>${alternatives.map(rotation => `<li><p>${escapeHtml(rotationDescription(rotation))}</p><p class="small-note">${SEASONS.filter(season => rotation.seasons[season]).map(season => { const window = rotation.seasons[season]; return `${season}: ${MONTH_NAMES[window.start - 1]}–${MONTH_NAMES[window.end - 1]}`; }).join(' · ')}</p></li>`).join('')}</ol>${alternatives.length ? '' : '<p>No alternative sequence passes these rules.</p>'}</details>
-    <details class="rotation-details"><summary>Excluded (${generated.excluded.length}) · with reasons</summary><ol>${generated.excluded.map(rotation => `<li><p>${escapeHtml(rotationDescription(rotation))}</p><ul>${rotation.reasons.map(reason => `<li>${escapeHtml(reason)}</li>`).join('')}</ul></li>`).join('')}</ol>${generated.excluded.length ? '' : '<p>No additional sequences were excluded.</p>'}</details>
-    <p class="small-note">Excluded sequences remain visible with reasons. Warnings on your current rotation do not remove it. The scoring preview is on Priorities; the full Option A/B display arrives in step 6.</p><a href="#/evidence">Review the crop assumptions and source labels</a></section>`;
+const listHtml = items => `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+const totalLabel = value => value == null ? 'Not scored' : `${Number(value.toFixed(2))} / 100`;
+
+function cropSummary(rotation) {
+  return `<ol class="comparison-crops">${SEASONS.map(season => {
+    const window = rotation.seasons[season];
+    if (!window) return `<li><span class="crop-initial" aria-hidden="true">—</span><div><strong>${season} · Bare</strong><p>No crop in this season.</p></div></li>`;
+    const crop = window.crop, dates = window.start && window.end ? `${MONTH_NAMES[window.start - 1]}–${MONTH_NAMES[window.end - 1]}` : 'Calendar unavailable';
+    const visual = crop.photo?.url ? `<img class="comparison-crop-photo" src="${escapeHtml(crop.photo.url)}" alt="${escapeHtml(crop.name)}" loading="lazy">` : `<span class="crop-initial" aria-hidden="true">${escapeHtml(crop.name[0])}</span>`;
+    return `<li>${visual}<div><strong>${season} · ${escapeHtml(crop.name)}</strong><p>${dates} · assumed sowing–harvest window</p><p class="small-note">${crop.photo?.url ? `${escapeHtml(crop.photo.credit)} · ${escapeHtml(crop.photo.licence)}` : 'Initial placeholder; no crop photo supplied.'}</p></div></li>`;
+  }).join('')}</ol>`;
 }
 
-export function renderCompare({ generated = null, cropData = { status: 'loading', crops: [], errors: [] }, field = null } = {}) {
-  return pageHeading('05', 'Compare rotations', 'Your current rotation will stay visible beside two alternatives. Excluded choices will have reasons.')
-    + `<p class="screen-status"><span class="status-dot" aria-hidden="true"></span>The three-column comparison is scheduled for step 6. The calendar list below is unranked; use Priorities for the scoring preview.</p><div class="comparison-grid">${['Your current', 'Option A', 'Option B'].map(comparisonPlaceholder).join('')}</div>${renderGenerator(generated, cropData, field)}<div class="page-actions">${glossaryButton}</div>`;
+function renderComparisonColumn(label,rotation,current,field,climate) {
+  const section = (name,content) => `<section class="comparison-explanation" data-explanation="${escapeHtml(name)}"><h3>${name}</h3>${content}</section>`;
+  if (!rotation) return `<article class="comparison-column comparison-empty" data-comparison="${label}"><h2>${label}</h2><p>Not available</p>
+    ${section('Why','<p>No scored rotation is selected for this place. Fewer than two scored alternatives may be available, or matching field/weather inputs are still needed.</p>')}
+    ${section('Evidence (NASA numbers)','<p>No crop window is selected here; no NASA numbers are shown.</p>')}
+    ${section('Benefits','<p>No benefit badge is calculated for an empty place.</p>')}
+    ${section('Information gaps','<p>A valid crop calendar and matching weather are needed before this place can be filled.</p>')}
+    ${section('Check locally (KVK / agri officer)','<p>Ask your KVK about locally suitable crops and water availability. An empty place is not a crop recommendation.</p>')}</article>`;
+  const badges = benefitBadges(rotation,current ?? rotation), advice = rotationAdvice(rotation,field,climate);
+  const why = [rotation.is_current ? 'Your current rotation is the baseline and stays visible even when it breaks a rule.' : 'Selected using your current priority weights. Alternatives passing the water-gap rule are preferred; an infeasible fallback keeps its warning.'];
+  if (rotation.total != null) why.push(`Relative total ${Number(rotation.total.toFixed(2))}: climate fit ${Number(rotation.climate_fit.toFixed(2))}, priority component ${Number(rotation.priority_score.toFixed(2))}, rule adjustment ${rotation.rule_adjust > 0 ? '+' : ''}${rotation.rule_adjust}. Source: illustrative comparison formulas.`);
+  else why.push('Matching climate or crop data are missing; a total score is not invented.');
+  why.push(...(rotation.rule_reasons ?? []).map(reason => reason.text));
+  const evidence = climate && rotation.season_metrics ? `<p class="source-note">${sourceLabel(climate.source)} · ${escapeHtml(climate.retrieved_at)}. ${escapeHtml(climate.grid_note)}</p>${SEASONS.map(season => {
+    if (!rotation.seasons[season]) return `<p>${season}: Bare; no crop-window climate metrics.</p>`;
+    const values = rotation.season_metrics[season], fit = rotation.season_fits[season];
+    return `<div class="comparison-season-evidence"><h4>${season}</h4><p>${values.start_date ? `${values.start_date}–${values.end_date}` : 'Calendar unavailable'}</p><dl>${[['Rain'+(values.missing?' (partial total)':''),metricValue(values.rain_mm,'mm')],['Heat / cold days',`${metricValue(values.heat_days)} / ${metricValue(values.cold_days)}`],['Longest known dry spell',metricValue(values.dry_spell_max,'days')],['Heavy-rain days',metricValue(values.heavy_rain,'days')],['Root-zone wetness (model)',metricValue(values.soil_wet_mean)],['Complete / missing days',`${values.days} / ${values.missing ?? 'unknown'}`]].map(([name,value]) => `<div><dt>${name}</dt><dd>${value}</dd></div>`).join('')}</dl><p class="small-note">Model-derived usable water ${metricValue(fit.usable_water,'mm')}; water gap ${metricValue(fit.water_gap,'mm')}. Rain fraction and crop need/temperature thresholds are illustrative; irrigation is your entry.</p></div>`;
+  }).join('')}<p class="small-note">${escapeHtml(climate.soil_note)}</p>` : '<p>Matching NASA weather is not loaded, or crop-window metrics are unavailable. No weather value is shown as zero.</p>';
+  return `<article class="comparison-column" data-comparison="${label}" data-rotation-id="${escapeHtml(rotation.id)}"><h2>${label}</h2>${cropSummary(rotation)}<div class="comparison-score"><strong>${totalLabel(rotation.total)}</strong><span>Relative score · illustrative rules</span></div><p class="feasibility-label">${escapeHtml(rotation.feasibility_label ?? 'Water feasibility unknown')}</p>
+    <details class="comparison-confidence"><summary>Confidence: ${rotation.confidence?.level ?? 'Unavailable'} · reasons</summary>${rotation.confidence ? listHtml(rotation.confidence.reasons) : '<p>Confidence needs matching crop and climate inputs.</p>'}</details>
+    ${(rotation.warnings ?? []).length ? `<div class="rotation-warnings" role="note"><strong>Current-rotation warnings</strong>${listHtml(rotation.warnings)}</div>` : ''}
+    ${(rotation.feasibility_reasons ?? []).length ? `<div class="comparison-water-reasons">${listHtml(rotation.feasibility_reasons)}</div>` : ''}
+    ${section('Why',listHtml(why))}
+    ${section('Evidence (NASA numbers)',evidence)}
+    ${section('Benefits',`<p class="small-note">Source: illustrative crop-table roles, attributes and calendar rules, compared with current. These are potential benefits, not measured outcomes.</p><div class="benefit-badges">${badges.map(badge => `<details class="benefit-badge"><summary title="${escapeHtml(badge.explanation)}">${badge.label}</summary><p>${escapeHtml(badge.explanation)}</p></details>`).join('')}</div>${badges.length ? '' : '<p>No badge meets the stated comparison rules with the available inputs.</p>'}`)}
+    ${section('Information gaps',listHtml(advice.gaps))}
+    ${section('Check locally (KVK / agri officer)',listHtml(advice.checks))}<div class="season-help"><button type="button" class="glossary-link" data-glossary="benefit">Benefit badges</button><button type="button" class="glossary-link" data-glossary="infiltration">Infiltration</button></div></article>`;
+}
+
+export const ROTATION_SORT_COLUMNS = Object.freeze([
+  {key:'name',label:'Rotation'}, {key:'total',label:'Total'}, {key:'climate_fit',label:'Climate fit'},
+  {key:'priority_score',label:'Priority score'}, {key:'water_need_mm',label:'Crop water need (mm)'},
+  {key:'feasible',label:'Water check'}, {key:'confidence',label:'Confidence'},
+].map(Object.freeze));
+
+export function tableDataFor(scoring,generated) {
+  if (scoring) return { ...scoring, has_scores:true };
+  return generated ? {current:generated.rotations.find(row => row.is_current),ranked:generated.rotations.filter(row => !row.is_current),options:[],excluded:generated.excluded,has_scores:false} : null;
+}
+
+export function sortedRotationRows(data,sort = {key:'total',direction:'desc'}) {
+  if (!data) return [];
+  const key = ROTATION_SORT_COLUMNS.some(column => column.key === sort.key) ? sort.key : 'total';
+  const direction = sort.direction === 'asc' ? 1 : -1;
+  const value = row => key === 'name' ? rotationDescription(row).toLowerCase() : key === 'confidence' ? ({Low:0,Medium:1,High:2})[row.confidence?.level] ?? null : key === 'feasible' ? row.feasible == null ? null : Number(row.feasible) : row[key] ?? null;
+  return [data.current,...data.ranked].filter(Boolean).sort((a,b) => {
+    const left = value(a), right = value(b);
+    if (left === null && right !== null) return 1;
+    if (right === null && left !== null) return -1;
+    return (left < right ? -1 : left > right ? 1 : 0) * direction || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+  });
+}
+
+export function renderRotationsTable(data,sort = {key:'total',direction:'desc'}) {
+  if (!data) return '<p>Complete your field to list retained rotations.</p>';
+  const rows = sortedRotationRows(data,sort);
+  return `<div class="rotations-table-scroll" role="region" aria-label="All rotations table, scroll horizontally on a small screen" tabindex="0"><table class="rotations-table"><caption>${rows.length} retained rotations, including current. ${data.has_scores ? 'Source: loaded NASA weather, your entries and illustrative crop/model values.' : 'Source: generated calendars and crop assumptions. Numerical scores await matching weather.'} Missing values stay last in either sort direction.</caption><thead><tr>${ROTATION_SORT_COLUMNS.map(column => `<th scope="col" aria-sort="${sort.key === column.key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}"><button type="button" data-sort-rotations="${column.key}">${column.label}${sort.key === column.key ? sort.direction === 'asc' ? ' ↑' : ' ↓' : ''}</button></th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr data-rotation-id="${escapeHtml(row.id)}"><th scope="row"><span>${row.is_current ? 'Your current' : data.options[0]?.id === row.id ? 'Option A' : data.options[1]?.id === row.id ? 'Option B' : 'Alternative'}</span>${escapeHtml(rotationDescription(row))}</th><td>${totalLabel(row.total)}</td><td>${metricValue(row.climate_fit)}</td><td>${metricValue(row.priority_score)}</td><td>${metricValue(row.water_need_mm)}</td><td>${escapeHtml(row.feasibility_label ?? 'Unknown')}</td><td>${row.confidence?.level ?? 'Unavailable'}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+export function renderCompare({ generated = null, cropData = {status:'loading',crops:[],errors:[]}, field = null, scoring = null, climateState = {data:null}, climateMatches = false, comparisonSort = {key:'total',direction:'desc'} } = {}) {
+  const current = scoring?.current ?? generated?.rotations.find(row => row.is_current) ?? null;
+  const climate = climateMatches ? climateState.data : null;
+  const tableData = tableDataFor(scoring,generated), excluded = scoring?.excluded ?? generated?.excluded ?? [];
+  return pageHeading('05','Compare rotations','Your current rotation stays visible beside two alternatives, with the evidence, trade-offs and checks behind each choice.')
+    + `<p class="screen-status">${scoring ? escapeHtml(scoring.selection_note) : 'Scores and alternatives need a complete field, valid crop data and matching weather. Your current inputs stay visible below.'} Scores are relative comparisons from stated rules, not yield or profit predictions.</p>
+    ${cropData.status !== 'loaded' ? cropLoading(cropData) : ''}${cropData.errors.length ? '<p class="screen-status">Some crop data are unavailable or invalid. <a href="#/evidence">See the errors in Evidence.</a></p>' : ''}
+    <div class="page-actions"><button type="button" class="secondary" data-navigate="/field">Edit My field</button><button type="button" class="secondary" data-navigate="/climate">Load or review climate</button><button type="button" class="secondary" data-navigate="/priorities">Adjust priorities</button></div>
+    ${scoring ? `<p class="source-note">Climate source: ${sourceLabel(climate.source)} · agricultural year ${climate.ag_year}–${climate.ag_year + 1}. Retrieved: ${escapeHtml(climate.retrieved_at)}. Weights: ${PRIORITIES.map(({key,label}) => `${label} ${scoring.weights[key]}`).join(' · ')}. Review crop assumptions and verification status on Evidence.</p>` : ''}
+    <div class="comparison-grid">${renderComparisonColumn('Your current',current,current,field,climate)}${renderComparisonColumn('Option A',scoring?.options[0],current,field,climate)}${renderComparisonColumn('Option B',scoring?.options[1],current,field,climate)}</div>
+    <details class="rotation-details" id="all-rotations"><summary>See all rotations · sortable table</summary><p id="table-sort-status" role="status">Select a column heading to change the sort.</p><div id="rotations-table-region">${renderRotationsTable(tableData,comparisonSort)}</div></details>
+    <details class="rotation-details"><summary>Excluded (${excluded.length}) · with reasons</summary>${excluded.length ? `<ol>${excluded.map(row => `<li><p>${escapeHtml(rotationDescription(row))}</p>${listHtml(row.reasons)}</li>`).join('')}</ol>` : '<p>No excluded calendars are available for these inputs.</p>'}</details><p class="small-note">Crop windows use listed months, not actual dates reported by you. Timelines and vulnerable-window markers arrive in step 7.</p>`;
 }
 
 export function renderWhatIf() {
@@ -187,7 +249,7 @@ function renderCropEvidence(cropData) {
     <div><dt>High nutrient demand / regionally common</dt><dd>${crop.heavy_feeder ? 'Yes' : 'No'} / ${crop.regional_common ? 'Yes' : 'No'}</dd></div>
     ${[['forage','Animal feed'],['n_fixation','Nitrogen fixation'],['erosion_cover','Erosion control'],['organic_matter','Organic matter'],['market','Market']].map(([key,label]) => `<div><dt>${label} (illustrative scale)</dt><dd>${crop[key]} out of 10</dd></div>`).join('')}
     </dl><p>${escapeHtml(crop.how_it_helps_soil)}</p><p class="small-note">${crop.photo.url ? `Photo metadata supplied: ${escapeHtml(crop.photo.credit)} · ${escapeHtml(crop.photo.licence)}` : 'No crop photo is supplied. The initial is a placeholder.'}</p></details>`).join('')}</div>` : ''}
-    <p class="small-note">Calendar filtering, climate fit, water feasibility, scores and confidence are implemented. Benefit badges and full comparison explanations arrive in step 6.</p></section>`;
+    <p class="small-note">Calendar filtering, climate fit, water feasibility, scores and confidence are implemented. Benefit badges and full comparison explanations are available on Compare.</p></section>`;
 }
 
 export function renderEvidence({ cropData = { status: 'loading', crops: [], errors: [] }, climateState = {status:'idle',data:null,error:''} } = {}) {
@@ -195,7 +257,7 @@ export function renderEvidence({ cropData = { status: 'loading', crops: [], erro
     + renderCropEvidence(cropData)
     + renderWeatherProvenance(climateState)
     + renderModelEvidence()
-    + `<section class="evidence-panel"><span class="stage-label">Step 5 · scoring preview</span><h2>Model and integration status</h2><div class="evidence-row"><h3>Weather history</h3><p>Daily POWER loading, caching and Rajkot fallback are available on the climate page. Loaded sources and request URLs appear above.</p></div><div class="evidence-row"><h3>Long-term weather changes</h3><p>Monthly records are fetched with provenance. Trend calculations and full climate cards are scheduled for step 8.</p></div><div class="evidence-row"><h3>Satellite summaries</h3><p>Not loaded yet. The optional team-supplied dataset is planned for step 9.</p></div><div class="evidence-row"><h3>Crop values and formulas</h3><p>The crop table is validated on load and calendar sequences are generated. All starter values are illustrative and unverified. The Priorities page scores retained rotations using loaded weather, your weights and the stated rules.</p></div><div class="evidence-row"><h3>Validation boundary</h3><p>Future scores will compare stated rules. Local crop values still need agricultural review. No yield or profit predictions are made.</p></div></section>`;
+    + `<section class="evidence-panel"><span class="stage-label">Step 6 · full comparison</span><h2>Model and integration status</h2><div class="evidence-row"><h3>Weather history</h3><p>Daily POWER loading, caching and Rajkot fallback are available on the climate page. Loaded sources and request URLs appear above.</p></div><div class="evidence-row"><h3>Long-term weather changes</h3><p>Monthly records are fetched with provenance. Trend calculations and full climate cards are scheduled for step 8.</p></div><div class="evidence-row"><h3>Satellite summaries</h3><p>Not loaded yet. The optional team-supplied dataset is planned for step 9.</p></div><div class="evidence-row"><h3>Crop values and formulas</h3><p>The crop table is validated on load and calendar sequences are generated. All starter values are illustrative and unverified. The Priorities page scores retained rotations using loaded weather, your weights and the stated rules.</p></div><div class="evidence-row"><h3>Validation boundary</h3><p>Scores compare stated rules. Local crop values still need agricultural review. No yield or profit predictions are made.</p></div></section>`;
 }
 
 export const ROUTES = Object.freeze([

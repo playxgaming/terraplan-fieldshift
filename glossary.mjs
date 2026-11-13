@@ -1,5 +1,7 @@
 /** Terms currently used in the app. The remaining climate glossary arrives in step 8. */
 export const GLOSSARY = Object.freeze({
+  benefit: Object.freeze({ title: 'Benefit badge', definition: 'A match to a stated comparison rule using crop-table roles and assumptions. A badge describes a potential benefit; it is not a measured change at your field.' }),
+  infiltration: Object.freeze({ title: 'Infiltration', definition: 'Water moving into the soil. A crop-role and cover comparison may suggest a potential benefit, but TerraPlan has not measured how fast water enters your soil.' }),
   priority: Object.freeze({ title: 'Priority weight', definition: 'How much importance you give a factor in the comparison. A zero weight leaves it out of the priority component; it does not turn off climate or water checks.' }),
   confidence: Object.freeze({ title: 'Confidence', definition: 'How complete and verified the inputs are under these rules. Low confidence means important uncertainties remain; even High does not guarantee that a crop will suit your field.' }),
   feasibility: Object.freeze({ title: 'Water feasibility', definition: 'A rule check comparing estimated usable water with crop water need. Passing this check does not confirm your actual water supply or establish local crop suitability.' }),

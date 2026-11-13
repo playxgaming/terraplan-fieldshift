@@ -25,11 +25,11 @@ test('empty hashes show Welcome and unknown routes have a recoverable screen', (
   assert.match(renderNotFound(), /data-navigate="\/"/);
 });
 
-test('comparison placeholders keep the current rotation and required explanations visible', () => {
+test('comparison empty states keep all three places and the five explanation sections', () => {
   const html = resolveRoute('#/compare').render();
   for (const label of ['Your current', 'Option A', 'Option B', 'Why', 'Evidence (NASA numbers)', 'Benefits', 'Information gaps', 'Check locally (KVK / agri officer)']) assert(html.includes(label));
-  assert.equal((html.match(/Not calculated yet/g) || []).length, 3);
-  assert.equal((html.match(/This column is not connected yet. Use Priorities for scores and confidence./g) || []).length, 3);
+  assert.equal((html.match(/data-comparison=/g) || []).length, 3);
+  assert.equal((html.match(/data-explanation=/g) || []).length, 15);
 });
 
 test('all screens share the persistent decision-support banner outside their route content', async () => {
@@ -38,7 +38,7 @@ test('all screens share the persistent decision-support banner outside their rou
   assert.match(shell, /<main id="app" tabindex="-1"><\/main>/);
   assert(shell.indexOf('decision-banner') < shell.indexOf('<main'));
   assert.match(shell, /data-glossary="kvk"/);
-  assert.match(shell, /Relative scoring and priority sliders available/);
+  assert(shell.includes('Current / Option A / Option B comparison available'));
 });
 
 test('terms used in the scaffold have definitions and unsupported terms are rejected', () => {
@@ -48,19 +48,19 @@ test('terms used in the scaffold have definitions and unsupported terms are reje
   assert.equal(getGlossaryEntry('unknown'), null);
 });
 
-test('generation preview keeps current warnings and exclusions visible without scores or rankings', async () => {
+test('unloaded comparison keeps current warnings and exclusions visible without inventing scores', async () => {
   const crops = JSON.parse(await readFile(new URL('../data/crops.json', import.meta.url), 'utf8'));
   const field = { ...DEMO_FARM, soil: 'sandy', current_rotation: {kharif:'rice',rabi:'wheat',zaid:null} };
   const generated = generateRotations(crops, field);
   const html = resolveRoute('#/compare').render({ generated, field, cropData: {crops,errors:[],status:'loaded'} });
-  assert(html.includes('Your current · retained for comparison'));
+  assert(html.includes('Current-rotation warnings'));
   assert(html.includes('Rice on sandy soil loses too much water'));
   assert(html.includes(`Excluded (${generated.excluded.length})`));
-  assert(html.includes('unranked'));
-  assert(html.includes('No scores are displayed in this calendar preview'));
+  assert(html.includes('Not scored'));
+  assert(html.includes('matching field/weather inputs'));
   const failed = resolveRoute('#/compare').render({ generated:generateRotations([],field),field,cropData:{crops:[],errors:[],status:'error'} });
-  assert(failed.includes('Your current · retained for comparison'));
-  assert(failed.includes('crop data are unavailable'));
+  assert(failed.includes('Current-rotation warnings'));
+  assert(failed.includes('Crop data are unavailable'));
   assert(failed.includes('missing or invalid'));
 });
 
