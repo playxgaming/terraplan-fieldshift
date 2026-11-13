@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { ROUTES, resolveRoute, renderNotFound } from '../views.mjs';
 import { getGlossaryEntry } from '../glossary.mjs';
+import { generateRotations } from '../engine.mjs';
+import { DEMO_FARM } from '../data.mjs';
 
 test('all seven required routes resolve and return complete screen content', () => {
   assert.deepEqual(ROUTES.map(route => route.path), ['/', '/field', '/climate', '/priorities', '/compare', '/whatif', '/evidence']);
@@ -44,4 +46,30 @@ test('terms used in the scaffold have definitions and unsupported terms are reje
   assert.match(getGlossaryEntry('rotation').definition, /sequence of crops/);
   assert.equal(getGlossaryEntry('__proto__'), null);
   assert.equal(getGlossaryEntry('unknown'), null);
+});
+
+test('generation preview keeps current warnings and exclusions visible without scores or rankings', async () => {
+  const crops = JSON.parse(await readFile(new URL('../data/crops.json', import.meta.url), 'utf8'));
+  const field = { ...DEMO_FARM, soil: 'sandy', current_rotation: {kharif:'rice',rabi:'wheat',zaid:null} };
+  const generated = generateRotations(crops, field);
+  const html = resolveRoute('#/compare').render({ generated, field, cropData: {crops,errors:[],status:'loaded'} });
+  assert(html.includes('Your current · retained for comparison'));
+  assert(html.includes('Rice on sandy soil loses too much water'));
+  assert(html.includes(`Excluded (${generated.excluded.length})`));
+  assert(html.includes('unranked'));
+  assert(html.includes('not been scored or checked against weather'));
+  const failed = resolveRoute('#/compare').render({ generated:generateRotations([],field),field,cropData:{crops:[],errors:[],status:'error'} });
+  assert(failed.includes('Your current · retained for comparison'));
+  assert(failed.includes('crop data are unavailable'));
+  assert(failed.includes('missing or invalid'));
+});
+
+test('Evidence reports skipped rows, escapes diagnostics and labels every starter row with its source', async () => {
+  const crops = JSON.parse(await readFile(new URL('../data/crops.json', import.meta.url), 'utf8'));
+  const html = resolveRoute('#/evidence').render({cropData:{crops,status:'loaded',errors:[{row:13,id:'<bad>',messages:['<script>bad</script>']}]}});
+  assert.equal((html.match(/Source for all values in this row/g) ?? []).length, 12);
+  assert.equal((html.match(/illustrative \(AI-drafted, not verified\)/g) ?? []).length, 13);
+  assert(html.includes('Row 13 (&lt;bad&gt;)'));
+  assert(!html.includes('<script>'));
+  assert(html.includes('all starter-based results will be Low'));
 });

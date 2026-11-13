@@ -1,5 +1,13 @@
 /** Terms currently used in the app. The remaining climate glossary arrives in step 8. */
 export const GLOSSARY = Object.freeze({
+  'nitrogen-fixer': Object.freeze({ title: 'Nitrogen fixer', definition: 'A crop that can work with root microbes to add nitrogen to the soil. The amount depends on the variety, soil and management.' }),
+  cover: Object.freeze({ title: 'Cover crop', definition: 'A crop that helps keep the soil surface covered. Coverage depends on growth and how crop residues are managed.' }),
+  'deep-rooted': Object.freeze({ title: 'Deep-rooted crop', definition: 'A crop with roots that may reach deeper soil layers. Actual root depth depends on the soil and growing conditions.' }),
+  'drought-tolerant': Object.freeze({ title: 'Drought-tolerant crop', definition: 'A crop that may cope better with periods of low water. It still needs enough water to establish and grow.' }),
+  forage: Object.freeze({ title: 'Forage', definition: 'Plant material grown or used as feed for farm animals. A forage score here is an illustrative comparison, not an amount of animal feed.' }),
+  organic_matter: Object.freeze({ title: 'Organic matter', definition: 'Material from plants and other living things that remains in the soil. The crop score is illustrative and does not replace a soil test.' }),
+  erosion: Object.freeze({ title: 'Erosion control', definition: 'Keeping soil from being carried away by water or wind. Plant cover may help, depending on local conditions.' }),
+  threshold: Object.freeze({ title: 'Temperature threshold', definition: 'A temperature limit used by the comparison rules to count unusually hot or cold days for a crop. The starter limits are illustrative and need local review.' }),
   coordinates: Object.freeze({ title: 'Latitude and longitude', definition: 'These coordinates identify a place on a map. Copy the coordinates for your field from a trusted map or ask someone locally to help find them.' }),
   hectare: Object.freeze({ title: 'Hectare', definition: 'A hectare is a unit for measuring land area. Use the area in hectares from your land records or ask your local agricultural officer to help convert it.' }),
   kharif: Object.freeze({ title: 'Kharif', definition: 'The main rainy-season cropping period. Local sowing and harvest dates depend on rain and the crop variety.' }),

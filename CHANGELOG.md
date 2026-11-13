@@ -1,5 +1,15 @@
 # Changelog
 
+## V3 — step 3 crop validation and rotation generation — 2026-11-13
+
+- Replaced the original empty crop placeholder with the 12 requested starter crops, using fodder sorghum. Every row is explicitly AI-drafted, illustrative and unverified, with no photo URL.
+- Added pure crop-schema validation, skipped-row diagnostics, local JSON loading and a retry state.
+- Added pure rotation generation with earliest complete calendars, inclusive month windows, year wrapping, deduplication and explicit calendar/soil/equipment exclusions.
+- Retained the farmer's current sequence exactly once, including overlaps, off-season crops, bare seasons and missing crop rows, with warnings instead of exclusions.
+- Added an unranked generation preview and expandable excluded list; Evidence shows per-row assumptions, source labels, errors and crop glossary help.
+- Added calendar, purity, schema, loader and view tests. The Rajkot fixture produces current + 83 alternatives, with 36 excluded sequences; these are illustrative rule outputs, not recommendations.
+- NASA loading, scoring, Option A/B selection and the full comparison remain in their subsequent build steps.
+
 ## V3 — step 2 field entry and saving — 2026-11-13
 
 - Added labelled field inputs, a soil-report checkbox, seasonal irrigation and current-crop pickers including Bare.

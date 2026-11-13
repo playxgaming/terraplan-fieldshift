@@ -1,1 +1,496 @@
-[]
+[
+  {
+    "id": "rice",
+    "name": "Rice",
+    "family": "Poaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      6,
+      7
+    ],
+    "duration_months": 4,
+    "water_need_mm": 1200,
+    "heat_threshold_c": 38,
+    "cold_threshold_c": 15,
+    "soils": [
+      "black",
+      "loam",
+      "clay"
+    ],
+    "roles": [],
+    "heavy_feeder": true,
+    "forage": 0,
+    "n_fixation": 0,
+    "erosion_cover": 5,
+    "organic_matter": 5,
+    "market": 8,
+    "equipment": "machine",
+    "regional_common": true,
+    "how_it_helps_soil": "Its roots and leftover straw may add organic material when managed locally.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "wheat",
+    "name": "Wheat",
+    "family": "Poaceae",
+    "seasons": [
+      "rabi"
+    ],
+    "start_months": [
+      10,
+      11
+    ],
+    "duration_months": 5,
+    "water_need_mm": 450,
+    "heat_threshold_c": 32,
+    "cold_threshold_c": 2,
+    "soils": [
+      "black",
+      "loam",
+      "clay"
+    ],
+    "roles": [],
+    "heavy_feeder": true,
+    "forage": 3,
+    "n_fixation": 0,
+    "erosion_cover": 5,
+    "organic_matter": 5,
+    "market": 8,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "Leaving suitable crop residues may help protect the soil surface.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "sorghum",
+    "name": "Rabi jowar (sorghum)",
+    "family": "Poaceae",
+    "seasons": [
+      "rabi"
+    ],
+    "start_months": [
+      9,
+      10
+    ],
+    "duration_months": 4,
+    "water_need_mm": 350,
+    "heat_threshold_c": 38,
+    "cold_threshold_c": 5,
+    "soils": [
+      "black",
+      "loam",
+      "clay",
+      "red"
+    ],
+    "roles": [
+      "deep-rooted",
+      "drought-tolerant"
+    ],
+    "heavy_feeder": true,
+    "forage": 7,
+    "n_fixation": 0,
+    "erosion_cover": 6,
+    "organic_matter": 6,
+    "market": 6,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "Its deeper roots may help open channels in the soil.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "bajra",
+    "name": "Bajra (pearl millet)",
+    "family": "Poaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      6,
+      7
+    ],
+    "duration_months": 3,
+    "water_need_mm": 300,
+    "heat_threshold_c": 42,
+    "cold_threshold_c": 10,
+    "soils": [
+      "black",
+      "loam",
+      "sandy",
+      "red"
+    ],
+    "roles": [
+      "drought-tolerant"
+    ],
+    "heavy_feeder": false,
+    "forage": 6,
+    "n_fixation": 0,
+    "erosion_cover": 5,
+    "organic_matter": 4,
+    "market": 6,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "Keeping its residues on the field may help cover the soil.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "maize",
+    "name": "Maize",
+    "family": "Poaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      6,
+      7
+    ],
+    "duration_months": 4,
+    "water_need_mm": 500,
+    "heat_threshold_c": 35,
+    "cold_threshold_c": 5,
+    "soils": [
+      "black",
+      "loam",
+      "clay",
+      "red"
+    ],
+    "roles": [],
+    "heavy_feeder": true,
+    "forage": 7,
+    "n_fixation": 0,
+    "erosion_cover": 6,
+    "organic_matter": 6,
+    "market": 8,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "Its residues may return organic material to the soil.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "soybean",
+    "name": "Soybean",
+    "family": "Fabaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      6,
+      7
+    ],
+    "duration_months": 4,
+    "water_need_mm": 500,
+    "heat_threshold_c": 35,
+    "cold_threshold_c": 10,
+    "soils": [
+      "black",
+      "loam",
+      "clay"
+    ],
+    "roles": [
+      "nitrogen-fixer",
+      "cover"
+    ],
+    "heavy_feeder": false,
+    "forage": 2,
+    "n_fixation": 7,
+    "erosion_cover": 7,
+    "organic_matter": 5,
+    "market": 7,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "With suitable soil microbes, its roots may add nitrogen to the soil.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "groundnut",
+    "name": "Groundnut",
+    "family": "Fabaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      6,
+      7
+    ],
+    "duration_months": 4,
+    "water_need_mm": 500,
+    "heat_threshold_c": 38,
+    "cold_threshold_c": 10,
+    "soils": [
+      "black",
+      "loam",
+      "sandy",
+      "red"
+    ],
+    "roles": [
+      "nitrogen-fixer"
+    ],
+    "heavy_feeder": false,
+    "forage": 4,
+    "n_fixation": 7,
+    "erosion_cover": 5,
+    "organic_matter": 5,
+    "market": 8,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "With suitable soil microbes, it may add nitrogen for a later crop.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "chickpea",
+    "name": "Chickpea (chana)",
+    "family": "Fabaceae",
+    "seasons": [
+      "rabi"
+    ],
+    "start_months": [
+      10,
+      11
+    ],
+    "duration_months": 4,
+    "water_need_mm": 300,
+    "heat_threshold_c": 35,
+    "cold_threshold_c": 2,
+    "soils": [
+      "black",
+      "loam",
+      "clay"
+    ],
+    "roles": [
+      "nitrogen-fixer",
+      "drought-tolerant"
+    ],
+    "heavy_feeder": false,
+    "forage": 4,
+    "n_fixation": 8,
+    "erosion_cover": 4,
+    "organic_matter": 5,
+    "market": 7,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "With suitable soil microbes, it may add nitrogen to the soil.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "tur",
+    "name": "Tur (pigeon pea)",
+    "family": "Fabaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      6,
+      7
+    ],
+    "duration_months": 7,
+    "water_need_mm": 650,
+    "heat_threshold_c": 38,
+    "cold_threshold_c": 10,
+    "soils": [
+      "black",
+      "loam",
+      "clay",
+      "red"
+    ],
+    "roles": [
+      "nitrogen-fixer",
+      "deep-rooted"
+    ],
+    "heavy_feeder": false,
+    "forage": 3,
+    "n_fixation": 8,
+    "erosion_cover": 6,
+    "organic_matter": 6,
+    "market": 7,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "Its deeper roots and nitrogen-fixing partners may help the next crop.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "moong",
+    "name": "Moong (mung bean)",
+    "family": "Fabaceae",
+    "seasons": [
+      "kharif",
+      "zaid"
+    ],
+    "start_months": [
+      3,
+      4,
+      6,
+      7
+    ],
+    "duration_months": 2,
+    "water_need_mm": 250,
+    "heat_threshold_c": 38,
+    "cold_threshold_c": 10,
+    "soils": [
+      "black",
+      "loam",
+      "sandy",
+      "red"
+    ],
+    "roles": [
+      "nitrogen-fixer",
+      "cover"
+    ],
+    "heavy_feeder": false,
+    "forage": 3,
+    "n_fixation": 7,
+    "erosion_cover": 6,
+    "organic_matter": 4,
+    "market": 7,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "A short crop may cover otherwise bare soil and add nitrogen with suitable microbes.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "cotton",
+    "name": "Cotton",
+    "family": "Malvaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      6,
+      7
+    ],
+    "duration_months": 7,
+    "water_need_mm": 700,
+    "heat_threshold_c": 40,
+    "cold_threshold_c": 12,
+    "soils": [
+      "black",
+      "loam",
+      "clay"
+    ],
+    "roles": [
+      "deep-rooted"
+    ],
+    "heavy_feeder": true,
+    "forage": 0,
+    "n_fixation": 0,
+    "erosion_cover": 5,
+    "organic_matter": 5,
+    "market": 8,
+    "equipment": "machine",
+    "regional_common": true,
+    "how_it_helps_soil": "Its deep roots may leave channels after harvest, depending on soil management.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  },
+  {
+    "id": "fodder",
+    "name": "Fodder sorghum",
+    "family": "Poaceae",
+    "seasons": [
+      "kharif",
+      "zaid"
+    ],
+    "start_months": [
+      3,
+      4,
+      6,
+      7
+    ],
+    "duration_months": 3,
+    "water_need_mm": 400,
+    "heat_threshold_c": 40,
+    "cold_threshold_c": 8,
+    "soils": [
+      "black",
+      "loam",
+      "clay",
+      "red"
+    ],
+    "roles": [
+      "forage",
+      "cover",
+      "deep-rooted"
+    ],
+    "heavy_feeder": true,
+    "forage": 9,
+    "n_fixation": 0,
+    "erosion_cover": 8,
+    "organic_matter": 6,
+    "market": 5,
+    "equipment": "basic",
+    "regional_common": true,
+    "how_it_helps_soil": "Its roots and remaining cover may help reduce exposed soil.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "source_note": "illustrative (AI-drafted, not verified)",
+    "verified": false
+  }
+]

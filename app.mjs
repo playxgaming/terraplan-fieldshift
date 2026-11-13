@@ -1,7 +1,8 @@
 import { ROUTES, resolveRoute, renderNotFound } from './views.mjs';
 import { openGlossary } from './glossary.mjs';
-import { DEMO_FARM } from './data.mjs';
-import { SEASONS, emptyField, loadField, saveField } from './field.mjs';
+import { DEMO_FARM, loadCrops } from './data.mjs';
+import { generateRotations } from './engine.mjs';
+import { SEASONS, emptyField, loadField, saveField, validateField } from './field.mjs';
 
 // Only this field-specific adapter touches storage; scenario keys are left alone.
 const fieldStorage = {
@@ -12,6 +13,7 @@ const restored = loadField(fieldStorage);
 let fieldDraft = restored.field ?? emptyField();
 let fieldMessage = restored.field ? 'Your saved field is loaded. Edit it and save again when ready.' : '';
 let storageError = restored.error;
+let cropData = { crops: [], errors: [], status: 'loading' };
 
 const app = document.getElementById('app');
 const navigation = document.getElementById('primary-nav');
@@ -29,7 +31,9 @@ function syncMenu() {
 function render({ focus = false } = {}) {
   const route = resolveRoute(window.location.hash);
   navigation.innerHTML = ROUTES.map(item => `<a href="#${item.path}"${route?.path === item.path ? ' aria-current="page"' : ''}>${item.label}</a>`).join('');
-  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError }) : renderNotFound();
+  const field = validateField(fieldDraft).field;
+  const generated = route?.path === '/compare' && field && cropData.status !== 'loading' ? generateRotations(cropData.crops, field) : null;
+  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field }) : renderNotFound();
   document.title = `TerraPlan V3 · ${route?.label ?? 'Page not found'}`;
   menuOpen = false;
   syncMenu();
@@ -57,6 +61,7 @@ document.querySelector('.skip-link').addEventListener('click', event => {
 });
 
 document.addEventListener('click', event => {
+  if (event.target.closest('[data-retry-crops]')) refreshCrops();
   if (event.target.closest('[data-load-demo]')) {
     fieldDraft = structuredClone(DEMO_FARM);
     fieldMessage = 'Demo farm, Rajkot is filled in. Review the entries, then choose Save field to keep them.';
@@ -148,3 +153,12 @@ document.getElementById('glossary-close').addEventListener('click', () => {
 
 window.addEventListener('hashchange', () => render({ focus: true }));
 render();
+
+async function refreshCrops() {
+  cropData = { crops: [], errors: [], status: 'loading' };
+  if (['#/compare', '#/evidence'].includes(window.location.hash)) render();
+  cropData = await loadCrops();
+  // Avoid replacing an in-progress field form or stealing focus when the file arrives.
+  if (['#/compare', '#/evidence'].includes(window.location.hash)) render();
+}
+refreshCrops();

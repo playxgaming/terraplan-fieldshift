@@ -1,4 +1,4 @@
-// Field choices are labels only. Agronomic values and rotation generation arrive in step 3.
+// Stable field choices; agronomic assumptions live in data/crops.json.
 export const SEASONS = Object.freeze(['kharif', 'rabi', 'zaid']);
 export const FIELD_CHOICES = Object.freeze(Object.fromEntries(Object.entries({
   soil: [['black', 'Black'], ['loam', 'Loam'], ['sandy', 'Sandy'], ['clay', 'Clay'], ['red', 'Red']],

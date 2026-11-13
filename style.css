@@ -125,6 +125,33 @@ dialog > p { color: #506347; font-size: 0.95rem; }
 #field-form .small-note { margin-top: 1rem; }
 #field-form fieldset > .glossary-link { margin-top: 1rem; font-size: 0.8rem; }
 
+.generator-preview { margin-top: 2rem; border: 1px solid var(--line); padding: 1.25rem; border-radius: 6px; background: var(--surface); }
+.generator-preview > h2 { font-size: 1.5rem; margin: 1rem 0; }
+.generator-preview > p { font-size: 0.85rem; margin-block: 1rem; }
+.current-rotation { background: var(--soft); padding: 1rem; margin-block: 1rem; border-radius: 5px; overflow-wrap: anywhere; }
+.current-rotation h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+.current-rotation p, .rotation-warnings { font-size: 0.82rem; }
+.rotation-warnings { color: #78352a; border-left: 3px solid #ac3b30; padding-left: 1.5rem; }
+.rotation-details { margin-block: 1rem; border: 1px solid var(--line); border-radius: 5px; padding: 0.75rem; font-size: 0.82rem; overflow-wrap: anywhere; }
+summary { cursor: pointer; min-height: 2.75rem; padding-block: 0.5rem; }
+summary:focus-visible { outline: 3px solid #9b6630; outline-offset: 3px; }
+.rotation-details ol { padding-left: 1.3rem; }
+.rotation-details ol > li { border-top: 1px solid var(--line); padding-block: 0.8rem; }
+.rotation-details ul { padding-left: 1rem; color: #78352a; }
+.crop-evidence { margin-bottom: 1.5rem; }
+.crop-evidence > p { font-size: 0.85rem; }
+.crop-cards { display: grid; gap: 0.75rem; margin-top: 1rem; }
+.crop-card { min-width: 0; padding: 0.65rem 1rem; border: 1px solid var(--line); border-radius: 5px; font-size: 0.82rem; overflow-wrap: anywhere; }
+.crop-initial { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 4px; background: var(--soft); margin-inline: 0.5rem; font-weight: 700; }
+.crop-card dl { margin-block: 1rem; }
+.crop-card dl > div { padding-block: 0.5rem; border-top: 1px solid var(--line); }
+.crop-card dt { font-weight: 600; }
+.crop-card dd { margin: 0.15rem 0 0; }
+.crop-card > p { margin-block: 0.75rem; }
+.crop-errors { padding: 1rem; margin-block: 1rem; background: #fff2ec; color: #78352a; border: 1px solid #ac3b30; border-radius: 5px; overflow-wrap: anywhere; font-size: 0.85rem; }
+.crop-errors h3 { font-size: 1rem; }
+.crop-errors ul { padding-left: 1.25rem; }
+
 @media (min-width: 40rem) {
   .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .season-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
