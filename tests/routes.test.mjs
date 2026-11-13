@@ -38,7 +38,7 @@ test('all screens share the persistent decision-support banner outside their rou
   assert.match(shell, /<main id="app" tabindex="-1"><\/main>/);
   assert(shell.indexOf('decision-banner') < shell.indexOf('<main'));
   assert.match(shell, /data-glossary="kvk"/);
-  assert(shell.includes('June–May timelines and historical weather markers available'));
+  assert(shell.includes('Climate cards, crop comparisons, timelines and What-if experiments'));
 });
 
 test('terms used in the scaffold have definitions and unsupported terms are rejected', () => {

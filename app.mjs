@@ -63,6 +63,10 @@ function render({ focus = false } = {}) {
   }
 }
 
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && menuOpen) { menuOpen = false; syncMenu(); menuButton.focus(); }
+});
+
 menuButton.addEventListener('click', () => {
   menuOpen = !menuOpen;
   syncMenu();

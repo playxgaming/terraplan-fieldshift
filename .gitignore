@@ -19,3 +19,6 @@ Thumbs.db
 .vscode/
 
 # V3 uses root-level HTML, CSS and ES modules. Public data JSON stays tracked.
+
+# Allowlisted GitHub Pages artifact
+.pages-dist/

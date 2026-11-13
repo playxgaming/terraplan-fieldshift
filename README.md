@@ -6,11 +6,11 @@ NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 
 V3 is a fresh build for small farms in western India. The planned workflow starts with the farmer's **current rotation** and compares it with two alternatives using stated rules and clearly labelled NASA evidence.
 
-## Current status: steps 1–7
+## Current status: steps 1–11
 
-This branch implements the first seven build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison with crop timelines. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
+This branch implements the first eleven build steps in [AGENTS.md](AGENTS.md): seven routes, mobile navigation, a persistent decision-support banner, a validated field form with browser storage, crop validation/rotation generation, NASA POWER loading with offline demo fallback, a relative scoring/priority preview, and the explained three-column comparison with crop timelines, full climate cards and What-if sensitivity. It does not copy V2 application code or datasets. V2 remains in the `main` branch and the existing release history.
 
-Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. June–May crop timelines now show historical weather markers and known Bare months. Full climate cards, monthly trends and scenarios are **not implemented yet**.
+Field entry, saving, editable Rajkot demo loading, unranked rotation generation, NASA POWER loading/caching and per-crop climate metrics are available. The Priorities page now scores rotations with water-feasibility labels and confidence reasons. Compare now displays current / Option A / Option B, potential-benefit badges, information gaps, local checks and a sortable table. June–May crop timelines now show historical weather markers and known Bare months. Climate cards, complete-year monthly trends, optional satellite evidence and What-if sensitivity are now implemented. Satellite observations have not been supplied; the cards show **Not loaded yet**.
 
 Choose **Start** for a blank field or **Load demo farm** for the shared Rajkot definition. Fill in the location, soil, water, equipment, market access and current crop for each season. Every season supports **Bare (no crop)**. Choose **Save field** to keep entries after reloading. Demo loading fills a draft and does not overwrite a saved field until you save it. Draft edits survive navigation between pages in the current tab, but unsaved edits do not survive a reload.
 
@@ -18,7 +18,7 @@ All numeric values must be finite: latitude −90…90, longitude −180…180, 
 
 Storage uses `terraplan.v3.field` with the envelope `{ "version": 1, "field": { ... } }`. Field saves write only this key. Weather requests write their own versioned cache keys; future What-if storage and unrelated keys are untouched. Corrupt, invalid or unsupported records show a recovery message and are kept unchanged until the user saves a valid replacement. Blocked storage or quota failures leave the editable draft visible and do not claim success. Browser storage is local to the origin/browser; it is not an account or a cloud backup.
 
-The 12-crop starter contains explicitly illustrative, AI-drafted values: every row has `verified: false` and `source_note: "illustrative (AI-drafted, not verified)"`. These are not NASA measurements or verified farming advice. Fodder means fodder sorghum. Photo URLs are empty; initials serve as placeholders. The daily and monthly demo files now contain actual NASA POWER responses plus retrieval metadata. The optional satellite file is absent. No missing value is shown as zero.
+The 12-crop starter contains explicitly illustrative, AI-drafted values: every row has `verified: false` and `source_note: "illustrative (AI-drafted, not verified)"`. These are not NASA measurements or verified farming advice. Fodder means fodder sorghum. Photo URLs are empty; initials serve as placeholders. The daily and monthly demo files now contain actual NASA POWER responses plus retrieval metadata. The optional satellite file is a not-loaded manifest, with no invented observations. No missing value is shown as zero.
 
 ## Run locally
 
@@ -38,15 +38,15 @@ With Python on your PATH, `npm start` serves the same root at http://127.0.0.1:3
 | --- | --- | --- |
 | `#/` | Welcome | Start a field or load an editable Rajkot demo |
 | `#/field` | My field | Validated form, current-rotation pickers, save/reload and recovery messages |
-| `#/climate` | Your climate (NASA) | Explicit live/bundle loading, source labels, current-crop metrics, missing-data notes and retry |
+| `#/climate` | Your climate (NASA) | Explicit live/bundle loading, source labels, current-crop cards, annual trends, optional satellite summaries, missing-data notes and retry |
 | `#/priorities` | Priorities | Six weights, live ranking preview, current score, water labels and confidence/rule reasons |
 | `#/compare` | Compare rotations | Current / Option A / Option B, crop timelines, ordered explanations, badges, sortable retained-rotation table and exclusions |
-| `#/whatif` | What if? | Scenario and sensitivity placeholder |
+| `#/whatif` | What if? | Rain/temperature/irrigation experiments on fixed comparison plans; four historical-year scores and best/worst |
 | `#/evidence` | Evidence | Crop assumptions plus weather request URLs, retrieval times, source labels, parameter metadata and limitations |
 
 Unknown routes provide a return-to-Welcome action. Direct hashes and browser back/forward are supported. Mobile navigation can be expanded/collapsed; each route updates the title, active link and main-content focus. The decision-support message remains outside the routed content.
 
-Glossary popups explain **KVK**, **crop rotation**, **kharif**, **rabi**, **zaid**, **irrigation in millimetres**, **coordinates** and **hectares**. They open with click/keyboard and close through the Close button or Escape. Crop-related terms have help on Evidence. The remaining climate glossary is scheduled for step 8.
+Glossary popups explain **KVK**, **crop rotation**, **kharif**, **rabi**, **zaid**, **irrigation in millimetres**, **coordinates** and **hectares**. They open with click/keyboard and close through the Close button or Escape. Crop-related terms have help on Evidence. Climate, satellite and sensitivity terms are also available.
 
 ## Files
 
@@ -76,7 +76,7 @@ npm run check
 npm run verify
 ```
 
-The suite contains 75 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 90 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 
@@ -103,7 +103,7 @@ For the current illustrative Rajkot fixture: **84 retained rotations (current + 
 
 Daily parameters: `PRECTOTCORR,T2M,T2M_MAX,T2M_MIN,GWETROOT,GWETTOP`. For agricultural year Y, the requested range is June 1 of Y−3 through May 31 of Y+1. The default Y follows the specification: current month ≥ July gives current year−1; January–June gives current year−2. Dates use UTC calendar arithmetic while the provider's default daily data time standard is LST (recorded in metadata).
 
-Monthly parameters: `PRECTOTCORR_SUM,T2M_MAX`, 1991–2024. Parsing emits 408 monthly entries and skips month 13 (annual values). Raw sums and provider units are retained. The downloaded API metadata labels `PRECTOTCORR_SUM` as `mm/day`; no conversion or monthly trend is performed in step 4. Unit interpretation must remain explicit when step 8 adds trends. Missing values, including −999 and absent dates, become null.
+Monthly parameters: `PRECTOTCORR_SUM,T2M_MAX`, 1991–2024. Parsing emits 408 monthly entries and skips month 13 (annual values). Raw sums and provider units are retained. The downloaded API metadata labels `PRECTOTCORR_SUM` as `mm/day`; the monthly accumulation is used directly in mm, following the NASA POWER GIS variable definition and a cross-check against every overlapping complete daily month. The discrepancy is explicitly disclosed on the cards and Evidence; do not multiply the SUM by days. Missing values, including −999 and absent dates, become null.
 
 Fallback order is **live → validated cache → matching Rajkot bundle**. Cache keys include temporal level, coordinates rounded to two decimal places, start and end dates; records are versioned and checked against request URL, location and range before use. Cache fallback keeps the original retrieval time. Corrupt cache bytes are left untouched when a fallback is used. A bundle for another point or date range is rejected. Monthly failure is reported separately while daily data remain usable. Storage quota/blocking errors do not hide successful live data.
 
@@ -120,7 +120,7 @@ When the default agricultural year advances, regenerate the daily bundle; the ap
 
 The small test fixture is explicitly synthetic and lives only in `tests/fixtures/power-small.json`. Demo files under `data/` contain the real downloads. The fixture's expected June metrics are 205 mm partial rain, 2 heat days, 1 cold day, 2 heavy-rain days, a 10-day dry spell, 27 complete days and 3 missing days.
 
-NASA references: [daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/), [monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/), [data methodology/FAQ](https://power.larc.nasa.gov/docs/faqs/data/). POWER area patterns are not field measurements; soil wetness is a MERRA-2 model value. Crop thresholds remain illustrative. Full climate cards and trends remain scheduled for step 8.
+NASA references: [daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/), [monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/), [data methodology/FAQ](https://power.larc.nasa.gov/docs/faqs/data/). POWER area patterns are not field measurements; soil wetness is a MERRA-2 model value. Crop thresholds remain illustrative. Full climate cards and complete-year trends are available on Your climate.
 
 ## Scoring and priority preview
 
@@ -168,11 +168,31 @@ Each populated comparison has twelve June–May cells. Crop names and colours id
 
 A known dry run needs at least 10 consecutive days below 2.5 mm inside that crop window. Every month touched by the qualifying run is marked, including runs crossing a month boundary. Missing days break runs. Missing weather stays unknown rather than zero; no weather flag is placed in a Bare month. Markers describe historical area weather under rules, not forecasts or confirmed crop damage. Timeline tests cover threshold boundaries, cross-month runs, missing records, leap years, unknown calendars, overlap, year clipping, safe rendering and unchanged demo scoring.
 
-## Next build step
+## Climate and satellite evidence
 
-**Step 8:** full POWER climate cards, monthly trends, glossary and resolution notes. Do one build step per prompt, test and check the app, then commit as specified in AGENTS.md.
+Your climate shows six cards per active current crop: rainfall, heat/cold days, longest known dry spell, heavy-rain days and model root-zone wetness. Each has a plain explanation, source/retrieval label, grid resolution and glossary help. Crop thresholds and calendars remain illustrative. Bare seasons have no crop-specific metrics.
 
-Public GitHub Pages deployment is scheduled for step 11. This scaffold does not replace the existing V2 live Site.
+Long-term trends cover calendar years 1991–2024, separately from agricultural years. Rain uses the sum of twelve monthly accumulations; Tmax uses the mean of twelve monthly values. Each series drops an incomplete year independently. Ordinary least-squares slope against the actual years is multiplied by ten; at least two complete years are needed. The cards list all years used and provide an annual audit table. No statistical significance or forecast is claimed. NASA metadata reference: [POWER monthly variable definitions](https://gis.earthdata.nasa.gov/portal/rest/services/POWER/POWER_MONTHLY_METEOROLOGY_LST/ImageServer/multiDimensionalInfo).
+
+`data/demo-satellite.json` is an explicit not-loaded manifest. Replace it with the sourced team dataset described in AGENTS.md §9.4. The loader requires a matching Rajkot location, valid retrieval time and HTTPS/DOI sources, and skips invalid products independently. Cards never apply Rajkot values to another field. IMERG/POWER differences require complete, same-location monthly rain records; SMAP anomalies show supplied units or a missing-unit note; GRACE is total water-storage context, not isolated groundwater or a well measurement. Satellite values do not change scores.
+
+## What-if experiments
+
+Load field weather, select priorities and open What if?. Rain ranges from −50% to +30%; added temperature from 0 to 3 °C affects daily mean/minimum/maximum; seasonal irrigation ranges from 0 to 1500 mm as an absolute amount. These controls operate on copies. Missing values stay missing and soil wetness stays unchanged. No crop-growth or hydrological response is simulated.
+
+The three plans are the baseline current/A/B for the present field and priorities. Their IDs remain fixed during experiments and across all four available agricultural years; a worsening result cannot silently select a replacement. The table applies the active settings in every historical year, retains missing scores and water warnings, and reports best/worst years among available totals. This is sensitivity analysis, not a forecast or yield/profit prediction.
+
+Validated settings are stored separately as `{version:1,scenario:{rain_pct,temperature_c,irrigation_mm}}` under `terraplan.v3.whatif`. Field saving does not reset them. Reset uses the current field irrigation and zero weather change. Invalid stored bytes are preserved with a recovery notice; blocked storage leaves tab edits usable without claiming they were saved. Priority weights remain tab-local.
+
+## Deployment and verification
+
+Public site: [TerraPlan V3 on GitHub Pages](https://playxgaming.github.io/terraplan-fieldshift/). Repository source stays private; the existing V2 Site and main branch are preserved. The workflow publishes the `codex/terraplan-v3` branch after verification. Each deployed artifact includes `build-info.json` with its source commit and version.
+
+`npm run package:site` creates a fresh `.pages-dist` directory containing only allowlisted app modules, public demo JSON, licence and build metadata. It refuses to reuse an existing output directory. No repository history, instructions, tests, credentials or private hosting files are published. All imports and asset URLs are relative so project-site paths work. No build or runtime dependency is required.
+
+The 90-test suite checks prior field/generator/scoring/timeline contracts plus trend arithmetic and units, satellite provenance/location boundaries, scenario validation/storage/purity/fixed IDs, exact historical recalculation and deployment contents. Browser verification covers the demo flow, 360 px reflow, desktop columns, keyboard ranges, native month disclosures, horizontal data regions, glossary dismissal/focus and route/menu labels. Full certification with every screen reader/device is not claimed.
+
+Steps 1–11 are implemented. Step 12 remains optional: map pin, regional-language labels and print view. Crop values and satellite observations still need the data/agronomy team; photos remain explicitly labelled initial placeholders until licensed images are supplied.
 
 ## Honesty and credits
 

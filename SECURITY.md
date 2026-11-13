@@ -1,6 +1,6 @@
 # Security and data boundaries
 
-V3 step 7 is a static app with validated field entry, browser-local persistence and locally computed scores/comparisons. It has no login, backend or user file imports. User-triggered weather requests go to NASA POWER. Field names and loaded metadata are escaped when rendered. Field/cache records are versioned and validated before use. Storage failures show a message instead of claiming success; corrupt records are not deleted by fallback handling.
+V3 steps 1–11 is a static app with validated field entry, browser-local persistence and locally computed scores/comparisons. It has no login, backend or user file imports. User-triggered weather requests go to NASA POWER. Field names and loaded metadata are escaped when rendered. Field/cache records are versioned and validated before use. Storage failures show a message instead of claiming success; corrupt records are not deleted by fallback handling.
 
 Priority weights are validated whole numbers from 0 to 5 and are held in tab memory. Slider changes make no remote requests and write no browser storage. They reuse already loaded weather; missing/stale weather is not silently scored. Priority changes, field saves and weather caching leave What-if storage alone.
 
@@ -13,3 +13,9 @@ Anyone with access to this browser profile or scripts running on the same origin
 Use GitHub private vulnerability reporting if it is enabled for this repository. Otherwise request a private reporting channel without posting sensitive details, tokens or actual field profiles.
 
 Do not add credentials or private hosting files. Future NASA coordinates, browser storage and imported data need explicit handling and honest provenance. No formal security audit is claimed.
+
+What-if settings are validated and stored only under `terraplan.v3.whatif` in a versioned envelope. Experiments work on copies of historical records; missing values and original observations are retained. These settings do not write the field profile or trigger network requests. Invalid persisted settings remain stored until a deliberate edit/reset replaces them. Scenario field saves do not reset settings.
+
+Satellite summaries require demo-location, retrieval-time and HTTPS/DOI provenance checks before values are exposed. Invalid products are independently skipped. These summaries never alter rotation scores. The checked-in manifest contains no satellite observations.
+
+The Pages workflow verifies tests before publishing an allowlist of runtime modules, public demo data, licence and build metadata. It excludes repository history, instructions, tests and private files. Deployment permissions are confined to the deployment job; actions are pinned to commits. The public artifact has no user field profiles, credentials or browser caches. Repository visibility remains private.

@@ -32,7 +32,7 @@ export const MODEL = Object.freeze({
 export const SCENARIO_LIMITS = Object.freeze({
   rain_pct:Object.freeze({min:-50,max:30,step:1}),
   temperature_c:Object.freeze({min:0,max:3,step:0.1}),
-  irrigation_mm:Object.freeze({...FIELD_LIMITS.irrigation_mm,step:10}),
+  irrigation_mm:Object.freeze({...FIELD_LIMITS.irrigation_mm,step:'any'}),
 });
 
 export function defaultScenario(field = null) {

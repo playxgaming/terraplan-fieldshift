@@ -1,5 +1,12 @@
 # Changelog
 
+## V3 — step 11 accessibility and Pages deployment — 2026-11-13
+
+- Audited mobile routes and keyboard controls; added consistent glossary hit areas and focus indicators for scrolling tables.
+- Kept fractional entered irrigation intact in the experiment controls and rejected wrong-location POWER data in satellite cross-checks.
+- Updated setup, feature, dataset, scenario and limitation documentation. Added allowlisted Pages packaging with a source-commit manifest and a deployment-content test.
+- Added a pinned-actions workflow that verifies before publishing the V3 branch. Main and the V2 live Site remain unchanged.
+
 ## V3 — step 10 What-if and historical sensitivity — 2026-11-13
 
 - Added validated rain, temperature and absolute seasonal irrigation sliders, saved separately from the field with recovery from invalid/blocked storage.

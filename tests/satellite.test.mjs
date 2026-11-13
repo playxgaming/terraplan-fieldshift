@@ -17,10 +17,11 @@ test('satellite provenance and location are mandatory and invalid products are s
 test('satellite view keeps zero values, missing cross-checks and non-demo location boundaries honest',()=>{
  const state=validateSatellite(fixture());
  const daily=Array.from({length:30},(_,i)=>({date:`2025-06-${String(i+1).padStart(2,'0')}`,rain:1}));
- const html=renderSatelliteCards(DEMO_FARM,state,{daily});assert.match(html,/-30/);assert.match(html,/0 cm\/year/);assert.match(html,/units not supplied/);
+ const html=renderSatelliteCards(DEMO_FARM,state,{daily,point:DEMO_FARM});assert.match(html,/-30/);assert.match(html,/0 cm\/year/);assert.match(html,/units not supplied/);
  assert(!html.includes('javascript:'));
- const partial=renderSatelliteCards(DEMO_FARM,state,{daily:daily.slice(1)});assert.match(partial,/<td>Missing<\/td>/);
- const other=renderSatelliteCards({...DEMO_FARM,lat:23},state,{daily});assert.match(other,/No Rajkot satellite value is applied/);assert(!other.includes('0 cm/year'));
+ const wrong=renderSatelliteCards(DEMO_FARM,state,{daily,point:{lat:23,lon:70}});assert(!wrong.includes('-30'));
+ const partial=renderSatelliteCards(DEMO_FARM,state,{daily:daily.slice(1),point:DEMO_FARM});assert.match(partial,/<td>Missing<\/td>/);
+ const other=renderSatelliteCards({...DEMO_FARM,lat:23},state,{daily,point:DEMO_FARM});assert.match(other,/No Rajkot satellite value is applied/);assert(!other.includes('0 cm/year'));
  state.data.sources[0].name='<script>';assert(!renderSatelliteCards(DEMO_FARM,state).includes('<script>'));
  assert.match(renderSatelliteCards(DEMO_FARM),/Not loaded yet/);
 });
