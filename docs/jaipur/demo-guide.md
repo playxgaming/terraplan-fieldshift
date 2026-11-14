@@ -20,4 +20,4 @@ All 12 crop rows remain unverified. Original regional flags were designed for Gu
 
 ## Before presenting
 
-Check the Site opens in the presenting account: it currently retains owner-private access. For a venue Wi-Fi backup, unzip the supplied static package, run `python -m http.server 8080 --bind 127.0.0.1` inside its directory and open `http://127.0.0.1:8080`. Keep the server running. No installation or API key is required. The optional map needs internet; the core bundled demo, photos and fonts are local. Downloaded briefs contain field coordinates; share them intentionally.
+Check the public Site opens in a private browser window. The owner authorized public Studio access during the readiness audit. For a venue Wi-Fi backup, unzip the supplied static package, run `python -m http.server 8080 --bind 127.0.0.1` inside its directory and open `http://127.0.0.1:8080`. Keep the server running. No installation or API key is required. The optional map needs internet; the core bundled demo, photos and fonts are local. Downloaded briefs contain field coordinates; share them intentionally.

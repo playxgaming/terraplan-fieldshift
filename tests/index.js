@@ -14,3 +14,5 @@ import './deployment.test.mjs';
 import './optional.test.mjs';
 import './studio.test.mjs';
 import './jaipur.test.mjs';
+
+import './readiness.test.mjs';

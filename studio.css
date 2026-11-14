@@ -282,3 +282,7 @@
 @media print {.brief-actions{display:none}.local-model-note{font-size:8pt}}
 
 @media screen{.compare-field-context{font-size:.76rem;color:#4d6744;margin:-.8rem 0 .8rem}}
+.history-chart{margin:1.5rem 0;padding:1rem;background:#fffefa;border:1px solid var(--line,#dfe5d7);border-radius:10px;color:#34583e}
+.history-chart figcaption{font-weight:700}.history-chart svg{display:block;width:100%;height:auto;margin-top:.8rem}.history-chart text{font:12px sans-serif;fill:currentColor}
+.readiness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}.readiness-grid h3{font-size:1rem}
+@media(max-width:600px){.readiness-grid{grid-template-columns:1fr}.field-intro{flex-wrap:wrap}}

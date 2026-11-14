@@ -1,6 +1,6 @@
 # TerraPlan V3 · Field Studio
 
-Studio: [TerraPlan V3 · Field Studio](https://terraplan-v3-studio.sarveshsehra1.chatgpt.site). This separate Site uses owner-private access, matching the earlier Site.
+Studio: [TerraPlan V3 · Field Studio](https://terraplan-v3-studio.sarveshsehra1.chatgpt.site). This separate Studio Site is public for judging at the owner's request; V2 and the earlier V3 Pages release remain separate.
 
 The separately hosted Studio redesign lives on `codex/terraplan-v3-studio`. The original public V3 Pages site and earlier V2 Site remain unchanged. Studio adds a refined planning workspace, an original animated WebGL field and sourced crop photographs while preserving V3 calculations. See [the UI/UX and regression review](docs/design-studio/review.md).
 
@@ -9,6 +9,12 @@ NASA Space Apps 2026 · **Field Shift: Adapting Farms with NASA Data**
 **TerraPlan supports your decision. It does not replace your judgment or local advice.**
 
 V3 is a fresh build for small farms in western India. The planned workflow starts with the farmer's **current rotation** and compares it with two alternatives using stated rules and clearly labelled NASA evidence.
+
+## AEGIS LABS · readiness release
+
+Team: Sarvesh Sehra (owner), Ayush Tyagi, Aditya Rathi and Arshi. See the [requirement audit and completed plan](docs/jaipur/requirements.md), [submission text draft](docs/jaipur/submission-draft.md) and [seven-slide presentation](pitch.html). This is a demonstrated prototype, not confirmation of official registration/submission or validated farming recommendations.
+
+Priorities now survive reload under their own versioned `terraplan.v3.priorities` record. Restore saved field recovers the saved form after trying the demo. Evidence withholds weather for a changed field point/year. Annual history charts retain missing-year gaps and link to the exact annual values table.
 
 ## Jaipur demo release
 
@@ -86,7 +92,7 @@ npm run check
 npm run verify
 ```
 
-The suite contains 103 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
+The suite contains 107 tests. These include numeric boundary/coercion rejection, required choices, Bare seasons, a versioned save/load round trip, preservation of other stored state, corrupt records, blocked/quota-limited storage and safe rendering of field names. The original route/configuration/data checks remain. A small `tests/index.js` entrypoint makes the requested `node --test tests/` command work on Node.js 24.
 
 The crop picker registry in `field.mjs` contains names/IDs only, with every crop available for recording the farmer's actual current rotation. It contains no agronomic values or suitability claims. The crop table uses these IDs (`rice`, `wheat`, `sorghum`, `bajra`, `maize`, `soybean`, `groundnut`, `chickpea`, `tur`, `moong`, `cotton`, `fodder`). The selected fodder is fodder sorghum. Current crops must not be silently removed for seasonal or suitability mismatches.
 

@@ -1,4 +1,5 @@
 import {buildDecisionBrief} from './brief.mjs';
+import {loadPriorities,savePriorities} from './priorities.mjs';
 import {mountFieldScene} from './field-scene.mjs';
 import {LABELS,validLanguage,loadLabelLanguage,saveLabelLanguage,applyCropLabels} from './labels.mjs';
 import {mapPoint,createFieldMap} from './map.mjs';
@@ -24,7 +25,9 @@ let storageError = restored.error;
 let cropData = { crops: [], errors: [], status: 'loading' };
 let climateState = { status: 'idle', data: null, error: '', key: '' };
 let climateRequestId = 0;
-let priorities = defaultPriorities();
+const restoredPriorities=loadPriorities(fieldStorage);
+let priorities = restoredPriorities.priorities;
+let priorityStorageError=restoredPriorities.error;
 let satelliteState = {status:'loading',data:null,errors:[]};
 const restoredScenario = loadScenario(fieldStorage);
 let scenarioSettings = restoredScenario.scenario;
@@ -95,7 +98,7 @@ function render({ focus = false } = {}) {
   disposeScene();
   mapRequest++;
   mapController?.destroy();mapController=null;
-  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, scoring, comparisonSort, satelliteState, scenario, scenarioResult, scenarioError }) : renderNotFound();
+  app.innerHTML = route ? route.render({ draft: fieldDraft, message: fieldMessage, storageError, cropData, generated, field, climateState, climateMatches, metrics, priorities, priorityStorageError, scoring, comparisonSort, satelliteState, scenario, scenarioResult, scenarioError }) : renderNotFound();
   localize();
   disposeScene=mountFieldScene(app);
   document.getElementById('route-crumb').textContent=route?.label??'Page not found';
@@ -152,6 +155,7 @@ document.addEventListener('click', event => {
   }
   if (event.target.closest('[data-reset-priorities]')) {
     priorities = defaultPriorities();
+    persistPriorities();
     for (const {key} of PRIORITIES) {
       const input = document.getElementById(`priority-${key}`);
       input.value = String(priorities[key]);
@@ -166,6 +170,14 @@ document.addEventListener('click', event => {
   if (weather) refreshClimate(weather.dataset.loadClimate);
   if (event.target.closest('[data-retry-crops]')) refreshCrops();
   if (event.target.closest('[data-run-demo]')) runDemo();
+  if (event.target.closest('[data-restore-field]')) {
+    const saved=loadField(fieldStorage);
+    if(saved.field){
+      fieldDraft=saved.field;storageError='';
+      fieldMessage='Saved field restored as your draft. Priorities and What-if settings are unchanged. Load matching weather if the location changed.';
+    }else{storageError=saved.error;fieldMessage=saved.error?'Your current draft is kept.':'No saved field is available. Your current draft is kept.';}
+    render({focus:true});
+  }
   if (event.target.closest('[data-download-brief]')) downloadBrief();
   if (event.target.closest('[data-load-demo]')) {
     fieldDraft = structuredClone(DEMO_FARM);
@@ -221,6 +233,7 @@ app.addEventListener('input', event => {
     return;
   }
   priorities = checked.priorities;
+  persistPriorities();
   event.target.removeAttribute('aria-invalid');
   error.textContent = '';
   document.getElementById(`weight-${key}`).textContent = String(priorities[key]);
@@ -326,6 +339,12 @@ function updatePriorityRanking() {
   document.getElementById('ranking-preview').innerHTML = renderRankingPreview(scoring);
   localize(document.getElementById('ranking-preview'));
   document.getElementById('ranking-status').textContent = `Ranking updated. ${scoring.ranked.filter(row => row.total !== null).length} alternatives have a score. ${scoring.options[0] ? `First comparison candidate: ${SEASONS.map(season => scoring.options[0].seasons[season]?.crop.name ?? 'Bare').join(', ')}. ${scoring.options[0].feasibility_label}.` : 'No scored comparison candidate is available.'}`;
+}
+
+function persistPriorities(){
+  priorityStorageError=savePriorities(fieldStorage,priorities);
+  const status=document.getElementById('priority-storage');
+  if(status)status.textContent=priorityStorageError || 'Priorities saved on this browser.';
 }
 
 loadSatellite().then(result => {
