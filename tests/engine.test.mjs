@@ -19,7 +19,7 @@ test('model configuration can be imported and serialized without browser globals
 test('starter crop table matches field IDs and passes schema validation without scientific verification', () => {
   const result = validateCrops(crops);
   assert.deepEqual(result.errors, []);
-  assert.equal(result.crops.length, 12);
+  assert.equal(result.crops.length, 15);
   assert.deepEqual(new Set(result.crops.map(row => row.id)), new Set(FIELD_CHOICES.crop.map(([id]) => id)));
   assert(result.crops.every(row => row.verified === false));
   assert.equal(result.crops.find(row => row.id === 'fodder').name, 'Fodder sorghum');

@@ -492,5 +492,181 @@
     },
     "source_note": "illustrative (AI-drafted, not verified)",
     "verified": false
+  },
+  {
+    "id": "mustard",
+    "name": "Indian mustard (sarson)",
+    "family": "Brassicaceae",
+    "seasons": [
+      "rabi"
+    ],
+    "start_months": [
+      10,
+      11
+    ],
+    "duration_months": 5,
+    "water_need_mm": 300,
+    "heat_threshold_c": 32,
+    "cold_threshold_c": 2,
+    "soils": [
+      "loam",
+      "sandy",
+      "clay"
+    ],
+    "roles": [
+      "deep-rooted"
+    ],
+    "heavy_feeder": true,
+    "forage": 1,
+    "n_fixation": 0,
+    "erosion_cover": 5,
+    "organic_matter": 4,
+    "market": 7,
+    "how_it_helps_soil": "A different plant family may interrupt some cereal-linked pest cycles; local pests and residue management still need review.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "equipment": "basic",
+    "regional_common": false,
+    "verified": false,
+    "source_note": "Source-researched prototype (not agronomist-verified). Calendars and crop identity use linked references; temperature thresholds, broad soil classes, water proxies and 0–10 scores remain illustrative modelling assumptions.",
+    "review": {
+      "reviewed_on": "2026-11-15",
+      "status": "Literature review only; local agronomist validation pending",
+      "sources": [
+        {
+          "title": "ICAR-DRMR Indian mustard varieties",
+          "url": "https://drmr.res.in/rm_varieties.php",
+          "supports": "Indian mustard identity, Rajasthan-growing zones and variety-specific maturity. Not a universal water or temperature threshold."
+        },
+        {
+          "title": "ICAR rabi agro-advisory 2021–22",
+          "url": "https://www.icar.gov.in/sites/default/files/2022-09/Rabi-Agro-Advisory-2021-22_0.pdf",
+          "supports": "Rabi sowing and crop-management context. This prototype does not reproduce pesticide or fertilizer advice."
+        }
+      ],
+      "assumptions_note": "Model calendar bins approximate variety-dependent maturity. Mustard 300 mm and clusterbean 350 mm are illustrative seasonal water proxies, not published irrigation prescriptions. Barley 500 mm is an indicative value within the FAO 450–650 mm range. All temperature limits, nutrient-demand flags, role benefits, soils, equipment and attribute scores need local review. regional_common is false conservatively; it is not a claim that the crop is absent locally."
+    }
+  },
+  {
+    "id": "barley",
+    "name": "Barley (jau)",
+    "family": "Poaceae",
+    "seasons": [
+      "rabi"
+    ],
+    "start_months": [
+      10,
+      11
+    ],
+    "duration_months": 5,
+    "water_need_mm": 500,
+    "heat_threshold_c": 32,
+    "cold_threshold_c": 0,
+    "soils": [
+      "loam",
+      "sandy",
+      "clay"
+    ],
+    "roles": [
+      "forage"
+    ],
+    "heavy_feeder": true,
+    "forage": 7,
+    "n_fixation": 0,
+    "erosion_cover": 6,
+    "organic_matter": 5,
+    "market": 6,
+    "how_it_helps_soil": "Suitable residue retention may protect the soil surface; this cereal does not add a nitrogen-fixer role.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "equipment": "basic",
+    "regional_common": false,
+    "verified": false,
+    "source_note": "Source-researched prototype (not agronomist-verified). Calendars and crop identity use linked references; temperature thresholds, broad soil classes, water proxies and 0–10 scores remain illustrative modelling assumptions.",
+    "review": {
+      "reviewed_on": "2026-11-15",
+      "status": "Literature review only; local agronomist validation pending",
+      "sources": [
+        {
+          "title": "Government of India NFSM crop package",
+          "url": "https://nfsm.gov.in/ReadyReckoner/NFSM_Package.pdf",
+          "supports": "Barley rabi sowing in October–November and soil context."
+        },
+        {
+          "title": "FAO Irrigation Water Management: crop water needs",
+          "url": "https://www.fao.org/4/s2022e/s2022e02.htm",
+          "supports": "Indicative barley/oats/wheat duration 120–150 days and seasonal crop water need 450–650 mm; values vary by climate and variety."
+        }
+      ],
+      "assumptions_note": "Model calendar bins approximate variety-dependent maturity. Mustard 300 mm and clusterbean 350 mm are illustrative seasonal water proxies, not published irrigation prescriptions. Barley 500 mm is an indicative value within the FAO 450–650 mm range. All temperature limits, nutrient-demand flags, role benefits, soils, equipment and attribute scores need local review. regional_common is false conservatively; it is not a claim that the crop is absent locally."
+    }
+  },
+  {
+    "id": "clusterbean",
+    "name": "Cluster bean (guar)",
+    "family": "Fabaceae",
+    "seasons": [
+      "kharif"
+    ],
+    "start_months": [
+      7
+    ],
+    "duration_months": 4,
+    "water_need_mm": 350,
+    "heat_threshold_c": 40,
+    "cold_threshold_c": 12,
+    "soils": [
+      "loam",
+      "sandy"
+    ],
+    "roles": [
+      "nitrogen-fixer",
+      "drought-tolerant",
+      "deep-rooted"
+    ],
+    "heavy_feeder": false,
+    "forage": 5,
+    "n_fixation": 7,
+    "erosion_cover": 5,
+    "organic_matter": 5,
+    "market": 6,
+    "how_it_helps_soil": "With suitable root microbes, guar may fix nitrogen; actual amounts depend on soil, variety and management.",
+    "photo": {
+      "url": "",
+      "credit": "",
+      "licence": ""
+    },
+    "equipment": "basic",
+    "regional_common": false,
+    "verified": false,
+    "source_note": "Source-researched prototype (not agronomist-verified). Calendars and crop identity use linked references; temperature thresholds, broad soil classes, water proxies and 0–10 scores remain illustrative modelling assumptions.",
+    "review": {
+      "reviewed_on": "2026-11-15",
+      "status": "Literature review only; local agronomist validation pending",
+      "sources": [
+        {
+          "title": "Directorate of Pulses Development: clusterbean",
+          "url": "https://www.dpd.gov.in/CLUSTERBEAN.PDF",
+          "supports": "Guar production and monsoon-crop context; not a measured Jaipur field water balance."
+        },
+        {
+          "title": "ICAR-CAZRI clusterbean frontline demonstration study",
+          "url": "https://epubs.icar.org.in/index.php/AAZ/article/download/92240/37307/487522",
+          "supports": "Clusterbean agronomic research in Rajasthan; not validation of the prototype scoring weights."
+        },
+        {
+          "title": "ICAR-IIPR AICRP kharif pulses",
+          "url": "https://www.icar-iipr.org.in/aicrp-kharif-pulses/",
+          "supports": "Clusterbean identity and variety programme under kharif pulses."
+        }
+      ],
+      "assumptions_note": "Model calendar bins approximate variety-dependent maturity. Mustard 300 mm and clusterbean 350 mm are illustrative seasonal water proxies, not published irrigation prescriptions. Barley 500 mm is an indicative value within the FAO 450–650 mm range. All temperature limits, nutrient-demand flags, role benefits, soils, equipment and attribute scores need local review. regional_common is false conservatively; it is not a claim that the crop is absent locally."
+    }
   }
 ]

@@ -1,3 +1,5 @@
+> Updated 15 November 2026: mustard, barley and cluster bean are now included as source-researched, unverified profiles. The catalogue has 15 crops. See [current crop review](crop-review.md). The matrix below records the earlier audit; new totals are in the current README.
+
 # TerraPlan requirement audit and completion plan
 
 Audit date: 14 November 2026, India. Team: **AEGIS LABS** — Sarvesh Sehra (owner), Ayush Tyagi, Aditya Rathi, Arshi. This is a software/evidence audit, not confirmation of contest registration or submission.

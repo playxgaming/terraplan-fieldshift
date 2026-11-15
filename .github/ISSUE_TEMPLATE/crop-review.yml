@@ -1,0 +1,36 @@
+name: Crop source or agronomic review
+description: Propose evidence for crop parameters without silently promoting verification status.
+title: "[Crop review]: "
+body:
+  - type: markdown
+    attributes:
+      value: "A source reference is not local validation. Separate measured values, published context and modelling assumptions. Do not upload private farmer records."
+  - type: input
+    id: crop
+    attributes:
+      label: Crop, variety and region
+    validations:
+      required: true
+  - type: textarea
+    id: parameters
+    attributes:
+      label: Parameter, current value, proposed value and units
+      description: Include season, sowing window, duration and water definition where relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Primary sources and what each supports
+      description: Link the exact document/page, date, regional coverage and limitations. Explain irrigation water versus total crop water need.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Local review and uncertainty
+      description: Describe reviewer qualifications, applicability, missing field evidence and which assumptions remain unverified.
+  - type: textarea
+    id: impact
+    attributes:
+      label: Expected changes to calendars, exclusions, scores and tests

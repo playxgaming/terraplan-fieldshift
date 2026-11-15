@@ -15,10 +15,11 @@ test('the one demo definition is Jaipur and includes the farmer current rotation
 
 test('crop assumptions are unverified and weather bundles retain NASA responses and provenance', async () => {
   const crops = JSON.parse(await readFile(new URL('../data/crops.json', import.meta.url), 'utf8'));
-  assert.equal(crops.length, 12);
+  assert.equal(crops.length, 15);
   for (const crop of crops) {
     assert.equal(crop.verified, false);
-    assert.equal(crop.source_note, 'illustrative (AI-drafted, not verified)');
+    assert(crop.source_note.includes('not verified') || crop.source_note.includes('not agronomist-verified'));
+    if(crop.review)assert(crop.review.sources.length>=2);
     assert.equal(crop.photo.url, '');
   }
   for (const file of ['demo-power-daily.json', 'demo-power-monthly.json']) {
@@ -39,8 +40,8 @@ test('crop loader validates bundled rows, skips bad rows and reports failures wi
   const result = await loadCrops(async url => { requested = url; return { ok: true, json: async () => [...crops, { id: 'bad' }] }; });
   assert.match(requested.pathname, /\/data\/crops\.json$/);
   assert.equal(result.status, 'loaded');
-  assert.equal(result.crops.length, 12);
-  assert.equal(result.errors[0].row, 13);
+  assert.equal(result.crops.length, 15);
+  assert.equal(result.errors[0].row, 16);
   for (const fetcher of [async () => { throw new Error('offline'); }, async () => ({ ok: false }), async () => ({ ok: true, json: async () => { throw new Error('bad JSON'); } })]) {
     const failure = await loadCrops(fetcher);
     assert.equal(failure.status, 'error');

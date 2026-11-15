@@ -2,7 +2,7 @@ name: Deploy TerraPlan V3
 
 on:
   push:
-    branches: [codex/terraplan-v3]
+    branches: [codex/terraplan-v3-studio]
   workflow_dispatch:
 
 permissions:

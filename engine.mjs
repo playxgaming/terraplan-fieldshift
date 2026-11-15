@@ -130,6 +130,10 @@ export function validateCrops(input) {
     if (!FIELD_CHOICES.equipment.some(([id]) => id === row.equipment)) messages.push('equipment must be basic or machine.');
     if (!row.photo || typeof row.photo !== 'object' || ['url', 'credit', 'licence'].some(key => typeof row.photo[key] !== 'string')) messages.push('photo must contain url, credit and licence strings.');
     else if (row.photo.url && (!/^https:\/\//i.test(row.photo.url) || !row.photo.credit.trim() || !row.photo.licence.trim())) messages.push('A photo needs an HTTPS URL, credit and licence.');
+    if (row.review !== undefined) {
+      const review=row.review;
+      if(!review || !Number.isFinite(Date.parse(review.reviewed_on)) || typeof review.status!=='string' || !review.status.trim() || typeof review.assumptions_note!=='string' || !review.assumptions_note.trim() || !Array.isArray(review.sources) || !review.sources.length || review.sources.some(source=>!source || !/^https:\/\//.test(source.url) || typeof source.title!=='string' || !source.title.trim() || typeof source.supports!=='string' || !source.supports.trim()))messages.push('review needs a date, status, assumptions and HTTPS source references.');
+    }
     if (messages.length) errors.push({ row: index + 1, id: typeof row.id === 'string' ? row.id : null, messages });
     else { seen.add(row.id); crops.push(structuredClone(row)); }
   });

@@ -3,12 +3,12 @@ import {FIELD_CHOICES} from './field.mjs';
 export const LABEL_LANGUAGES=Object.freeze({en:'English',hi:'हिन्दी · Hindi',gu:'ગુજરાતી · Gujarati',mr:'मराठी · Marathi'});
 export const LABEL_STORAGE_KEY='terraplan.v3.labels';
 const paths=['/','/field','/climate','/priorities','/compare','/whatif','/evidence'];
-const crops=['rice','wheat','sorghum','bajra','maize','soybean','groundnut','chickpea','tur','moong','cotton','fodder'];
+const crops=['rice','wheat','sorghum','bajra','maize','soybean','groundnut','chickpea','tur','moong','cotton','fodder','mustard','barley','clusterbean'];
 const catalog=(nav,names,bare)=>Object.freeze({nav:Object.freeze(Object.fromEntries(paths.map((path,i)=>[path,nav[i]]))),crops:Object.freeze(Object.fromEntries(crops.map((id,i)=>[id,names[i]]))),bare});
 export const LABELS=Object.freeze({
-  hi:catalog(['स्वागत','मेरा खेत','आपकी जलवायु','प्राथमिकताएँ','फसल चक्र की तुलना','अगर ऐसा हो तो?','साक्ष्य'],['धान','गेहूँ','रबी ज्वार','बाजरा','मक्का','सोयाबीन','मूंगफली','चना','अरहर (तूर)','मूंग','कपास','चारे की ज्वार'],'बिना फसल'),
-  gu:catalog(['સ્વાગત','મારું ખેતર','તમારી આબોહવા','પ્રાથમિકતાઓ','પાક ફેરબદલીની તુલના','જો આવું થાય તો?','પુરાવા'],['ડાંગર','ઘઉં','રવી જુવાર','બાજરી','મકાઈ','સોયાબીન','મગફળી','ચણા','તુવેર','મગ','કપાસ','ચારા જુવાર'],'પાક વગર'),
-  mr:catalog(['स्वागत','माझे शेत','तुमचे हवामान','प्राधान्ये','पीक फेरपालटीची तुलना','असे झाले तर?','पुरावे'],['भात','गहू','रब्बी ज्वारी','बाजरी','मका','सोयाबीन','भुईमूग','हरभरा','तूर','मूग','कापूस','चाऱ्याची ज्वारी'],'पीक नाही'),
+  hi:catalog(['स्वागत','मेरा खेत','आपकी जलवायु','प्राथमिकताएँ','फसल चक्र की तुलना','अगर ऐसा हो तो?','साक्ष्य'],['धान','गेहूँ','रबी ज्वार','बाजरा','मक्का','सोयाबीन','मूंगफली','चना','अरहर (तूर)','मूंग','कपास','चारे की ज्वार','सरसों','जौ','ग्वार'],'बिना फसल'),
+  gu:catalog(['સ્વાગત','મારું ખેતર','તમારી આબોહવા','પ્રાથમિકતાઓ','પાક ફેરબદલીની તુલના','જો આવું થાય તો?','પુરાવા'],['ડાંગર','ઘઉં','રવી જુવાર','બાજરી','મકાઈ','સોયાબીન','મગફળી','ચણા','તુવેર','મગ','કપાસ','ચારા જુવાર','રાઈ (સરસવ)','જવ','ગુવાર'],'પાક વગર'),
+  mr:catalog(['स्वागत','माझे शेत','तुमचे हवामान','प्राधान्ये','पीक फेरपालटीची तुलना','असे झाले तर?','पुरावे'],['भात','गहू','रब्बी ज्वारी','बाजरी','मका','सोयाबीन','भुईमूग','हरभरा','तूर','मूग','कापूस','चाऱ्याची ज्वारी','मोहरी','जव','गवार'],'पीक नाही'),
 });
 export const validLanguage=value=>typeof value==='string' && Object.hasOwn(LABEL_LANGUAGES,value);
 

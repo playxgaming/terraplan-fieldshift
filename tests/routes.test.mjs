@@ -67,7 +67,7 @@ test('unloaded comparison keeps current warnings and exclusions visible without 
 test('Evidence reports skipped rows, escapes diagnostics and labels every starter row with its source', async () => {
   const crops = JSON.parse(await readFile(new URL('../data/crops.json', import.meta.url), 'utf8'));
   const html = resolveRoute('#/evidence').render({cropData:{crops,status:'loaded',errors:[{row:13,id:'<bad>',messages:['<script>bad</script>']}]}});
-  assert.equal((html.match(/Source for all values in this row/g) ?? []).length, 12);
+  assert.equal((html.match(/Source for all values in this row/g) ?? []).length, 15);
   assert.equal((html.match(/illustrative \(AI-drafted, not verified\)/g) ?? []).length, 13);
   assert(html.includes('Row 13 (&lt;bad&gt;)'));
   assert(!html.includes('<script>'));

@@ -104,5 +104,32 @@
     "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
     "source": "https://commons.wikimedia.org/wiki/File:Sorghum_crop_field_-_geograph.org.uk_-_5214668.jpg",
     "description": "Representative sorghum; illustrative fodder crop is fodder sorghum."
+  },
+  "mustard": {
+    "url": "./assets/crops/mustard.jpg",
+    "credit": "Forest and Kim Starr",
+    "licence": "CC BY 3.0 us",
+    "licence_url": "https://creativecommons.org/licenses/by/3.0/us/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Starr-150403-0133-Brassica_juncea-small_plant-Southeast_Eastern_Island-Midway_Atoll_(25157389042).jpg",
+    "description": "Brassica juncea (Mustard cabbage)\nSmall plant at Southeast Eastern Island, Midway Atoll, Hawaii.\nApril 03, 2015\n\n#150403-0133\n\n\nImage Use Policy",
+    "changes": "Downloaded Wikimedia thumbnail; no local image edits."
+  },
+  "barley": {
+    "url": "./assets/crops/barley.jpg",
+    "credit": "Matt Lavin from Bozeman, Montana, USA",
+    "licence": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Hordeum_vulgare_(3885627759).jpg",
+    "description": "In two row barley, the lateral spikelets include aborted florets, which are the linear yellow structures in this photo.",
+    "changes": "Downloaded Wikimedia thumbnail; no local image edits."
+  },
+  "clusterbean": {
+    "url": "./assets/crops/clusterbean.jpg",
+    "credit": "Dinesh Valke from Thane, India",
+    "licence": "CC BY-SA 2.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Cyamopsis_tetragonoloba_(4663783848).jpg",
+    "description": "Fabaceae (pea, or legume family) » Cyamopsis tetragonoloba\n¿ ky-uh-mus-OP-sis ? -- from the Greek kyamos (bean) and opsis (resembling)\ntet-ra-gon-uh-LOW-bus -- four-angled lobes\ncommonly known as: Calcutta lucerne, cluster bean, guar, guar bean, gum bean, Siam bean • Bengali: ঝার শিম jhar sim • Gujarati: ગવાર gavar, ગુવાર guvar • Hindi: गवार gawar, गुवार guwar, गुआर guaar, गोआर goaar • Kannada: ಗೋರಿ ಕಾಯಿ gori kaayi • Konkani: मिडकीसांग midkisaang • Malayalam: kothavara • Marathi: बावची bavachi, चिटकी citaki, गवार gavar, गवारी gavari, गोवारी govari • Oriya: guanra chhuim, shimba • Punjabi: ਕੌਡ਼ਾ ਕਸੈਲਾ kaura kasaila, ਫਲੀ ਗੁਆਰ phali guar, ਸਫੈਦ ਮੋਠ safaid moth • Sanskrit: बाकुची bakuchi, दृढबिज dridhabija, गोरक्षफलिनी gorakshaphalini, क्षुद्रशिम्बी kshudrashimbi, वक्रशिम्बी vakrashimbi • Tamil: கொத்தவரை kottavarai • Telugu: గోరుచిక్కుడుకాయ goru-chikkudu-kaya\nDistribution: widely cultivated\n\n\nReferences: Wikipedia • NPGS / GRIN • M.M.P.N.D. • ENVIS - FRLHT • DDSA",
+    "changes": "Downloaded Wikimedia thumbnail; no local image edits."
   }
 }

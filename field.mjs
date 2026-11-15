@@ -5,7 +5,7 @@ export const FIELD_CHOICES = Object.freeze(Object.fromEntries(Object.entries({
   water_source: [['rainfed', 'Rainfed'], ['well', 'Well'], ['canal', 'Canal'], ['borewell', 'Borewell']],
   equipment: [['basic', 'Basic tools'], ['machine', 'Machinery available']],
   market_access: [['local', 'Local market'], ['mandi', 'Mandi (wholesale farm market)'], ['contract', 'Contract buyer']],
-  crop: [['rice', 'Rice'], ['wheat', 'Wheat'], ['sorghum', 'Rabi jowar (sorghum)'], ['bajra', 'Bajra (pearl millet)'], ['maize', 'Maize'], ['soybean', 'Soybean'], ['groundnut', 'Groundnut'], ['chickpea', 'Chickpea (chana)'], ['tur', 'Tur (pigeon pea)'], ['moong', 'Moong (mung bean)'], ['cotton', 'Cotton'], ['fodder', 'Fodder sorghum']],
+  crop: [['rice', 'Rice'], ['wheat', 'Wheat'], ['sorghum', 'Rabi jowar (sorghum)'], ['bajra', 'Bajra (pearl millet)'], ['maize', 'Maize'], ['soybean', 'Soybean'], ['groundnut', 'Groundnut'], ['chickpea', 'Chickpea (chana)'], ['tur', 'Tur (pigeon pea)'], ['moong', 'Moong (mung bean)'], ['cotton', 'Cotton'], ['fodder', 'Fodder sorghum'], ['mustard', 'Indian mustard (sarson)'], ['barley', 'Barley (jau)'], ['clusterbean', 'Cluster bean (guar)']],
 }).map(([key, rows]) => [key, Object.freeze(rows.map(row => Object.freeze(row)))])));
 
 export const FIELD_LIMITS = Object.freeze({

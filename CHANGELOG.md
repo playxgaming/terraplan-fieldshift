@@ -1,3 +1,11 @@
+# 3.4.0-catalogue.1 · 15 November 2026
+
+- Added Indian mustard, barley and cluster bean with per-row research references, explicit assumptions, Low confidence and local licensed photographs. Original twelve scientific rows unchanged.
+- Added interactive project guide: moving WebGL field, searchable crop gallery, season/research filters, architecture explorer and guided demonstration.
+- Updated README, contribution guidance, current demo outputs and source/assumption tests.
+- GitHub Pages now deploys the Studio branch after verification. Repository visibility and default entry are updated under owner authorization.
+- Water priority normalization changes with the catalogue; current/A/B are 50.59 / 71.41 / 70.23. This is not measured farm improvement.
+
 # Changelog
 
 ## V3 Field Studio — separate visual release — 2026-11-13

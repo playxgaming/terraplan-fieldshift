@@ -121,10 +121,10 @@ test('all-rotations table retains every row, marks current/options and sorts wit
   assert.deepEqual(knownDesc,[...knownDesc].sort((a,b)=>b-a));
   assert.equal(asc.at(-1).total,null);
   assert.equal(desc.at(-1).total,null);
-  assert.equal(asc.length,84);
-  assert.equal(new Set(asc.map(row=>row.id)).size,84);
+  assert.equal(asc.length,141);
+  assert.equal(new Set(asc.map(row=>row.id)).size,141);
   const html=renderRotationsTable(data,{key:'total',direction:'asc'});
-  assert.equal((html.match(/<tr data-rotation-id=/g)??[]).length,84);
+  assert.equal((html.match(/<tr data-rotation-id=/g)??[]).length,141);
   assert(html.includes('aria-sort="ascending"'));
   assert(html.includes('scroll horizontally'));
   assert(html.includes('Your current'));
@@ -137,7 +137,7 @@ test('every supported table sort is stable and missing values stay last for nume
   const data=tableDataFor(scoring,generated);
   for(const column of ROTATION_SORT_COLUMNS)for(const direction of ['asc','desc']){
     const rows=sortedRotationRows(data,{key:column.key,direction});
-    assert.equal(rows.length,84);
+    assert.equal(rows.length,141);
     assert.deepEqual(rows.map(row=>row.id),sortedRotationRows(data,{key:column.key,direction}).map(row=>row.id));
   }
   const unknown={...scoring.ranked[0],id:'unknown-confidence',confidence:undefined};
@@ -157,5 +157,5 @@ test('comparison output escapes crop text and never fabricates photos, sources o
   assert(html.includes('Representative photo'));
   assert(html.includes('./assets/crops/bajra.jpg'));
   assert(html.includes(climate.retrieved_at));
-  assert(html.includes('Excluded (36)'));
+  assert(html.includes('Excluded (57)'));
 });

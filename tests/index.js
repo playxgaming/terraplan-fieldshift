@@ -16,3 +16,5 @@ import './studio.test.mjs';
 import './jaipur.test.mjs';
 
 import './readiness.test.mjs';
+
+import './catalogue.test.mjs';

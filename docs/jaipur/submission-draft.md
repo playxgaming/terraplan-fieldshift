@@ -28,7 +28,7 @@ The farmer can inspect every rule, retain the current plan even when it breaks a
 
 ## Honest limitations and next work
 
-The twelve crop profiles and scoring constants are illustrative. No local agronomist validation, field trial, price feed, measured soil report or verified well capacity is claimed. Scores are not yield or profit predictions. The Jaipur case is a scenario, not a surveyed farm. The next step is local agronomic review, farmer usability testing, validated additional local crops and quality-checked satellite observations.
+The fifteen crop profiles and scoring constants are illustrative. No local agronomist validation, field trial, price feed, measured soil report or verified well capacity is claimed. Scores are not yield or profit predictions. The Jaipur case is a scenario, not a surveyed farm. The next step is local agronomic review, farmer usability testing, local validation of the three added crop profiles and quality-checked satellite observations.
 
 ## AI and other credits
 
